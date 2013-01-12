@@ -1,5 +1,5 @@
 %#codegen
-function [heart_rate] = heart_rate_official_cport(data, fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size, shouldPlot)  
+function [heart_rate] = heart_rate_official_cport(data, fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_time, shouldPlot)  
 %TO DO -
 % Uncomment the line:
 % REMOVE AFTER TESTING
@@ -10,7 +10,7 @@ function [heart_rate] = heart_rate_official_cport(data, fs, threshold_1, thresho
 %threshold_1 - threshold for filtering out peaks for channel 1
 %threshold_2 - threshold for filtering out peaks for channel 2
 %threshold_3 - threshold for filtering out peaks for channel 3
-%sample_size - length in time(s) over which HR is estimated
+%sample_time - length in time(s) over which HR is estimated
 
 % QRS Detection
 % shows the effect of each filter according to Pan-Tompkins algorithm.
@@ -20,7 +20,30 @@ function [heart_rate] = heart_rate_official_cport(data, fs, threshold_1, thresho
 
 %clear all
 %close all
-
+%[GB] Ensures the the input args are of the correct data type
+% T4 = numerictype('WordLength', 80, 'FractionLength', 40);
+Fixed_Point_Properties = numerictype('WordLength',32, 'FractionLength', 16, 'Signed',false);
+F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductMode', 'KeepMSB', 'MaxProductWordLength', 32, 'SumMode', 'KeepMSB','MaxSumWordLength', 32);
+% Asserts that the input parameters are of fixed point
+assert(isa(shouldPlot,'int32'));
+assert(isfi(data));
+assert(isfi(fs));
+assert(isfi(threshold_1));
+assert(isfi(threshold_2));
+assert(isfi(threshold_3));
+assert(isfi(pos_deviance_threshold));
+assert(isfi(neg_deviance_threshold));
+assert(isfi(sample_time));
+% Asserts that input parameters are of specific fixed point parameters
+assert(isequal(numerictype(data), Fixed_Point_Properties) && isequal(fimath(data), F));
+assert(isequal(numerictype(fs),Fixed_Point_Properties) && isequal(fimath(fs), F));
+assert(isequal(numerictype(threshold_1),Fixed_Point_Properties) && isequal(fimath(threshold_1), F));
+assert(isequal(numerictype(threshold_2),Fixed_Point_Properties) && isequal(fimath(threshold_2), F));
+assert(isequal(numerictype(threshold_3),Fixed_Point_Properties) && isequal(fimath(threshold_3), F));
+assert(isequal(numerictype(pos_deviance_threshold),Fixed_Point_Properties) && isequal(fimath(pos_deviance_threshold), F));
+assert(isequal(numerictype(neg_deviance_threshold),Fixed_Point_Properties) && isequal(fimath(neg_deviance_threshold), F));
+assert(isequal(numerictype(sample_time),Fixed_Point_Properties) && isequal(fimath(sample_time), F));
+       
 % [GB] Assures that the first threshold is less than the second threshold
 assert(threshold_1 < threshold_2);
 
@@ -36,7 +59,7 @@ NFFT = 2 ^(ceil(log2(N))); %[GB] Next power of 2 from length of the signal
 
 % Assures that the number of samples sent in aren't greater than the
 % specified sample size
-assert(N/fs >= sample_size);
+assert(N/fs >= sample_time);
 
 % UNCOMMENT TO SEE PLOT OF ORIGINAL EKG
 
@@ -66,16 +89,16 @@ x1 = x1/ max( abs(x1 )); % normalize to one
  % UNCOMMENT TO SEE FFT OF ORIGINAL EKG
     if (shouldPlot)
         %Plots the fft of the original signal
-        transform=fft(x1,NFFT)/N;%[GB] Transform from discrete values to the frequency domain
+        %transform=fft(x1,NFFT)/N;%[GB] Transform from discrete values to the frequency domain
         %transform=transform;
         %windows=[windows,abs(transform)];
-        freq = fs/2*linspace(0,1,NFFT/2+1);%[GB]Frequency index
+        %freq = fs/2*linspace(0,1,NFFT/2+1);%[GB]Frequency index
      %   fprintf('Plotting\n');
-        figure(2) 
-        plot(freq,2*abs(transform(1:NFFT/2+1)));
-        title('FFT EKG Signal');
-        xlabel('Frequency (Hz)');
-        ylabel('|X(f)|');
+        %figure(2) 
+        %plot(freq,2*abs(transform(1:NFFT/2+1)));
+        %title('FFT EKG Signal');
+        %xlabel('Frequency (Hz)');
+        %ylabel('|X(f)|');
     end
 %LOW PASS FILTERING
 
@@ -85,19 +108,19 @@ x1 = x1/ max( abs(x1 )); % normalize to one
 
 
 %h_LP=filter(b,a,[1 zeros(1,12)]); % transfer function of LPF
-if(shouldPlot)
+%if(shouldPlot)
     %figure(21)
     %freqz(b,a,1000,fs)
-end
+%end
 
 % x2 = conv (x1 ,h_LP);
-Fc  = 16;
-low_pass_order = 2;   % FIR filter order
-low_pass_spec = fdesign.lowpass('N,Fc',low_pass_order,Fc,fs);
-low_pass = design(low_pass_spec,'window','window',@hamming);
-x2 = filter(low_pass, x1);
+% Fc  = 16;
+% low_pass_order = 2;   % FIR filter order
+% low_pass_spec = fdesign.lowpass('N,Fc',low_pass_order,Fc,fs);
+% low_pass = design(low_pass_spec,'window','window',@hamming);
+% x2 = filter(low_pass, x1);
 %x2 = x2 (6+[1: N]); %cancle delay
-x2 = x2/ max( abs(x2 )); % normalize , for convenience .
+% x2 = x2/ max( abs(x2 )); % normalize , for convenience .
 
 % UNCOMMENT TO SEE PLOT OF EKG AFTER BEING LOW PASSED
 
@@ -112,21 +135,21 @@ x2 = x2/ max( abs(x2 )); % normalize , for convenience .
     %xlim([1 3]);
  
 % UNCOMMENT TO SEE FFT PLOT OF EKG AFTER BEING LOW PASSED
-    if(shouldPlot)
+    %if(shouldPlot)
         % Takes the fft of the signal %
-        transform=fft(x2,NFFT)/N;%[GB] Transform from discrete values to the frequency domain
+        %transform=fft(x2,NFFT)/N;%[GB] Transform from discrete values to the frequency domain
 
         % Plots the fft of the filtered signal
     %   transform=transform;
         %windows=[windows,abs(transform)];
-        freq = fs/2*linspace(0,1,NFFT/2+1);%[GB]Frequency index
+        %freq = fs/2*linspace(0,1,NFFT/2+1);%[GB]Frequency index
     %    fprintf('Plotting\n');
-        figure(4)
-        plot(freq,2*abs(transform(1:NFFT/2+1)));
-        title('FFT LP Filtered EKG Signal');
-        xlabel('Frequency (Hz)');
-        ylabel('|X(f)|');
-    end
+        %figure(4)
+        %plot(freq,2*abs(transform(1:NFFT/2+1)));
+        %title('FFT LP Filtered EKG Signal');
+        %xlabel('Frequency (Hz)');
+        %ylabel('|X(f)|');
+    %end
 
 %HIGH PASS FILTERING
 
@@ -135,17 +158,17 @@ x2 = x2/ max( abs(x2 )); % normalize , for convenience .
 %a = [1 -1];
 
 %h_HP=filter(b,a,[1 zeros(1,32)]); % impulse response iof HPF
-if(shouldPlot)
+%if(shouldPlot)
 %     freqz(h_HP);
-end
-Fc  = 5;
-high_pass_order = 2;   % FIR filter order
-high_pass_spec = fdesign.highpass('N,Fc',high_pass_order,Fc,fs);
-high_pass = design(high_pass_spec,'window','window',@hamming);
+%end
+% Fc  = 5;
+% high_pass_order = 2;   % FIR filter order
+% high_pass_spec = fdesign.highpass('N,Fc',high_pass_order,Fc,fs);
+% high_pass = design(high_pass_spec,'window','window',@hamming);
 %x3 = conv (x2 ,h_HP);
 %x3 = x3 (16+[1: N]); %cancle delay
-x3 = filter(high_pass, x2);
-x3 = x3/ max( abs(x3 ));
+% x3 = filter(high_pass, x2);
+% x3 = x3/ max( abs(x3 ));
 
 
 % UNCOMMENT TO SEE PLOT OF EKG AFTER BEING HIGH PASSED
@@ -160,30 +183,30 @@ x3 = x3/ max( abs(x3 ));
     %xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
     %xlim([1 3]);
 % UNCOMMENT TO SEE FFT PLOT OF EKG AFTER BEING HIGH PASSED
-if(shouldPlot)
+%if(shouldPlot)
     % Takes the fft of the signal %
-    transform=fft(x3,NFFT)/N;%[GB] Transform from discrete values to the frequency domain
+    %transform=fft(x3,NFFT)/N;%[GB] Transform from discrete values to the frequency domain
 
     % Plots the fft of the filtered signal
   %  transform=transform;
     %windows=[windows,abs(transform)];
-    freq = fs/2*linspace(0,1,NFFT/2+1);%[GB]Frequency index
+    %freq = fs/2*linspace(0,1,NFFT/2+1);%[GB]Frequency index
     %fprintf('Plotting\n');
-    figure(6)
-    plot(freq,2*abs(transform(1:NFFT/2+1)));
-    title('FFT HP Filtered EKG Signal');
-    xlabel('Frequency (Hz)');
-    ylabel('|X(f)|');
-end
+    %figure(6)
+    %plot(freq,2*abs(transform(1:NFFT/2+1)));
+    %title('FFT HP Filtered EKG Signal');
+    %xlabel('Frequency (Hz)');
+    %ylabel('|X(f)|');
+%end
 
 %DERIVATIVE FILTER
 
 % Make impulse response
-h = [-1 -2 0 2 1]/8;
+%h = [-1 -2 0 2 1]/8;
 % Apply filter
-x4 = conv (x3 ,h);
-x4 = x4 (2+ (1: N));
-x4 = x4/ max( abs(x4 ));
+%x4 = conv (x1 ,h);
+%x4 = x4 (2+ (1: N));
+%x4 = x4/ max( abs(x4 ));
 
 % UNCOMMENT TO SEE PLOT OF EKG AFTER BEING A DERIVATIVE FILTER IS APPLIED
 
@@ -198,7 +221,8 @@ x4 = x4/ max( abs(x4 ));
  
 %SQUARING
 
-x5 = x4 .^2;
+% x5 = x4 .^2;
+x5 = mpower(x1, 2);
 x5 = x5/ max( abs(x5 ));
 
 % UNCOMMENT TO SEE PLOT OF EKG AFTER SQUARING
@@ -268,8 +292,8 @@ left = find(diff([0 poss_reg])==1); %[GB] Gets all the indices in the resultant 
 right = find(diff([poss_reg 0])==-1);
 %left=left-(6+16);  % cancel delay because of LP and HP
 %right=right-(6+16);% cancel delay because of LP and HP
-R_value = zeros(N);
-R_loc = zeros(N);
+R_value = zeros(1, size(left));
+R_loc = zeros(1, size(left));
 for i=1:length(left)  
     [R_value(i) R_loc(i)] = max( x1(left(i):right(i)) );
     R_loc(i) = R_loc(i)-1+left(i); % add offset
@@ -281,9 +305,8 @@ for i=1:length(left)
 %     S_loc(i) = S_loc(i)-1+left(i); % add offset
 
 end
-
 % there is no selective wave
-R_loc=R_loc(find(R_loc~=0));
+R_loc=R_loc(R_loc~=0);
 % Q_loc=Q_loc(find(Q_loc~=0));
 % S_loc=S_loc(find(S_loc~=0));
 
@@ -306,7 +329,7 @@ R_peak_indices = R_loc;
 
 % Level 2 Detection: Uses two channels to detect heart beats based on two threshold
 % [num_rows_vals, num_cols_vals] = size(R_peak_vals);
-% [num_rows_indices, num_cols_indices] = size(R_peak_indices);
+[~, num_cols_indices] = size(R_peak_indices);
 
 % Creates a copy of the indices which store the indices where the 'R' peaks
 % lie
@@ -322,8 +345,9 @@ R_peak_indices_combined = R_peak_indices(1:num_cols_indices); % REPLACE THIS WIT
     %    fprintf('Channel 1 Original: There are %i non-zero values\n',length(find(R_peak_indices_channel_1 ~= 0)));
     %end
 
-[R_peak_indices_channel_1, noise_lvl_channel_1, signal_lvl_channel_1] = dualThreshold(threshold_1, R_peak_indices_channel_1, max_voltage, pos_deviance_threshold, neg_deviance_threshold);
-[R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(threshold_2, R_peak_indices_channel_2, max_voltage, pos_deviance_threshold, neg_deviance_threshold);
+[R_peak_indices_channel_1, noise_lvl_channel_1, signal_lvl_channel_1] = dualThreshold(R_peak_vals, threshold_1, R_peak_indices_channel_1, max_voltage, pos_deviance_threshold, neg_deviance_threshold);
+[R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(R_peak_vals, threshold_2, R_peak_indices_channel_2, max_voltage, pos_deviance_threshold, neg_deviance_threshold);
+
 
 % UNCOMMENT TO SEE THE NUMBER OF PEAKS AFTER CHANNEL 1 PROCESSING
     %if (shouldPlot)
@@ -335,63 +359,63 @@ R_peak_indices_combined = R_peak_indices(1:num_cols_indices); % REPLACE THIS WIT
 
 if (shouldPlot)
     % Sets R values to zero which failed any of the previous phases 
-    R_valuea = R_value;
-    for i=1:length(R_valuea)
-        if (R_peak_indices_channel_1(i) == 0)
-            R_valuea(i) = 0;
-        end
-    end
-    R_valuea = R_valuea(find(R_valuea ~= 0));   
-    R_peak_indices_channel_1a = R_peak_indices_channel_1((R_peak_indices_channel_1 ~= 0));
-    fprintf('The length of R after is: %i\n',length(R_valuea));
+    %R_valuea = R_value;
+    %for i=1:length(R_valuea)
+    %    if (R_peak_indices_channel_1(i) == 0)
+    %        R_valuea(i) = 0;
+    %    end
+    %end
+    %R_valuea = R_valuea(R_valuea ~= 0);   
+    %R_peak_indices_channel_1a = R_peak_indices_channel_1((R_peak_indices_channel_1 ~= 0));
+    %fprintf('The length of R after is: %i\n',length(R_valuea));
     %fprintf('The length of R_indices after is: %i\n',length(R_peak_indices_channel_1a));   
-    t(R_peak_indices_channel_1a)
+%     t(R_peak_indices_channel_1a);
     %clf(figure(13));
-    figure(13)
-    subplot(2,1,1)
-    plot (t, x1/max(x1), t(R_peak_indices_channel_1a), R_valuea, 'r^');
-    title('ECG Signal Post Channel 1 Processing');
-    xlabel('Time(s)');
-    ylabel('mV');
-    legend('ECG','R');
+    %figure(13)
+    %subplot(2,1,1)
+    %plot (t, x1/max(x1), t(R_peak_indices_channel_1a), R_valuea, 'r^');
+    %title('ECG Signal Post Channel 1 Processing');
+    %xlabel('Time(s)');
+    %ylabel('mV');
+    %legend('ECG','R');
     
-    subplot(2,1,2)
-    plot (t, x1/max(x1), t(R_peak_indices), R_value, 'r^');
-    title('ECG All Detected Peaks');
-    xlabel('Time(s)');
-    ylabel('mV')
+    %subplot(2,1,2)
+    %plot (t, x1/max(x1), t(R_peak_indices), R_value, 'r^');
+    %title('ECG All Detected Peaks');
+    %xlabel('Time(s)');
+    %ylabel('mV')
     %plot (t, x1/max(x1) , t(R_peak_indices_channel_3) ,R_peak_vals , 'r^', t(S_loc) ,S_value, '*',t(Q_loc) , Q_value, 'o');
 end
 % UNCOMMENT TO SEE PLOT OF EKG AFTER BEING PASSED THROUGH THE SECOND CHANNEL
 
 if (shouldPlot)
     % Sets R values to zero which failed any of the previous phases 
-    R_valuea = R_value;
-    for i=1:length(R_valuea)
-        if (R_peak_indices_channel_2(i) == 0)
-            R_valuea(i) = 0;
-        end
-    end
-    R_valuea = R_valuea(find(R_valuea ~= 0));   
-    R_peak_indices_channel_2a = R_peak_indices_channel_2((R_peak_indices_channel_2 ~= 0));
-    fprintf('The length of R after is: %i\n',length(R_valuea));
+    %R_valuea = R_value;
+    %for i=1:length(R_valuea)
+    %    if (R_peak_indices_channel_2(i) == 0)
+    %        R_valuea(i) = 0;
+    %    end
+    %end
+    %R_valuea = R_valuea(R_valuea ~= 0);   
+    %R_peak_indices_channel_2a = R_peak_indices_channel_2((R_peak_indices_channel_2 ~= 0));
+    %fprintf('The length of R after is: %i\n',length(R_valuea));
     %fprintf('The length of R_indices after is: %i\n',length(R_peak_indices_channel_2a));   
-    t(R_peak_indices_channel_2a)
+%     t(R_peak_indices_channel_2a);
     %clf(figure(13));
-    figure(14)
-    subplot(2,1,1)
-    plot (t, x1/max(x1), t(R_peak_indices_channel_2a), R_valuea, 'r^');
-    title('ECG Signal Post Channel 2 Processing');
-    xlabel('Time(s)');
-    ylabel('mV');
-    legend('ECG','R');
-    subplot(2,1,2)
-    plot (t, x1/max(x1), t(R_peak_indices), R_value, 'r^');
+    %figure(14)
+    %subplot(2,1,1)
+    %plot (t, x1/max(x1), t(R_peak_indices_channel_2a), R_valuea, 'r^');
+    %title('ECG Signal Post Channel 2 Processing');
+    %xlabel('Time(s)');
+    %ylabel('mV');
+    %legend('ECG','R');
+    %subplot(2,1,2)
+    %plot (t, x1/max(x1), t(R_peak_indices), R_value, 'r^');
     
-    title('ECG All Detected Peaks');
-    xlabel('Time(s)');
-    ylabel('mV');
-    legend('ECG','R');
+    %title('ECG All Detected Peaks');
+    %xlabel('Time(s)');
+    %ylabel('mV');
+    %legend('ECG','R');
     %plot (t, x1/max(x1) , t(R_peak_indices_channel_3) ,R_peak_vals , 'r^', t(S_loc) ,S_value, '*',t(Q_loc) , Q_value, 'o');
 end
 
@@ -434,14 +458,14 @@ for i=1:length(R_peak_indices_combined)
         Ds_2 = max(0, Ds_2);
       
         if (Ds_1 > Ds_2)
-            if(shouldPlot)
+            %if(shouldPlot)
                %fprintf('Ds1: %f Ds2: %f Ds1 wins\n', Ds_1, Ds_2);
-            end
+            %end
             R_peak_indices_combined(i) = R_peak_indices_channel_1(i);
         else
-            if(shouldPlot)
+            %if(shouldPlot)
                 %fprintf('Ds1: %f Ds2: %f Ds2 wins\n', Ds_1, Ds_2);
-            end
+            %end
             R_peak_indices_combined(i) = R_peak_indices_channel_2(i);
         end
     end
@@ -484,26 +508,26 @@ for i=1:length(R_peak_vals)
     end
 end
 % Removes all zero values from both the indice and value array
-R_peak_indices_channel_3 = R_peak_indices_channel_3(find(R_peak_indices_channel_3 ~= 0));
-R_peak_vals = R_peak_vals(find(R_peak_vals ~= 0));   
+R_peak_indices_channel_3 = R_peak_indices_channel_3(R_peak_indices_channel_3 ~= 0);
+R_peak_vals = R_peak_vals(R_peak_vals ~= 0);   
 
 %plots R peaks after all level processing
 if (shouldPlot)
     %clf(figure(14));
-    figure(15)
-    subplot(2,1,1)
-    plot (t, x1/max(x1), t(R_peak_indices_channel_3), R_peak_vals, 'r^');
-    title('Final ECG Signal with R points');
-    xlabel('Time(s)');
-    ylabel('mV');
-    legend('ECG','R');
+    %figure(15)
+    %subplot(2,1,1)
+    %plot (t, x1/max(x1), t(R_peak_indices_channel_3), R_peak_vals, 'r^');
+    %title('Final ECG Signal with R points');
+    %xlabel('Time(s)');
+    %ylabel('mV');
+    %legend('ECG','R');
     
-    subplot(2,1,2)
-    plot (t, x1/max(x1), t(R_peak_indices), R_value, 'r^');
-    title('ECG All Detected Peaks');
-    xlabel('Time(s)');
-    ylabel('mV');
-    legend('ECG','R');
+    %subplot(2,1,2)
+    %plot (t, x1/max(x1), t(R_peak_indices), R_value, 'r^');
+    %title('ECG All Detected Peaks');
+    %xlabel('Time(s)');
+    %ylabel('mV');
+    %legend('ECG','R');
     %plot (t, x1/max(x1) , t(R_peak_indices_channel_3) ,R_peak_vals , 'r^', t(S_loc) ,S_value, '*',t(Q_loc) , Q_value, 'o');
 end
 
@@ -527,7 +551,7 @@ for i=1:length(R_peak_indices_channel_3)
     R_peak_count = R_peak_count + 1;
 end
 
-heart_rate = (R_peak_count / sample_size) * 60;
+heart_rate = (R_peak_count / sample_time) * 60;
 %heart_rate = R_peak_count;
 
 end
@@ -560,7 +584,7 @@ end
 
 %DUAL THRESHOLD PROCESSSING
 % Filters out R_peaks which don't meet the threshold reqs
-    function [indices, noise_lvl, signal_lvl] = dualThreshold(threshold, indices, max_voltage, pos_deviance_threshold, neg_deviance_threshold)
+    function [indices, noise_lvl, signal_lvl] = dualThreshold(R_peak_vals, threshold, indices, max_voltage, pos_deviance_threshold, neg_deviance_threshold)
         noise_sum = 0; signal_sum = 0;
         noise_count = 0; signal_count = 0;
         noise_lvl = 0; signal_lvl = 0;

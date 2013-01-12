@@ -49,10 +49,10 @@ for step=0:(num_windows - 1)
     %end_index = begin_index + (window_size - 1);
     sample_size_t = length(data(begin_index:end_index)) / fs;
     if (step == 10)
-        heart_rate = heart_rate_official(data(begin_index:end_index), fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size_t, 1);
+        heart_rate = heart_rate_official_cport(data(begin_index:end_index), fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size_t, 1);
         heart_rates = [heart_rates heart_rate];
     else
-        heart_rate = heart_rate_official(data(begin_index:end_index), fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size_t, 0);
+        heart_rate = heart_rate_official_cport(data(begin_index:end_index), fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size_t, 0);
         heart_rates = [heart_rates heart_rate];
     end
 
