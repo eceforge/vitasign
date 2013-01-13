@@ -304,7 +304,7 @@ right = find(diff([poss_reg 0])==-1);
 %left=left-(6+16);  % cancel delay because of LP and HP
 %right=right-(6+16);% cancel delay because of LP and HP
 [~, left_num_cols] = size(left);
-R_value = zeros(1, left_num_cols);
+R_value = fi(zeros(1, left_num_cols), Fixed_Point_Properties, F);
 R_loc = zeros(1, left_num_cols);
 for i=1:length(left)  
     [R_value(i) R_loc(i)] = max( x1(left(i):right(i)) );
@@ -555,7 +555,7 @@ end
 % CALCULATES HEART RATE
 % NOTE: This will assume that only 1-min windows of the EKG are sent in as
 % the data type
-R_peak_count = 0;
+R_peak_count = fi(0, Fixed_Point_Properties, F);
 
 % Counts how many R peak counts are found in N seconds
 for i=1:length(R_peak_indices_channel_3)
@@ -563,14 +563,25 @@ for i=1:length(R_peak_indices_channel_3)
     R_peak_count = R_peak_count + 1;
 end
 
-heart_rate = (R_peak_count / sample_time) * 60;
+heart_rate = (R_peak_count / sample_time) * 60
 %heart_rate = R_peak_count;
-resetglobalfimath;
 end
 
 % RETURNS TRUE IF THE INPUT SIGNAL VALUE MEETS THE DEVIANCE REQS. NOTE
 % THE THRESHOLD VALUE CHANGES BASED ON WHETHER DEVIANCE IS NEG OR POS
 function [meets_deviance_req] = meets_deviance_threshold(hr_value, signal_level, pos_deviance_threshold, neg_deviance_threshold)
+        Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 16, 'Signed',false);
+        F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 16,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 16, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
+        % Asserts that the input parameters are of fixed point
+        assert(isfi(hr_value));
+        assert(isfi(signal_level));
+        assert(isfi(pos_deviance_threshold));
+        assert(isfi(neg_deviance_threshold));
+        % Asserts that input parameters are of specific fixed point parameters
+        assert(isequal(numerictype(hr_value), Fixed_Point_Properties) && isequal(fimath(hr_value), F));
+        assert(isequal(numerictype(signal_level), Fixed_Point_Properties) && isequal(fimath(signal_level), F));
+        assert(isequal(numerictype(pos_deviance_threshold), Fixed_Point_Properties) && isequal(fimath(pos_deviance_threshold), F));
+        assert(isequal(numerictype(neg_deviance_threshold), Fixed_Point_Properties) && isequal(fimath(neg_deviance_threshold), F));
     %Accounts for the first signal value
     if (signal_level == 0)
         meets_deviance_req = 1;
@@ -597,8 +608,8 @@ end
 %DUAL THRESHOLD PROCESSSING
 % Filters out R_peaks which don't meet the threshold reqs
     function [indices, noise_lvl, signal_lvl] = dualThreshold(R_peak_vals, threshold, indices, max_voltage, pos_deviance_threshold, neg_deviance_threshold)
-        Fixed_Point_Properties = numerictype('WordLength',32, 'FractionLength', 16, 'Signed',false);
-        F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductMode', 'KeepMSB', 'MaxProductWordLength', 32, 'SumMode', 'KeepMSB','MaxSumWordLength', 32);
+        Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 16, 'Signed',false);
+        F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 16,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 16, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
         % Asserts that the input parameters are of fixed point
         assert(isfi(R_peak_vals));
         assert(isfi(threshold));
@@ -612,9 +623,9 @@ end
         assert(isequal(numerictype(max_voltage), Fixed_Point_Properties) && isequal(fimath(max_voltage), F));
         assert(isequal(numerictype(pos_deviance_threshold), Fixed_Point_Properties) && isequal(fimath(pos_deviance_threshold), F));
         assert(isequal(numerictype(neg_deviance_threshold), Fixed_Point_Properties) && isequal(fimath(neg_deviance_threshold), F));
-        noise_sum = 0; signal_sum = 0;
-        noise_count = 0; signal_count = 0;
-        noise_lvl = 0; signal_lvl = 0;
+        noise_sum = fi(0, Fixed_Point_Properties, F); signal_sum = fi(0, Fixed_Point_Properties, F);
+        noise_count = fi(0, Fixed_Point_Properties, F); signal_count = fi(0, Fixed_Point_Properties, F);
+        noise_lvl = fi(0, Fixed_Point_Properties, F); signal_lvl = fi(0,Fixed_Point_Properties, F);
         for index=1:length(R_peak_vals)
                % DELETE AFTER DEBUGGING
                %if (shouldPlot && channel == 2)
@@ -633,7 +644,8 @@ end
                    noise_sum = noise_sum  + R_peak_vals(index);
                    noise_count = noise_count + 1;
                    % Calculates the noise level
-                   noise_lvl = noise_sum / noise_count;
+%                    noise_lvl = noise_sum / noise_count;
+                   noise_lvl = divide(Fixed_Point_Properties, noise_sum, noise_count);
                    continue;
                end
                % DELETE AFTER DEBUGGING
@@ -644,7 +656,8 @@ end
                signal_sum = signal_sum + R_peak_vals(index);
                signal_count = signal_count + 1;
                % Calculates the signal level
-               signal_lvl = signal_sum / signal_count;
+%                signal_lvl = signal_sum / signal_count;
+               signal_lvl = divide(Fixed_Point_Properties, signal_sum, signal_sum);
            else
                % Sets all the indices which R_vals don't meet the threshold to 0
                indices(index) = 0; 
@@ -652,7 +665,9 @@ end
                noise_sum = noise_sum  + R_peak_vals(index);
                noise_count = noise_count + 1;
                % Calculates the noise level
-               noise_lvl = noise_sum / noise_count;
+%                noise_lvl = noise_sum / noise_count;
+               noise_lvl = divide(Fixed_Point_Properties, noise_sum, noise_count);
+
            end          
         end
     end
