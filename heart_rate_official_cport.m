@@ -22,8 +22,9 @@ function [heart_rate] = heart_rate_official_cport(data, fs, threshold_1, thresho
 %close all
 %[GB] Ensures the the input args are of the correct data type
 % T4 = numerictype('WordLength', 80, 'FractionLength', 40);
-Fixed_Point_Properties = numerictype('WordLength',32, 'FractionLength', 16, 'Signed',false);
-F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductMode', 'KeepMSB', 'MaxProductWordLength', 32, 'SumMode', 'KeepMSB','MaxSumWordLength', 32);
+Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 16, 'Signed',false);
+F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 16,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 16, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
+% F.sub(fi(3), fi(2))
 % Asserts that the input parameters are of fixed point
 assert(isa(shouldPlot,'int32'));
 assert(isfi(data));
@@ -55,7 +56,7 @@ assert(threshold_3 < threshold_2 && threshold_3 > threshold_1);
 x1 = data;
 N = length (x1);       % Signal length
 t = (0:N-1)/fs;        % time index
-NFFT = 2 ^(ceil(log2(N))); %[GB] Next power of 2 from length of the signal
+% NFFT = 2 ^(ceil(log2(N))); %[GB] Next power of 2 from length of the signal
 
 % Assures that the number of samples sent in aren't greater than the
 % specified sample size
@@ -74,7 +75,10 @@ assert(N/fs >= sample_time);
 
 %CANCELLATION DC DRIFT AND NORMALIZATION
 x1 = x1 - mean (x1 );    % cancel DC conponents
-x1 = x1/ max( abs(x1 )); % normalize to one
+% x1 = x1/ max( abs(x1 )); % normalize to one
+x1 = divide(Fixed_Point_Properties, x1, max( abs(x1 ))); % normalize to one
+assert(isequal(numerictype(x1),Fixed_Point_Properties) && isequal(fimath(x1), F));
+
 
 % UNCOMMENT TO SEE PLOT OF EKG AFTER NORMALIZATION AND REMOVAL OF DC DRIFT
 
@@ -169,7 +173,7 @@ x1 = x1/ max( abs(x1 )); % normalize to one
 %x3 = x3 (16+[1: N]); %cancle delay
 % x3 = filter(high_pass, x2);
 % x3 = x3/ max( abs(x3 ));
-
+    
 
 % UNCOMMENT TO SEE PLOT OF EKG AFTER BEING HIGH PASSED
 
@@ -223,7 +227,10 @@ x1 = x1/ max( abs(x1 )); % normalize to one
 
 % x5 = x4 .^2;
 x5 = mpower(x1, 2);
-x5 = x5/ max( abs(x5 ));
+% x5 = x5/ max( abs(x5 ));
+x5 = divide(Fixed_Point_Properties, x5, max( abs(x5 ))); % normalize to one
+assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F));
+
 
 % UNCOMMENT TO SEE PLOT OF EKG AFTER SQUARING
     %figure(8)
@@ -242,10 +249,12 @@ h = ones (1 ,31)/31;
 % Delay = 15; % Delay in samples
 
 % Apply filter
-x6 = conv (x5 ,h);
+x6 = fi(conv (x5 ,h), Fixed_Point_Properties, F);
 x6 = x6 (15+(1: N));
 % Normalizes the signal 
-x6 = x6 / max( abs(x6 ));
+% x6 = x6 / max( abs(x6 ));
+x6 = divide(Fixed_Point_Properties, x6, max( abs(x6 ))); % normalize to one
+assert(isequal(numerictype(x6),Fixed_Point_Properties) && isequal(fimath(x6), F));
 
 % UNCOMMENT TO SEE PLOT OF EKG AFTER A MWI IS APPLIED
 
@@ -264,6 +273,8 @@ x6 = x6 / max( abs(x6 ));
 %subplot(2,1,1)
 max_h = max(x6);
 max_voltage = max_h;
+assert(isequal(numerictype(max_voltage),Fixed_Point_Properties) && isequal(fimath(max_voltage), F));
+
 thresh = mean (x6 );
 %[GB] Outputs an array with each value indicating whether the value at that
 % index is greater than thresh * max_h
@@ -292,8 +303,9 @@ left = find(diff([0 poss_reg])==1); %[GB] Gets all the indices in the resultant 
 right = find(diff([poss_reg 0])==-1);
 %left=left-(6+16);  % cancel delay because of LP and HP
 %right=right-(6+16);% cancel delay because of LP and HP
-R_value = zeros(1, size(left));
-R_loc = zeros(1, size(left));
+[~, left_num_cols] = size(left);
+R_value = zeros(1, left_num_cols);
+R_loc = zeros(1, left_num_cols);
 for i=1:length(left)  
     [R_value(i) R_loc(i)] = max( x1(left(i):right(i)) );
     R_loc(i) = R_loc(i)-1+left(i); % add offset
@@ -553,7 +565,7 @@ end
 
 heart_rate = (R_peak_count / sample_time) * 60;
 %heart_rate = R_peak_count;
-
+resetglobalfimath;
 end
 
 % RETURNS TRUE IF THE INPUT SIGNAL VALUE MEETS THE DEVIANCE REQS. NOTE
@@ -585,6 +597,21 @@ end
 %DUAL THRESHOLD PROCESSSING
 % Filters out R_peaks which don't meet the threshold reqs
     function [indices, noise_lvl, signal_lvl] = dualThreshold(R_peak_vals, threshold, indices, max_voltage, pos_deviance_threshold, neg_deviance_threshold)
+        Fixed_Point_Properties = numerictype('WordLength',32, 'FractionLength', 16, 'Signed',false);
+        F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductMode', 'KeepMSB', 'MaxProductWordLength', 32, 'SumMode', 'KeepMSB','MaxSumWordLength', 32);
+        % Asserts that the input parameters are of fixed point
+        assert(isfi(R_peak_vals));
+        assert(isfi(threshold));
+        assert(isa(indices,'int32'));
+        assert(isfi(max_voltage));
+        assert(isfi(pos_deviance_threshold));
+        assert(isfi(neg_deviance_threshold));
+        % Asserts that input parameters are of specific fixed point parameters
+        assert(isequal(numerictype(R_peak_vals), Fixed_Point_Properties) && isequal(fimath(R_peak_vals), F));
+        assert(isequal(numerictype(threshold), Fixed_Point_Properties) && isequal(fimath(threshold), F));
+        assert(isequal(numerictype(max_voltage), Fixed_Point_Properties) && isequal(fimath(max_voltage), F));
+        assert(isequal(numerictype(pos_deviance_threshold), Fixed_Point_Properties) && isequal(fimath(pos_deviance_threshold), F));
+        assert(isequal(numerictype(neg_deviance_threshold), Fixed_Point_Properties) && isequal(fimath(neg_deviance_threshold), F));
         noise_sum = 0; signal_sum = 0;
         noise_count = 0; signal_count = 0;
         noise_lvl = 0; signal_lvl = 0;
