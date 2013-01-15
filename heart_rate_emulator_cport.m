@@ -30,6 +30,15 @@ data = filter(low_pass, data);
  data = idresamp(datar, fs/300);
  data = data.y;
  fs = 300; % Updates fs to the new value
+ 
+% Emulates front end filters
+data = filters(data, fs);
+
+%[GB] Ensures the the input args are of the correct data type
+% T4 = numerictype('WordLength', 80, 'FractionLength', 40);
+Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 16, 'Signed',false);
+F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 16,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 16, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
+
 % Holds the length of the signal
 N = length(data);
 window_size =  sample_size * fs
@@ -49,13 +58,16 @@ for step=0:(num_windows - 1)
     %end_index = begin_index + (window_size - 1);
     sample_size_t = length(data(begin_index:end_index)) / fs;
     if (step == 10)
-        heart_rate = heart_rate_official_cport(data(begin_index:end_index), fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size_t, 1);
+%         heart_rate = heart_rate_official_cport(data(begin_index:end_index), fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size_t, 1);
+        heart_rate = heart_rate_official_cport(fi(data(begin_index:end_index), Fixed_Point_Properties, F), fi(fs, Fixed_Point_Properties, F), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), fi(sample_size_t, Fixed_Point_Properties, F), uint32(1));
+
         heart_rates = [heart_rates heart_rate];
     else
-        heart_rate = heart_rate_official_cport(data(begin_index:end_index), fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size_t, 0);
+%         heart_rate = heart_rate_official_cport(data(begin_index:end_index), fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size_t, 0);
+        heart_rate = heart_rate_official_cport(fi(data(begin_index:end_index), Fixed_Point_Properties, F), fi(fs, Fixed_Point_Properties, F), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), fi(sample_size_t, Fixed_Point_Properties, F), uint32(0));
         heart_rates = [heart_rates heart_rate];
     end
-
+    break;
 end
 toc
     

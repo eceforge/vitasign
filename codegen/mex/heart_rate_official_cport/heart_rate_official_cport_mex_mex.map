@@ -1,0 +1,9 @@
+MEX {
+	global:
+		mexFunction;
+		heart_rate_official_cport;
+		heart_rate_official_cport_initialize;
+		heart_rate_official_cport_terminate;
+	local:
+		*;
+};

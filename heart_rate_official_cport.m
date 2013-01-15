@@ -24,9 +24,14 @@ function [heart_rate] = heart_rate_official_cport(data, fs, threshold_1, thresho
 % T4 = numerictype('WordLength', 80, 'FractionLength', 40);
 Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 16, 'Signed',false);
 F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 16,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 16, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
+
+% DEBUG CODE
+% fipref('DataTypeOverride', 'TrueDoubles', 'LoggingMode', 'on'); % turns on datatype override to see the dynamic range of algo's values
+fipref('DataTypeOverride', 'ForceOff'); % turns off datatype override
+
 % F.sub(fi(3), fi(2))
-% Asserts that the input parameters are of fixed point
-assert(isa(shouldPlot,'int32'));
+% asserts that the input parameters are of fixed point
+assert(isa(shouldPlot,'uint32'));
 assert(isfi(data));
 assert(isfi(fs));
 assert(isfi(threshold_1));
@@ -35,7 +40,7 @@ assert(isfi(threshold_3));
 assert(isfi(pos_deviance_threshold));
 assert(isfi(neg_deviance_threshold));
 assert(isfi(sample_time));
-% Asserts that input parameters are of specific fixed point parameters
+% asserts that input parameters are of specific fixed point parameters
 assert(isequal(numerictype(data), Fixed_Point_Properties) && isequal(fimath(data), F));
 assert(isequal(numerictype(fs),Fixed_Point_Properties) && isequal(fimath(fs), F));
 assert(isequal(numerictype(threshold_1),Fixed_Point_Properties) && isequal(fimath(threshold_1), F));
@@ -74,22 +79,23 @@ assert(N/fs >= sample_time);
     %xlim([1 3]);
 
 %CANCELLATION DC DRIFT AND NORMALIZATION
-x1 = x1 - mean (x1 );    % cancel DC conponents
+%x1 = x1 - mean (x1 );    % cancel DC conponents
 % x1 = x1/ max( abs(x1 )); % normalize to one
-x1 = divide(Fixed_Point_Properties, x1, max( abs(x1 ))); % normalize to one
+% x1 = divide(Fixed_Point_Properties, x1, max( abs(x1 ))); % normalize to one
 assert(isequal(numerictype(x1),Fixed_Point_Properties) && isequal(fimath(x1), F));
 
 
 % UNCOMMENT TO SEE PLOT OF EKG AFTER NORMALIZATION AND REMOVAL OF DC DRIFT
-
-    %figure(3)
-    %sub%plot(2,1,1)
-    %plot(t,x1)
-    %xlabel('second');ylabel('Volts');title(' ECG Signal after cancellation DC drift and normalization')
-    %sub%plot(2,1,2)
-    %plot(t(200:600),x1(200:600))
-    %xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
-    %xlim([1 3]);
+    if(shouldPlot)
+        figure(3)
+        subplot(2,1,1)
+        plot(t,x1)
+        xlabel('second');ylabel('Volts');title(' ECG Signal after cancellation DC drift and normalization')
+        subplot(2,1,2)
+        plot(t(200:600),x1(200:600))
+        xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
+        xlim([1 3]);
+    end
  % UNCOMMENT TO SEE FFT OF ORIGINAL EKG
     if (shouldPlot)
         %Plots the fft of the original signal
@@ -225,23 +231,25 @@ assert(isequal(numerictype(x1),Fixed_Point_Properties) && isequal(fimath(x1), F)
  
 %SQUARING
 
-% x5 = x4 .^2;
-x5 = mpower(x1, 2);
+x5 = fi(x1 .^2, Fixed_Point_Properties, F);
+assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F));
+% x5 = mpower(x1, 2);
 % x5 = x5/ max( abs(x5 ));
 x5 = divide(Fixed_Point_Properties, x5, max( abs(x5 ))); % normalize to one
 assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F));
 
 
 % UNCOMMENT TO SEE PLOT OF EKG AFTER SQUARING
-    %figure(8)
-    %subplot(2,1,1)
-    %plot([0:length(x5)-1]/fs,x5)
-    %xlabel('second');ylabel('Volts');title(' ECG Signal Squarting')
-    %subplot(2,1,2)
-    %plot(t(200:600),x5(200:600))
-    %xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
-    %xlim([1 3]);
- 
+    if(shouldPlot)
+        figure(8)
+        subplot(2,1,1)
+        plot([0:length(x5)-1]/fs,x5)
+        xlabel('second');ylabel('Volts');title(' ECG Signal Squaring')
+        subplot(2,1,2)
+        plot(t(200:600),x5(200:600))
+        xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
+        xlim([1 3]);
+    end
 %MOVING WINDOW INTEGRATION
 
 % Make impulse response
@@ -257,16 +265,16 @@ x6 = divide(Fixed_Point_Properties, x6, max( abs(x6 ))); % normalize to one
 assert(isequal(numerictype(x6),Fixed_Point_Properties) && isequal(fimath(x6), F));
 
 % UNCOMMENT TO SEE PLOT OF EKG AFTER A MWI IS APPLIED
-
-    %figure(9)
-    %subplot(2,1,1)
-    %plot([0:length(x6)-1]/fs,x6)
-    %xlabel('second');ylabel('Volts');title(' ECG Signal after Averaging')
-    %subplot(2,1,2)
-    %plot(t(200:600),x6(200:600))
-    %xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
-    %xlim([1 3]);
- 
+    if(shouldPlot)
+        figure(9)
+        subplot(2,1,1)
+        plot([0:length(x6)-1]/fs,x6)
+        xlabel('second');ylabel('Volts');title(' ECG Signal after Averaging')
+        subplot(2,1,2)
+        plot(t(200:600),x6(200:600))
+        xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
+        xlim([1 3]);
+    end
 %FIND QRS POINTS. NOTE: THE PEAK FINDING IS DIFFERENT THAN PAN-TOMPKINS ALGORITHM
 
 %figure(7)
@@ -357,8 +365,18 @@ R_peak_indices_combined = R_peak_indices(1:num_cols_indices); % REPLACE THIS WIT
     %    fprintf('Channel 1 Original: There are %i non-zero values\n',length(find(R_peak_indices_channel_1 ~= 0)));
     %end
 
-[R_peak_indices_channel_1, noise_lvl_channel_1, signal_lvl_channel_1] = dualThreshold(R_peak_vals, threshold_1, R_peak_indices_channel_1, max_voltage, pos_deviance_threshold, neg_deviance_threshold);
-[R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(R_peak_vals, threshold_2, R_peak_indices_channel_2, max_voltage, pos_deviance_threshold, neg_deviance_threshold);
+[R_peak_indices_channel_1, noise_lvl_channel_1, signal_lvl_channel_1] = dualThreshold(R_peak_vals, threshold_1, uint32(R_peak_indices_channel_1), max_voltage, pos_deviance_threshold, neg_deviance_threshold);
+[R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(R_peak_vals, threshold_2, uint32(R_peak_indices_channel_2), max_voltage, pos_deviance_threshold, neg_deviance_threshold);
+
+% Ensures that noise and signal levels are fixed point
+assert(isfi(noise_lvl_channel_1));assert(isfi(signal_lvl_channel_1));
+assert(isfi(noise_lvl_channel_2));assert(isfi(signal_lvl_channel_2));
+
+assert(isequal(numerictype(noise_lvl_channel_1),Fixed_Point_Properties) && isequal(fimath(noise_lvl_channel_1), F));
+assert(isequal(numerictype(noise_lvl_channel_2),Fixed_Point_Properties) && isequal(fimath(noise_lvl_channel_2), F));
+
+assert(isequal(numerictype(signal_lvl_channel_1),Fixed_Point_Properties) && isequal(fimath(signal_lvl_channel_1), F));
+assert(isequal(numerictype(signal_lvl_channel_2),Fixed_Point_Properties) && isequal(fimath(signal_lvl_channel_2), F));
 
 
 % UNCOMMENT TO SEE THE NUMBER OF PEAKS AFTER CHANNEL 1 PROCESSING
@@ -464,6 +482,12 @@ for i=1:length(R_peak_indices_combined)
         % Uses the decision of the channel w/ the highest Detection.
         % Ensures that Ds is between 0 and 1
         % strength(Ds)
+%         signal_lvl_channel_1
+%         noise_lvl_channel_1
+%         diff1 = (R_peak_vals(i) - noise_lvl_channel_1) / (signal_lvl_channel_1 - noise_lvl_channel_1)
+%         diff2 = (R_peak_vals(i) - noise_lvl_channel_2) / (signal_lvl_channel_2 - noise_lvl_channel_2)
+%         minlog(diff1)
+%         minlog(diff2)
         Ds_1 = min(1, (R_peak_vals(i) - noise_lvl_channel_1) / (signal_lvl_channel_1 - noise_lvl_channel_1));
         Ds_1 = max(0, Ds_1);
         Ds_2 = min(1, (R_peak_vals(i) - noise_lvl_channel_2) / (signal_lvl_channel_2 - noise_lvl_channel_2));
@@ -563,7 +587,7 @@ for i=1:length(R_peak_indices_channel_3)
     R_peak_count = R_peak_count + 1;
 end
 
-heart_rate = (R_peak_count / sample_time) * 60
+heart_rate = (R_peak_count / sample_time) * 60;
 %heart_rate = R_peak_count;
 end
 
@@ -572,12 +596,12 @@ end
 function [meets_deviance_req] = meets_deviance_threshold(hr_value, signal_level, pos_deviance_threshold, neg_deviance_threshold)
         Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 16, 'Signed',false);
         F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 16,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 16, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
-        % Asserts that the input parameters are of fixed point
+        % asserts that the input parameters are of fixed point
         assert(isfi(hr_value));
         assert(isfi(signal_level));
         assert(isfi(pos_deviance_threshold));
         assert(isfi(neg_deviance_threshold));
-        % Asserts that input parameters are of specific fixed point parameters
+        % asserts that input parameters are of specific fixed point parameters
         assert(isequal(numerictype(hr_value), Fixed_Point_Properties) && isequal(fimath(hr_value), F));
         assert(isequal(numerictype(signal_level), Fixed_Point_Properties) && isequal(fimath(signal_level), F));
         assert(isequal(numerictype(pos_deviance_threshold), Fixed_Point_Properties) && isequal(fimath(pos_deviance_threshold), F));
@@ -610,14 +634,14 @@ end
     function [indices, noise_lvl, signal_lvl] = dualThreshold(R_peak_vals, threshold, indices, max_voltage, pos_deviance_threshold, neg_deviance_threshold)
         Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 16, 'Signed',false);
         F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 16,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 16, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
-        % Asserts that the input parameters are of fixed point
+        % asserts that the input parameters are of fixed point
         assert(isfi(R_peak_vals));
         assert(isfi(threshold));
-        assert(isa(indices,'int32'));
+        assert(isa(indices,'uint32'));
         assert(isfi(max_voltage));
         assert(isfi(pos_deviance_threshold));
         assert(isfi(neg_deviance_threshold));
-        % Asserts that input parameters are of specific fixed point parameters
+        % asserts that input parameters are of specific fixed point parameters
         assert(isequal(numerictype(R_peak_vals), Fixed_Point_Properties) && isequal(fimath(R_peak_vals), F));
         assert(isequal(numerictype(threshold), Fixed_Point_Properties) && isequal(fimath(threshold), F));
         assert(isequal(numerictype(max_voltage), Fixed_Point_Properties) && isequal(fimath(max_voltage), F));

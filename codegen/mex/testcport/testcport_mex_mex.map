@@ -1,0 +1,9 @@
+MEX {
+	global:
+		mexFunction;
+		testcport;
+		testcport_initialize;
+		testcport_terminate;
+	local:
+		*;
+};
