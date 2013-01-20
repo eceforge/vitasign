@@ -3,7 +3,7 @@
  *
  * Code generation for function 'testcport_api'
  *
- * C source code generated on: Mon Jan 14 11:03:44 2013
+ * C source code generated on: Mon Jan 14 21:36:44 2013
  *
  */
 

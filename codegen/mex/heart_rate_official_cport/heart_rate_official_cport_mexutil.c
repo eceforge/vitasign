@@ -3,7 +3,7 @@
  *
  * Code generation for function 'heart_rate_official_cport_mexutil'
  *
- * C source code generated on: Mon Jan 14 13:44:05 2013
+ * C source code generated on: Tue Jan 15 00:51:21 2013
  *
  */
 
@@ -11,7 +11,6 @@
 #include "rt_nonfinite.h"
 #include "heart_rate_official_cport.h"
 #include "heart_rate_official_cport_mexutil.h"
-#include "heart_rate_official_cport_data.h"
 
 /* Type Definitions */
 
@@ -39,19 +38,5 @@ uint32_T div_u32_near(uint32_T numerator, uint32_T denominator)
         }
     }
     return quotient;
-}
-
-const mxArray *emlrt_marshallOut(uint32_T u)
-{
-    const mxArray *y;
-    const mxArray *b_y;
-    const mxArray *m2;
-    y = NULL;
-    b_y = NULL;
-    m2 = mxCreateNumericMatrix(1, 1, mxUINT32_CLASS, mxREAL);
-    *(uint32_T *)mxGetData(m2) = u;
-    emlrtAssign(&b_y, m2);
-    emlrtAssign(&y, emlrtCreateFIR2009a(eml_mx, b_eml_mx, "simulinkarray", b_y, TRUE));
-    return y;
 }
 /* End of code generation (heart_rate_official_cport_mexutil.c) */

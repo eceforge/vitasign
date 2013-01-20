@@ -3,7 +3,7 @@
  *
  * Code generation for function 'heart_rate_official_cport'
  *
- * C source code generated on: Mon Jan 14 13:44:05 2013
+ * C source code generated on: Tue Jan 15 00:51:21 2013
  *
  */
 
@@ -23,84 +23,84 @@
 /* Variable Declarations */
 
 /* Variable Definitions */
-static emlrtRSInfo emlrtRSI = { 567, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtRSInfo b_emlrtRSI = { 525, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtRSInfo c_emlrtRSI = { 524, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtRSInfo d_emlrtRSI = { 470, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtRSInfo e_emlrtRSI = { 468, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtRSInfo f_emlrtRSI = { 362, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtRSInfo g_emlrtRSI = { 361, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtRSInfo h_emlrtRSI = { 322, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtRSInfo i_emlrtRSI = { 311, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtRSInfo j_emlrtRSI = { 257, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtRSInfo k_emlrtRSI = { 232, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtRSInfo l_emlrtRSI = { 79, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtRSInfo m_emlrtRSI = { 63, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtRSInfo n_emlrtRSI = { 63, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtRSInfo o_emlrtRSI = { 58, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtRSInfo p_emlrtRSI = { 53, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtRSInfo q_emlrtRSI = { 49, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo emlrtRSI = { 599, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo b_emlrtRSI = { 557, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo c_emlrtRSI = { 556, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo d_emlrtRSI = { 499, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo e_emlrtRSI = { 497, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo f_emlrtRSI = { 494, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo g_emlrtRSI = { 493, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo h_emlrtRSI = { 374, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo i_emlrtRSI = { 373, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo j_emlrtRSI = { 334, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo k_emlrtRSI = { 323, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo l_emlrtRSI = { 267, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo m_emlrtRSI = { 69, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo n_emlrtRSI = { 69, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo o_emlrtRSI = { 64, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo p_emlrtRSI = { 57, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo q_emlrtRSI = { 53, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
 static emlrtRSInfo t_emlrtRSI = { 22, "mrdivide", "/usr/local/MATLAB/R2011b/toolbox/eml/lib/fixedpoint/@embedded/@fi/mrdivide.m" };
 static emlrtRSInfo u_emlrtRSI = { 49, "rdivide", "/usr/local/MATLAB/R2011b/toolbox/eml/lib/fixedpoint/@embedded/@fi/rdivide.m" };
 static emlrtRSInfo v_emlrtRSI = { 22, "mrdivide", "/usr/local/MATLAB/R2011b/toolbox/eml/lib/fixedpoint/@embedded/@fi/mrdivide.m" };
 static emlrtRSInfo w_emlrtRSI = { 49, "rdivide", "/usr/local/MATLAB/R2011b/toolbox/eml/lib/fixedpoint/@embedded/@fi/rdivide.m" };
 static emlrtRSInfo bb_emlrtRSI = { 11, "eml_li_find", "/usr/local/MATLAB/R2011b/toolbox/eml/lib/matlab/eml/eml_li_find.m" };
 static emlrtRSInfo cb_emlrtRSI = { 14, "eml_li_find", "/usr/local/MATLAB/R2011b/toolbox/eml/lib/matlab/eml/eml_li_find.m" };
-static emlrtRSInfo db_emlrtRSI = { 670, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtRSInfo eb_emlrtRSI = { 661, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtRSInfo fb_emlrtRSI = { 649, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtRSInfo gb_emlrtRSI = { 640, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtRSInfo hb_emlrtRSI = { 617, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtRSInfo ib_emlrtRSI = { 591, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtMCInfo b_emlrtMCI = { 49, 1, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo db_emlrtRSI = { 673, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo eb_emlrtRSI = { 682, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo fb_emlrtRSI = { 694, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo gb_emlrtRSI = { 703, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtRSInfo hb_emlrtRSI = { 623, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
 static emlrtMCInfo c_emlrtMCI = { 53, 1, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtMCInfo d_emlrtMCI = { 63, 1, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtMCInfo g_emlrtMCI = { 14, 5, "eml_li_find", "/usr/local/MATLAB/R2011b/toolbox/eml/lib/matlab/eml/eml_li_find.m" };
-static emlrtMCInfo h_emlrtMCI = { 617, 9, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
-static emlrtBCInfo emlrtBCI = { -1, -1, 519, 28, "R_peak_indices_channel_3", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo b_emlrtBCI = { -1, -1, 515, 13, "R_peak_indices_channel_3", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo c_emlrtBCI = { -1, -1, 514, 13, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo d_emlrtBCI = { 1, 1, 512, 35, "t", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo e_emlrtBCI = { -1, -1, 511, 27, "R_peak_indices_channel_3", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo f_emlrtBCI = { -1, -1, 505, 9, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo g_emlrtBCI = { -1, -1, 504, 9, "R_peak_indices_channel_3", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo h_emlrtBCI = { -1, -1, 482, 13, "R_peak_indices_combined", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo i_emlrtBCI = { -1, -1, 482, 42, "R_peak_indices_channel_2", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo j_emlrtBCI = { -1, -1, 477, 13, "R_peak_indices_combined", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo k_emlrtBCI = { -1, -1, 477, 42, "R_peak_indices_channel_1", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo l_emlrtBCI = { -1, -1, 470, 24, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo m_emlrtBCI = { -1, -1, 468, 24, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo n_emlrtBCI = { -1, -1, 460, 49, "R_peak_indices_channel_2", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo o_emlrtBCI = { -1, -1, 460, 13, "R_peak_indices_channel_1", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo p_emlrtBCI = { -1, -1, 459, 9, "R_peak_indices_combined", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo q_emlrtBCI = { -1, -1, 458, 45, "R_peak_indices_channel_2", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo r_emlrtBCI = { -1, -1, 458, 9, "R_peak_indices_channel_1", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo s_emlrtBCI = { -1, -1, 311, 6, "R_value", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo t_emlrtBCI = { -1, -1, 312, 5, "R_loc", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo u_emlrtBCI = { -1, -1, 312, 27, "left", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo v_emlrtBCI = { -1, -1, 312, 16, "R_loc", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo w_emlrtBCI = { -1, -1, 311, 17, "R_loc", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo x_emlrtBCI = { -1, -1, 311, 45, "right", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo y_emlrtBCI = { -1, -1, 311, 37, "left", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo ab_emlrtBCI = { -1, -1, 322, 7, "R_loc", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo bb_emlrtBCI = { -1, -1, 524, 28, "R_peak_indices_channel_3", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo cb_emlrtBCI = { -1, -1, 525, 15, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtMCInfo d_emlrtMCI = { 57, 1, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtMCInfo e_emlrtMCI = { 69, 1, "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m" };
+static emlrtMCInfo h_emlrtMCI = { 14, 5, "eml_li_find", "/usr/local/MATLAB/R2011b/toolbox/eml/lib/matlab/eml/eml_li_find.m" };
+static emlrtBCInfo emlrtBCI = { -1, -1, 551, 28, "R_peak_indices_channel_3", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo b_emlrtBCI = { -1, -1, 547, 13, "R_peak_indices_channel_3", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo c_emlrtBCI = { -1, -1, 546, 13, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo d_emlrtBCI = { 1, 1, 544, 35, "t", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo e_emlrtBCI = { -1, -1, 543, 27, "R_peak_indices_channel_3", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo f_emlrtBCI = { -1, -1, 537, 9, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo g_emlrtBCI = { -1, -1, 536, 9, "R_peak_indices_channel_3", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo h_emlrtBCI = { -1, -1, 511, 13, "R_peak_indices_combined", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo i_emlrtBCI = { -1, -1, 511, 42, "R_peak_indices_channel_2", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo j_emlrtBCI = { -1, -1, 506, 13, "R_peak_indices_combined", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo k_emlrtBCI = { -1, -1, 506, 42, "R_peak_indices_channel_1", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo l_emlrtBCI = { -1, -1, 499, 24, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo m_emlrtBCI = { -1, -1, 497, 24, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo n_emlrtBCI = { -1, -1, 494, 20, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo o_emlrtBCI = { -1, -1, 493, 20, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo p_emlrtBCI = { -1, -1, 482, 49, "R_peak_indices_channel_2", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo q_emlrtBCI = { -1, -1, 482, 13, "R_peak_indices_channel_1", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo r_emlrtBCI = { -1, -1, 481, 9, "R_peak_indices_combined", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo s_emlrtBCI = { -1, -1, 480, 45, "R_peak_indices_channel_2", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo t_emlrtBCI = { -1, -1, 480, 9, "R_peak_indices_channel_1", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo u_emlrtBCI = { -1, -1, 323, 6, "R_value", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo v_emlrtBCI = { -1, -1, 324, 5, "R_loc", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo w_emlrtBCI = { -1, -1, 324, 27, "left", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo x_emlrtBCI = { -1, -1, 324, 16, "R_loc", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo y_emlrtBCI = { -1, -1, 323, 17, "R_loc", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo ab_emlrtBCI = { -1, -1, 323, 45, "right", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo bb_emlrtBCI = { -1, -1, 323, 37, "left", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo cb_emlrtBCI = { -1, -1, 334, 7, "R_loc", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo db_emlrtBCI = { -1, -1, 556, 28, "R_peak_indices_channel_3", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo eb_emlrtBCI = { -1, -1, 557, 15, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
 static emlrtDCInfo emlrtDCI = { 17, 37, "eml_li_find", "/usr/local/MATLAB/R2011b/toolbox/eml/lib/matlab/eml/eml_li_find.m", 4 };
-static emlrtBCInfo db_emlrtBCI = { -1, -1, 27, 12, "", "eml_li_find", "/usr/local/MATLAB/R2011b/toolbox/eml/lib/matlab/eml/eml_li_find.m", 0 };
-static emlrtBCInfo eb_emlrtBCI = { -1, -1, 28, 13, "", "eml_li_find", "/usr/local/MATLAB/R2011b/toolbox/eml/lib/matlab/eml/eml_li_find.m", 0 };
-static emlrtBCInfo fb_emlrtBCI = { -1, -1, 40, 12, "", "eml_li_find", "/usr/local/MATLAB/R2011b/toolbox/eml/lib/matlab/eml/eml_li_find.m", 0 };
-static emlrtBCInfo gb_emlrtBCI = { -1, -1, 635, 16, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo hb_emlrtBCI = { -1, -1, 640, 46, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo ib_emlrtBCI = { -1, -1, 645, 45, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo jb_emlrtBCI = { -1, -1, 657, 42, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo kb_emlrtBCI = { -1, -1, 666, 41, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo lb_emlrtBCI = { -1, -1, 664, 16, "indices", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
-static emlrtBCInfo mb_emlrtBCI = { -1, -1, 643, 20, "indices", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo fb_emlrtBCI = { -1, -1, 27, 12, "", "eml_li_find", "/usr/local/MATLAB/R2011b/toolbox/eml/lib/matlab/eml/eml_li_find.m", 0 };
+static emlrtBCInfo gb_emlrtBCI = { -1, -1, 28, 13, "", "eml_li_find", "/usr/local/MATLAB/R2011b/toolbox/eml/lib/matlab/eml/eml_li_find.m", 0 };
+static emlrtBCInfo hb_emlrtBCI = { -1, -1, 40, 12, "", "eml_li_find", "/usr/local/MATLAB/R2011b/toolbox/eml/lib/matlab/eml/eml_li_find.m", 0 };
+static emlrtBCInfo ib_emlrtBCI = { -1, -1, 668, 16, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo jb_emlrtBCI = { -1, -1, 673, 46, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo kb_emlrtBCI = { -1, -1, 676, 20, "indices", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo lb_emlrtBCI = { -1, -1, 678, 45, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo mb_emlrtBCI = { -1, -1, 690, 42, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo nb_emlrtBCI = { -1, -1, 697, 16, "indices", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
+static emlrtBCInfo ob_emlrtBCI = { -1, -1, 699, 41, "R_peak_vals", "heart_rate_official_cport", "/home/iventio/vitasign/heart_rate_official_cport.m", 0 };
 
 /* Function Declarations */
 static void MultiWordUnsignedWrap(const uint32_T u1[], int32_T n1, uint32_T n2, uint32_T y[]);
 static uint32_T div_repeat_u32_sat_near(uint32_T numerator, uint32_T denominator, uint32_T nRepeatSub);
-static void dualThreshold(const uint32_T R_peak_vals_data[1], const int32_T R_peak_vals_sizes[2], uint32_T threshold, real_T indices_data[1], int32_T indices_sizes[2], uint32_T max_voltage, uint32_T pos_deviance_threshold, uint32_T neg_deviance_threshold, uint32_T *noise_lvl, uint32_T *signal_lvl);
+static void dualThreshold(const uint32_T R_peak_vals_data[1], const int32_T R_peak_vals_sizes[2], uint32_T threshold, uint32_T indices_data[1], int32_T indices_sizes[2], uint32_T max_voltage, uint32_T pos_deviance_threshold, uint32_T neg_deviance_threshold, uint32_T *noise_lvl, uint32_T *signal_lvl);
 static void eml_li_find(const boolean_T x_data[1], const int32_T x_sizes[2], int32_T y_data[1], int32_T y_sizes[2]);
 static void error(const mxArray *b, emlrtMCInfo *location);
 static uint32_T mul_u32_u32_u32_sr10_sat_near(uint32_T a, uint32_T b);
@@ -164,15 +164,12 @@ static uint32_T div_repeat_u32_sat_near(uint32_T numerator, uint32_T denominator
     return quotient;
 }
 
-static void dualThreshold(const uint32_T R_peak_vals_data[1], const int32_T R_peak_vals_sizes[2], uint32_T threshold, real_T indices_data[1], int32_T indices_sizes[2], uint32_T max_voltage, uint32_T pos_deviance_threshold, uint32_T neg_deviance_threshold, uint32_T *noise_lvl, uint32_T *signal_lvl)
+static void dualThreshold(const uint32_T R_peak_vals_data[1], const int32_T R_peak_vals_sizes[2], uint32_T threshold, uint32_T indices_data[1], int32_T indices_sizes[2], uint32_T max_voltage, uint32_T pos_deviance_threshold, uint32_T neg_deviance_threshold, uint32_T *noise_lvl, uint32_T *signal_lvl)
 {
-    const mxArray *y;
-    const mxArray *m5;
     uint32_T noise_sum;
     uint32_T signal_sum;
     uint32_T noise_count;
     int32_T b_index;
-    int32_T meets_deviance_req;
     uint32_T q0;
     uint32_T qY;
     uint64m_T r0;
@@ -180,49 +177,43 @@ static void dualThreshold(const uint32_T R_peak_vals_data[1], const int32_T R_pe
     uint64m_T r2;
     /* DUAL THRESHOLD PROCESSSING */
     /*  Filters out R_peaks which don't meet the threshold reqs */
-    /*  Asserts that the input parameters are of fixed point */
-    EMLRTPUSHRTSTACK(&hb_emlrtRSI);
-    y = NULL;
-    m5 = mxCreateString("Assertion failed.");
-    emlrtAssign(&y, m5);
-    error(y, &h_emlrtMCI);
-    EMLRTPOPRTSTACK(&hb_emlrtRSI);
-    /*  Asserts that input parameters are of specific fixed point parameters */
+    /*  asserts that the input parameters are of fixed point */
+    /*  asserts that input parameters are of specific fixed point parameters */
     noise_sum = 0U;
     signal_sum = 0U;
     noise_count = 0U;
     *noise_lvl = 0U;
     *signal_lvl = 0U;
     b_index = 0;
-    while (0 <= R_peak_vals_sizes[1] - 1) {
+    while (b_index <= R_peak_vals_sizes[1] - 1) {
         /*  DELETE AFTER DEBUGGING */
         /* if (shouldPlot && channel == 2) */
         /*     fprintf('The peak val is: %f\n',R_peak_vals(index)); */
         /* end */
-        emlrtDynamicBoundsCheck((int32_T)(1.0 + (real_T)b_index), 1, R_peak_vals_sizes[1], &gb_emlrtBCI);
-        if (mul_u32_u32_u32_sr16_sat_near(R_peak_vals_data[(int32_T)(1.0 + (real_T)b_index) - 1], max_voltage) > threshold) {
+        emlrtDynamicBoundsCheck(1, 1, R_peak_vals_sizes[1], &ib_emlrtBCI);
+        if (mul_u32_u32_u32_sr16_sat_near(R_peak_vals_data[0], max_voltage) > threshold) {
             /* fprintf('mv: %f. Threshold is: %f\n', R_peak_vals(index) * max_voltage, threshold); */
             /* R_peak_vals(index) */
             /*  Filters out any signal value which exceeds the allowed deviance from */
             /*  the average signal value  */
-            EMLRTPUSHRTSTACK(&gb_emlrtRSI);
-            emlrtDynamicBoundsCheck((int32_T)(1.0 + (real_T)b_index), 1, R_peak_vals_sizes[1], &hb_emlrtBCI);
+            emlrtDynamicBoundsCheck(1, 1, R_peak_vals_sizes[1], &jb_emlrtBCI);
+            EMLRTPUSHRTSTACK(&db_emlrtRSI);
             /*  RETURNS TRUE IF THE INPUT SIGNAL VALUE MEETS THE DEVIANCE REQS. NOTE */
             /*  THE THRESHOLD VALUE CHANGES BASED ON WHETHER DEVIANCE IS NEG OR POS */
-            /*  Asserts that the input parameters are of fixed point */
-            /*  Asserts that input parameters are of specific fixed point parameters */
+            /*  asserts that the input parameters are of fixed point */
+            /*  asserts that input parameters are of specific fixed point parameters */
             /* Accounts for the first signal value */
             if (*signal_lvl == 0U) {
-                meets_deviance_req = 1;
+                b_index = 1;
             } else {
+                EMLRTPUSHRTSTACK(&hb_emlrtRSI);
                 EMLRTPUSHRTSTACK(&ib_emlrtRSI);
                 EMLRTPUSHRTSTACK(&jb_emlrtRSI);
-                EMLRTPUSHRTSTACK(&kb_emlrtRSI);
-                EMLRTPOPRTSTACK(&kb_emlrtRSI);
                 EMLRTPOPRTSTACK(&jb_emlrtRSI);
                 EMLRTPOPRTSTACK(&ib_emlrtRSI);
+                EMLRTPOPRTSTACK(&hb_emlrtRSI);
                 /*  APPLIES CHECK  */
-                q0 = R_peak_vals_data[(int32_T)(1.0 + (real_T)b_index) - 1];
+                q0 = R_peak_vals_data[0];
                 qY = q0 - *signal_lvl;
                 if (qY > q0) {
                     qY = 0U;
@@ -233,19 +224,20 @@ static void dualThreshold(const uint32_T R_peak_vals_data[1], const int32_T R_pe
                 uLong2MultiWord(pos_deviance_threshold, &r0.chunks[0U], 2);
                 MultiWordUnsignedWrap(&r0.chunks[0U], 2, 16U, &r1.chunks[0U]);
                 if (uMultiWordLt(&r2.chunks[0U], &r1.chunks[0U], 2)) {
-                    meets_deviance_req = 1;
+                    b_index = 1;
                 } else {
-                    meets_deviance_req = 0;
+                    b_index = 0;
                 }
             }
-            EMLRTPOPRTSTACK(&gb_emlrtRSI);
-            if (!(meets_deviance_req != 0)) {
+            EMLRTPOPRTSTACK(&db_emlrtRSI);
+            if (!(b_index != 0)) {
                 /* fprintf('%f, %f Does not meet the deviance threshold\n', R_peak_vals(index), signal_lvl); */
                 /*  Sets all the indices which R_vals don't meet the threshold to 0 */
-                indices_data[emlrtDynamicBoundsCheck((int32_T)(1.0 + (real_T)b_index), 1, indices_sizes[1], &mb_emlrtBCI) - 1] = 0.0;
+                emlrtDynamicBoundsCheck(1, 1, indices_sizes[1], &kb_emlrtBCI);
+                indices_data[0] = 0U;
                 /*  Updates the average noise signal lvl */
-                emlrtDynamicBoundsCheck((int32_T)(1.0 + (real_T)b_index), 1, R_peak_vals_sizes[1], &ib_emlrtBCI);
-                qY = noise_sum + R_peak_vals_data[(int32_T)(1.0 + (real_T)b_index) - 1];
+                emlrtDynamicBoundsCheck(1, 1, R_peak_vals_sizes[1], &lb_emlrtBCI);
+                qY = noise_sum + R_peak_vals_data[0];
                 if (qY < noise_sum) {
                     qY = MAX_uint32_T;
                 }
@@ -257,33 +249,34 @@ static void dualThreshold(const uint32_T R_peak_vals_data[1], const int32_T R_pe
                 noise_count = qY;
                 /*  Calculates the noise level */
                 /*                     noise_lvl = noise_sum / noise_count; */
-                EMLRTPUSHRTSTACK(&fb_emlrtRSI);
+                EMLRTPUSHRTSTACK(&eb_emlrtRSI);
                 *noise_lvl = div_repeat_u32_sat_near(noise_sum, noise_count, 16U);
-                EMLRTPOPRTSTACK(&fb_emlrtRSI);
+                EMLRTPOPRTSTACK(&eb_emlrtRSI);
             } else {
                 /*  DELETE AFTER DEBUGGING */
                 /* if (shouldPlot && channel == 2) */
                 /*    fprintf('The peak val is: %f\n',R_peak_vals(index)); */
                 /* end */
                 /*  Updates the average signal lvl */
-                emlrtDynamicBoundsCheck((int32_T)(1.0 + (real_T)b_index), 1, R_peak_vals_sizes[1], &jb_emlrtBCI);
-                qY = signal_sum + R_peak_vals_data[(int32_T)(1.0 + (real_T)b_index) - 1];
+                emlrtDynamicBoundsCheck(1, 1, R_peak_vals_sizes[1], &mb_emlrtBCI);
+                qY = signal_sum + R_peak_vals_data[0];
                 if (qY < signal_sum) {
                     qY = MAX_uint32_T;
                 }
                 signal_sum = qY;
                 /*  Calculates the signal level */
                 /*                 signal_lvl = signal_sum / signal_count; */
-                EMLRTPUSHRTSTACK(&eb_emlrtRSI);
+                EMLRTPUSHRTSTACK(&fb_emlrtRSI);
                 *signal_lvl = div_repeat_u32_sat_near(signal_sum, signal_sum, 16U);
-                EMLRTPOPRTSTACK(&eb_emlrtRSI);
+                EMLRTPOPRTSTACK(&fb_emlrtRSI);
             }
         } else {
             /*  Sets all the indices which R_vals don't meet the threshold to 0 */
-            indices_data[emlrtDynamicBoundsCheck((int32_T)(1.0 + (real_T)b_index), 1, indices_sizes[1], &lb_emlrtBCI) - 1] = 0.0;
+            emlrtDynamicBoundsCheck(1, 1, indices_sizes[1], &nb_emlrtBCI);
+            indices_data[0] = 0U;
             /*  Updates the average noise signal lvl */
-            emlrtDynamicBoundsCheck((int32_T)(1.0 + (real_T)b_index), 1, R_peak_vals_sizes[1], &kb_emlrtBCI);
-            qY = noise_sum + R_peak_vals_data[(int32_T)(1.0 + (real_T)b_index) - 1];
+            emlrtDynamicBoundsCheck(1, 1, R_peak_vals_sizes[1], &ob_emlrtBCI);
+            qY = noise_sum + R_peak_vals_data[0];
             if (qY < noise_sum) {
                 qY = MAX_uint32_T;
             }
@@ -295,11 +288,11 @@ static void dualThreshold(const uint32_T R_peak_vals_data[1], const int32_T R_pe
             noise_count = qY;
             /*  Calculates the noise level */
             /*                 noise_lvl = noise_sum / noise_count; */
-            EMLRTPUSHRTSTACK(&db_emlrtRSI);
+            EMLRTPUSHRTSTACK(&gb_emlrtRSI);
             *noise_lvl = div_repeat_u32_sat_near(noise_sum, noise_count, 16U);
-            EMLRTPOPRTSTACK(&db_emlrtRSI);
+            EMLRTPOPRTSTACK(&gb_emlrtRSI);
         }
-        b_index++;
+        b_index = 1;
         emlrtBreakCheck();
     }
 }
@@ -314,7 +307,7 @@ static void eml_li_find(const boolean_T x_data[1], const int32_T x_sizes[2], int
     k = 0;
     i = 1;
     while (i <= x_sizes[1]) {
-        emlrtDynamicBoundsCheck(1, 1, x_sizes[1], &fb_emlrtBCI);
+        emlrtDynamicBoundsCheck(1, 1, x_sizes[1], &hb_emlrtBCI);
         if (x_data[0]) {
             k++;
         }
@@ -327,7 +320,7 @@ static void eml_li_find(const boolean_T x_data[1], const int32_T x_sizes[2], int
         y = NULL;
         m1 = mxCreateString("Assertion failed.");
         emlrtAssign(&y, m1);
-        error(y, &g_emlrtMCI);
+        error(y, &h_emlrtMCI);
         EMLRTPOPRTSTACK(&cb_emlrtRSI);
     }
     emlrtNonNegativeCheckR2009b((real_T)k, &emlrtDCI);
@@ -336,9 +329,9 @@ static void eml_li_find(const boolean_T x_data[1], const int32_T x_sizes[2], int
     k = 1;
     i = 1;
     while (i <= x_sizes[1]) {
-        emlrtDynamicBoundsCheck(1, 1, 1, &db_emlrtBCI);
+        emlrtDynamicBoundsCheck(1, 1, 1, &fb_emlrtBCI);
         if (x_data[0]) {
-            emlrtDynamicBoundsCheck(k, 1, y_sizes[1], &eb_emlrtBCI);
+            emlrtDynamicBoundsCheck(k, 1, y_sizes[1], &gb_emlrtBCI);
             y_data[0] = 1;
             k = 2;
         }
@@ -507,7 +500,7 @@ static void uMultiWordShl(const uint32_T u1[], int32_T n1, uint32_T n2, uint32_T
     }
 }
 
-uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshold_1, uint32_T threshold_2, uint32_T threshold_3, uint32_T pos_deviance_threshold, uint32_T neg_deviance_threshold, uint32_T sample_time, int32_T shouldPlot)
+uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshold_1, uint32_T threshold_2, uint32_T threshold_3, uint32_T pos_deviance_threshold, uint32_T neg_deviance_threshold, uint32_T sample_time, uint32_T shouldPlot)
 {
     uint32_T heart_rate;
     const mxArray *y;
@@ -515,10 +508,9 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
     boolean_T poss_reg;
     const mxArray *b_y;
     const mxArray *c_y;
-    uint32_T x1;
-    uint32_T d_y;
     uint32_T c[31];
     int32_T i;
+    uint32_T d_y;
     uint32_T x6;
     int32_T ii_sizes_idx_0;
     int32_T ii_sizes_idx_1;
@@ -529,8 +521,8 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
     int32_T loop_ub;
     uint32_T R_value_data[1];
     int8_T R_loc_data[1];
-    int32_T last_R_index;
-    uint32_T x1_data[1];
+    int32_T Ds_1;
+    uint32_T data_data[1];
     int32_T tmp_sizes[2];
     real_T d0;
     boolean_T b_R_loc_data[1];
@@ -538,17 +530,21 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
     int32_T tmp_data[1];
     int8_T c_R_loc_data[1];
     uint32_T R_peak_vals_data[1];
-    int8_T R_peak_indices_channel_3_data[1];
+    uint32_T R_peak_indices_combined_data[1];
     int32_T R_peak_indices_channel_1_sizes[2];
-    real_T R_peak_indices_channel_1_data[1];
+    uint32_T R_peak_indices_channel_1_data[1];
     uint32_T signal_lvl_channel_1;
     uint32_T noise_lvl_channel_1;
     int32_T R_peak_indices_channel_2_sizes[2];
-    real_T R_peak_indices_channel_2_data[1];
+    uint32_T R_peak_indices_channel_2_data[1];
     uint32_T signal_lvl_channel_2;
     uint32_T noise_lvl_channel_2;
     boolean_T guard1 = FALSE;
-    int32_T R_peak_indices_channel_3_sizes[2];
+    const mxArray *e_y;
+    const mxArray *f_y;
+    const mxArray *g_y;
+    const mxArray *h_y;
+    int32_T R_peak_indices_combined_sizes[2];
     int32_T R_peak_vals_sizes[2];
     /* TO DO - */
     /*  Uncomment the line: */
@@ -568,9 +564,12 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
     /* close all */
     /* [GB] Ensures the the input args are of the correct data type */
     /*  T4 = numerictype('WordLength', 80, 'FractionLength', 40); */
+    /*  DEBUG CODE */
+    /*  fipref('DataTypeOverride', 'TrueDoubles', 'LoggingMode', 'on'); % turns on datatype override to see the dynamic range of algo's values */
+    /*  fipref('DataTypeOverride', 'ForceOff'); % turns off datatype override */
     /*  F.sub(fi(3), fi(2)) */
-    /*  Asserts that the input parameters are of fixed point */
-    /*  Asserts that input parameters are of specific fixed point parameters */
+    /*  asserts that the input parameters are of fixed point */
+    /*  asserts that input parameters are of specific fixed point parameters */
     /*  [GB] Assures that the first threshold is less than the second threshold */
     if (threshold_1 < threshold_2) {
     } else {
@@ -578,7 +577,7 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
         y = NULL;
         m0 = mxCreateString("Assertion failed.");
         emlrtAssign(&y, m0);
-        error(y, &b_emlrtMCI);
+        error(y, &c_emlrtMCI);
         EMLRTPOPRTSTACK(&q_emlrtRSI);
     }
     /*  [GB] Assures that the third threshold is in between the first and the second */
@@ -594,10 +593,12 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
         b_y = NULL;
         m0 = mxCreateString("Assertion failed.");
         emlrtAssign(&b_y, m0);
-        error(b_y, &c_emlrtMCI);
+        error(b_y, &d_emlrtMCI);
         EMLRTPOPRTSTACK(&p_emlrtRSI);
     }
     /* x1 = load('ecg3.dat'); % load the ECG signal from the file */
+    /*  figure(30) */
+    /*  plot(data); */
     /*  Signal length */
     EMLRTPUSHRTSTACK(&o_emlrtRSI);
     EMLRTPUSHRTSTACK(&t_emlrtRSI);
@@ -621,7 +622,7 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
         c_y = NULL;
         m0 = mxCreateString("Assertion failed.");
         emlrtAssign(&c_y, m0);
-        error(c_y, &d_emlrtMCI);
+        error(c_y, &e_emlrtMCI);
         EMLRTPOPRTSTACK(&m_emlrtRSI);
     }
     /*  UNCOMMENT TO SEE PLOT OF ORIGINAL EKG */
@@ -634,21 +635,10 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
     /* xlabel('second');ylabel('Volts');title('Input ECG Signal 1-3 second') */
     /* xlim([1 3]); */
     /* CANCELLATION DC DRIFT AND NORMALIZATION */
-    /*  cancel DC conponents */
+    /* x1 = x1 - mean (x1 );    % cancel DC conponents */
     /*  x1 = x1/ max( abs(x1 )); % normalize to one */
-    EMLRTPUSHRTSTACK(&l_emlrtRSI);
-    x1 = div_u32_near(0U, 0U);
-    EMLRTPOPRTSTACK(&l_emlrtRSI);
-    /*  normalize to one */
+    /*  x1 = divide(Fixed_Point_Properties, x1, max( abs(x1 ))); % normalize to one */
     /*  UNCOMMENT TO SEE PLOT OF EKG AFTER NORMALIZATION AND REMOVAL OF DC DRIFT */
-    /* figure(3) */
-    /* sub%plot(2,1,1) */
-    /* plot(t,x1) */
-    /* xlabel('second');ylabel('Volts');title(' ECG Signal after cancellation DC drift and normalization') */
-    /* sub%plot(2,1,2) */
-    /* plot(t(200:600),x1(200:600)) */
-    /* xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second') */
-    /* xlim([1 3]); */
     /*  UNCOMMENT TO SEE FFT OF ORIGINAL EKG */
     /* LOW PASS FILTERING */
     /*  LPF (1-z^-6)^2/(1-z^-1)^2 */
@@ -750,45 +740,32 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
     /* xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second') */
     /* xlim([1 3]); */
     /* SQUARING */
-    d_y = mul_u32_u32_u32_sr16_sat_near(x1, x1);
+    /*  x5 = fi(x1 .^2, Fixed_Point_Properties, F); */
+    /*  assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F)); */
     /*  x5 = mpower(x1, 2); */
     /*  x5 = x5/ max( abs(x5 )); */
-    EMLRTPUSHRTSTACK(&k_emlrtRSI);
-    d_y = div_repeat_u32_sat_near(d_y, d_y, 16U);
-    EMLRTPOPRTSTACK(&k_emlrtRSI);
-    /*  normalize to one */
+    /*  x5 = divide(Fixed_Point_Properties, x5, max( abs(x5 ))); % normalize to one */
+    /*  figure(24) */
+    /*  plot(x5); */
+    /*  assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F)); */
     /*  UNCOMMENT TO SEE PLOT OF EKG AFTER SQUARING */
-    /* figure(8) */
-    /* subplot(2,1,1) */
-    /* plot([0:length(x5)-1]/fs,x5) */
-    /* xlabel('second');ylabel('Volts');title(' ECG Signal Squarting') */
-    /* subplot(2,1,2) */
-    /* plot(t(200:600),x5(200:600)) */
-    /* xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second') */
-    /* xlim([1 3]); */
     /* MOVING WINDOW INTEGRATION */
     /*  Make impulse response */
     /*  Delay = 15; % Delay in samples */
     /*  Apply filter */
     for (i = 0; i < 31; i++) {
-        c[i] = mul_u32_u32_u32_sr36_near(d_y, 2216757314U);
+        c[i] = mul_u32_u32_u32_sr36_near(data, 2216757314U);
     }
     /*  Normalizes the signal  */
     /*  x6 = x6 / max( abs(x6 )); */
-    EMLRTPUSHRTSTACK(&j_emlrtRSI);
+    EMLRTPUSHRTSTACK(&l_emlrtRSI);
     d_y = c[15];
     x6 = div_repeat_u32_sat_near(c[15], d_y, 16U);
-    EMLRTPOPRTSTACK(&j_emlrtRSI);
+    EMLRTPOPRTSTACK(&l_emlrtRSI);
     /*  normalize to one */
+    /*  figure(25) */
+    /*  plot(x6); */
     /*  UNCOMMENT TO SEE PLOT OF EKG AFTER A MWI IS APPLIED */
-    /* figure(9) */
-    /* subplot(2,1,1) */
-    /* plot([0:length(x6)-1]/fs,x6) */
-    /* xlabel('second');ylabel('Volts');title(' ECG Signal after Averaging') */
-    /* subplot(2,1,2) */
-    /* plot(t(200:600),x6(200:600)) */
-    /* xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second') */
-    /* xlim([1 3]); */
     /* FIND QRS POINTS. NOTE: THE PEAK FINDING IS DIFFERENT THAN PAN-TOMPKINS ALGORITHM */
     /* figure(7) */
     /* subplot(2,1,1) */
@@ -847,27 +824,27 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
         i = 1;
     }
     if ((left_sizes_idx_0 == 0) || (left_sizes_idx_1 == 0)) {
-        last_R_index = -1;
+        Ds_1 = -1;
     } else {
-        last_R_index = 0;
+        Ds_1 = 0;
     }
     i = 0;
-    while (i <= last_R_index) {
-        emlrtDynamicBoundsCheck(1, 1, left_sizes_idx_0 * left_sizes_idx_1, &y_emlrtBCI);
-        emlrtDynamicBoundsCheck(1, 1, ii_sizes_idx_0 * ii_sizes_idx_1, &x_emlrtBCI);
-        EMLRTPUSHRTSTACK(&i_emlrtRSI);
+    while (i <= Ds_1) {
+        emlrtDynamicBoundsCheck(1, 1, left_sizes_idx_0 * left_sizes_idx_1, &bb_emlrtBCI);
+        emlrtDynamicBoundsCheck(1, 1, ii_sizes_idx_0 * ii_sizes_idx_1, &ab_emlrtBCI);
+        EMLRTPUSHRTSTACK(&k_emlrtRSI);
         tmp_sizes[0] = 1;
         tmp_sizes[1] = 1;
-        x1_data[0] = x1;
-        b_max(x1_data, tmp_sizes, &d_y, &d0);
-        EMLRTPOPRTSTACK(&i_emlrtRSI);
-        emlrtDynamicBoundsCheck(1, 1, R_value_sizes[1], &s_emlrtBCI);
+        data_data[0] = data;
+        b_max(data_data, tmp_sizes, &d_y, &d0);
+        EMLRTPOPRTSTACK(&k_emlrtRSI);
+        emlrtDynamicBoundsCheck(1, 1, R_value_sizes[1], &u_emlrtBCI);
         R_value_data[0] = d_y;
-        emlrtDynamicBoundsCheck(1, 1, left_sizes_idx_1, &w_emlrtBCI);
+        emlrtDynamicBoundsCheck(1, 1, left_sizes_idx_1, &y_emlrtBCI);
         R_loc_data[0] = 1;
-        emlrtDynamicBoundsCheck(1, 1, left_sizes_idx_1, &t_emlrtBCI);
         emlrtDynamicBoundsCheck(1, 1, left_sizes_idx_1, &v_emlrtBCI);
-        emlrtDynamicBoundsCheck(1, 1, left_sizes_idx_0 * left_sizes_idx_1, &u_emlrtBCI);
+        emlrtDynamicBoundsCheck(1, 1, left_sizes_idx_1, &x_emlrtBCI);
+        emlrtDynamicBoundsCheck(1, 1, left_sizes_idx_0 * left_sizes_idx_1, &w_emlrtBCI);
         R_loc_data[0] = 1;
         /*  add offset */
         /*      [Q_value(i) Q_loc(i)] = min( x1(left(i):R_loc(i)) ); */
@@ -878,7 +855,7 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
         emlrtBreakCheck();
     }
     /*  there is no selective wave */
-    EMLRTPUSHRTSTACK(&h_emlrtRSI);
+    EMLRTPUSHRTSTACK(&j_emlrtRSI);
     R_loc_sizes[0] = 1;
     R_loc_sizes[1] = left_sizes_idx_1;
     loop_ub = left_sizes_idx_1 - 1;
@@ -890,13 +867,13 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
     eml_li_find(b_R_loc_data, R_loc_sizes, tmp_data, tmp_sizes);
     loop_ub = tmp_sizes[1] - 1;
     for (i = 0; i <= loop_ub; i++) {
-        c_R_loc_data[i] = R_loc_data[emlrtDynamicBoundsCheck(tmp_data[tmp_sizes[0] * i], 1, left_sizes_idx_1, &ab_emlrtBCI) - 1];
+        c_R_loc_data[i] = R_loc_data[emlrtDynamicBoundsCheck(tmp_data[tmp_sizes[0] * i], 1, left_sizes_idx_1, &cb_emlrtBCI) - 1];
     }
     loop_ub = tmp_sizes[1] - 1;
     for (i = 0; i <= loop_ub; i++) {
         R_loc_data[i] = c_R_loc_data[i];
     }
-    EMLRTPOPRTSTACK(&h_emlrtRSI);
+    EMLRTPOPRTSTACK(&j_emlrtRSI);
     /*  Q_loc=Q_loc(find(Q_loc~=0)); */
     /*  S_loc=S_loc(find(S_loc~=0)); */
     /*  UNCOMMENT TO SEE RESULTS OF THE QRS DETECTION */
@@ -927,53 +904,54 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
         i = 0;
     }
     if (1 > tmp_sizes[1]) {
-        ii_sizes_idx_0 = -1;
+        Ds_1 = -1;
     } else {
-        ii_sizes_idx_0 = 0;
+        Ds_1 = 0;
     }
-    if (1 > tmp_sizes[1]) {
-        left_sizes_idx_0 = -1;
-    } else {
-        left_sizes_idx_0 = 0;
-    }
-    loop_ub = left_sizes_idx_0;
-    last_R_index = 0;
-    while (last_R_index <= loop_ub) {
-        R_peak_indices_channel_3_data[0] = R_loc_data[0];
-        last_R_index = 1;
-    }
+    /*  R_peak_indices_channel_3 = R_peak_indices(1:num_cols_indices); */
     if (1 > tmp_sizes[1]) {
         ii_sizes_idx_1 = -1;
     } else {
         ii_sizes_idx_1 = 0;
+    }
+    loop_ub = ii_sizes_idx_1;
+    ii_sizes_idx_0 = 0;
+    while (ii_sizes_idx_0 <= loop_ub) {
+        R_peak_indices_combined_data[0] = (uint32_T)R_loc_data[0];
+        ii_sizes_idx_0 = 1;
     }
     /*  REPLACE THIS WITH A ZEROS ARRAY */
     /*  UNCOMMENT TO SEE THE NUMBER OF PEAKS BEFORE CHANNEL 1 PROCESSING */
     /* if (shouldPlot) */
     /*     fprintf('Channel 1 Original: There are %i non-zero values\n',length(find(R_peak_indices_channel_1 ~= 0))); */
     /* end */
-    EMLRTPUSHRTSTACK(&g_emlrtRSI);
+    EMLRTPUSHRTSTACK(&i_emlrtRSI);
     R_peak_indices_channel_1_sizes[0] = 1;
     R_peak_indices_channel_1_sizes[1] = i + 1;
     loop_ub = i;
     i = 0;
     while (i <= loop_ub) {
-        R_peak_indices_channel_1_data[0] = (real_T)R_loc_data[0];
+        i = (int32_T)R_loc_data[0];
+        i = (int32_T)(real32_T)muDoubleScalarFloor((real_T)i + 0.5);
+        R_peak_indices_channel_1_data[0] = (uint32_T)i;
         i = 1;
     }
     dualThreshold(R_value_data, R_value_sizes, threshold_1, R_peak_indices_channel_1_data, R_peak_indices_channel_1_sizes, x6, pos_deviance_threshold, neg_deviance_threshold, &noise_lvl_channel_1, &signal_lvl_channel_1);
-    EMLRTPOPRTSTACK(&g_emlrtRSI);
-    EMLRTPUSHRTSTACK(&f_emlrtRSI);
+    EMLRTPOPRTSTACK(&i_emlrtRSI);
+    EMLRTPUSHRTSTACK(&h_emlrtRSI);
     R_peak_indices_channel_2_sizes[0] = 1;
-    R_peak_indices_channel_2_sizes[1] = ii_sizes_idx_0 + 1;
-    loop_ub = ii_sizes_idx_0;
+    R_peak_indices_channel_2_sizes[1] = Ds_1 + 1;
+    loop_ub = Ds_1;
     i = 0;
     while (i <= loop_ub) {
-        R_peak_indices_channel_2_data[0] = (real_T)R_loc_data[0];
+        i = (int32_T)R_loc_data[0];
+        i = (int32_T)(real32_T)muDoubleScalarFloor((real_T)i + 0.5);
+        R_peak_indices_channel_2_data[0] = (uint32_T)i;
         i = 1;
     }
     dualThreshold(R_value_data, R_value_sizes, threshold_2, R_peak_indices_channel_2_data, R_peak_indices_channel_2_sizes, x6, pos_deviance_threshold, neg_deviance_threshold, &noise_lvl_channel_2, &signal_lvl_channel_2);
-    EMLRTPOPRTSTACK(&f_emlrtRSI);
+    EMLRTPOPRTSTACK(&h_emlrtRSI);
+    /*  Ensures that noise and signal levels are fixed point */
     /*  UNCOMMENT TO SEE THE NUMBER OF PEAKS AFTER CHANNEL 1 PROCESSING */
     /* if (shouldPlot) */
     /*     fprintf('Channel 1 Post: There are %i non-zero values\n',length(find(R_peak_indices_channel_1 ~= 0))); */
@@ -1000,12 +978,13 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
         /* if (R_peak_indices_channel_1(i) == 0 && R_peak_indices_channel_2(i) ~=0)    */
         /*  If the signal's amplitude fails both the channels then there is a */
         /*  high chance that the it's not a beat */
-        emlrtDynamicBoundsCheck(1, 1, R_peak_indices_channel_1_sizes[1], &r_emlrtBCI);
+        emlrtDynamicBoundsCheck(1, 1, R_peak_indices_channel_1_sizes[1], &t_emlrtBCI);
         guard1 = FALSE;
-        if (R_peak_indices_channel_1_data[0] == 0.0) {
-            emlrtDynamicBoundsCheck(1, 1, R_peak_indices_channel_2_sizes[1], &q_emlrtBCI);
-            if (R_peak_indices_channel_2_data[0] == 0.0) {
-                emlrtDynamicBoundsCheck(1, 1, ii_sizes_idx_1 + 1, &p_emlrtBCI);
+        if (R_peak_indices_channel_1_data[0] == 0U) {
+            emlrtDynamicBoundsCheck(1, 1, R_peak_indices_channel_2_sizes[1], &s_emlrtBCI);
+            if (R_peak_indices_channel_2_data[0] == 0U) {
+                emlrtDynamicBoundsCheck(1, 1, ii_sizes_idx_1 + 1, &r_emlrtBCI);
+                R_peak_indices_combined_data[0] = 0U;
             } else {
                 guard1 = TRUE;
             }
@@ -1013,10 +992,10 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
             guard1 = TRUE;
         }
         if (guard1 == TRUE) {
-            emlrtDynamicBoundsCheck(1, 1, R_peak_indices_channel_1_sizes[1], &o_emlrtBCI);
-            if (R_peak_indices_channel_1_data[0] != 0.0) {
-                emlrtDynamicBoundsCheck(1, 1, R_peak_indices_channel_2_sizes[1], &n_emlrtBCI);
-                if (R_peak_indices_channel_2_data[0] == 0.0) {
+            emlrtDynamicBoundsCheck(1, 1, R_peak_indices_channel_1_sizes[1], &q_emlrtBCI);
+            if (R_peak_indices_channel_1_data[0] != 0U) {
+                emlrtDynamicBoundsCheck(1, 1, R_peak_indices_channel_2_sizes[1], &p_emlrtBCI);
+                if (R_peak_indices_channel_2_data[0] == 0U) {
                     /*  DELETE DEBUGGING */
                     /* if (shouldPlot) */
                     /*    fprintf('The peak val is: %f\n',R_peak_vals(i)); */
@@ -1024,54 +1003,101 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
                     /*  Uses the decision of the channel w/ the highest Detection. */
                     /*  Ensures that Ds is between 0 and 1 */
                     /*  strength(Ds) */
-                    emlrtDynamicBoundsCheck(1, 1, R_value_sizes[1], &m_emlrtBCI);
-                    EMLRTPUSHRTSTACK(&e_emlrtRSI);
+                    /*          signal_lvl_channel_1 */
+                    /*          noise_lvl_channel_1 */
+                    /*            fprintf('In here'); */
+                    emlrtDynamicBoundsCheck(1, 1, R_value_sizes[1], &o_emlrtBCI);
+                    EMLRTPUSHRTSTACK(&g_emlrtRSI);
                     d_y = R_value_data[0];
-                    x1 = d_y - noise_lvl_channel_1;
-                    if (x1 > d_y) {
-                        x1 = 0U;
+                    x6 = d_y - noise_lvl_channel_1;
+                    if (x6 > d_y) {
+                        x6 = 0U;
                     }
                     d_y = signal_lvl_channel_1 - noise_lvl_channel_1;
                     if (d_y > signal_lvl_channel_1) {
                         d_y = 0U;
                     }
-                    d_y = mrdivide(x1, d_y);
-                    if (1U > d_y) {
-                        last_R_index = 0;
-                    } else {
-                        last_R_index = 1;
-                    }
-                    EMLRTPOPRTSTACK(&e_emlrtRSI);
-                    emlrtDynamicBoundsCheck(1, 1, R_value_sizes[1], &l_emlrtBCI);
-                    EMLRTPUSHRTSTACK(&d_emlrtRSI);
+                    d_y = mrdivide(x6, d_y);
+                    EMLRTPOPRTSTACK(&g_emlrtRSI);
+                    e_y = NULL;
+                    f_y = NULL;
+                    m0 = mxCreateNumericMatrix(1, 1, mxUINT32_CLASS, mxREAL);
+                    *(uint32_T *)mxGetData(m0) = d_y;
+                    emlrtAssign(&f_y, m0);
+                    emlrtAssign(&e_y, emlrtCreateFIR2009a(eml_mx, b_eml_mx, "simulinkarray", f_y, TRUE));
+                    emlrtDisplayR2011a(e_y, "diff1");
+                    emlrtDynamicBoundsCheck(1, 1, R_value_sizes[1], &n_emlrtBCI);
+                    EMLRTPUSHRTSTACK(&f_emlrtRSI);
                     d_y = R_value_data[0];
-                    x1 = d_y - noise_lvl_channel_2;
-                    if (x1 > d_y) {
-                        x1 = 0U;
+                    x6 = d_y - noise_lvl_channel_2;
+                    if (x6 > d_y) {
+                        x6 = 0U;
                     }
                     d_y = signal_lvl_channel_2 - noise_lvl_channel_2;
                     if (d_y > signal_lvl_channel_2) {
                         d_y = 0U;
                     }
-                    d_y = mrdivide(x1, d_y);
+                    d_y = mrdivide(x6, d_y);
+                    EMLRTPOPRTSTACK(&f_emlrtRSI);
+                    g_y = NULL;
+                    h_y = NULL;
+                    m0 = mxCreateNumericMatrix(1, 1, mxUINT32_CLASS, mxREAL);
+                    *(uint32_T *)mxGetData(m0) = d_y;
+                    emlrtAssign(&h_y, m0);
+                    emlrtAssign(&g_y, emlrtCreateFIR2009a(eml_mx, b_eml_mx, "simulinkarray", h_y, TRUE));
+                    emlrtDisplayR2011a(g_y, "diff2");
+                    /*          minlog(diff1) */
+                    /*          minlog(diff2) */
+                    emlrtDynamicBoundsCheck(1, 1, R_value_sizes[1], &m_emlrtBCI);
+                    EMLRTPUSHRTSTACK(&e_emlrtRSI);
+                    d_y = R_value_data[0];
+                    x6 = d_y - noise_lvl_channel_1;
+                    if (x6 > d_y) {
+                        x6 = 0U;
+                    }
+                    d_y = signal_lvl_channel_1 - noise_lvl_channel_1;
+                    if (d_y > signal_lvl_channel_1) {
+                        d_y = 0U;
+                    }
+                    d_y = mrdivide(x6, d_y);
+                    if (1U > d_y) {
+                        Ds_1 = 0;
+                    } else {
+                        Ds_1 = 1;
+                    }
+                    EMLRTPOPRTSTACK(&e_emlrtRSI);
+                    emlrtDynamicBoundsCheck(1, 1, R_value_sizes[1], &l_emlrtBCI);
+                    EMLRTPUSHRTSTACK(&d_emlrtRSI);
+                    d_y = R_value_data[0];
+                    x6 = d_y - noise_lvl_channel_2;
+                    if (x6 > d_y) {
+                        x6 = 0U;
+                    }
+                    d_y = signal_lvl_channel_2 - noise_lvl_channel_2;
+                    if (d_y > signal_lvl_channel_2) {
+                        d_y = 0U;
+                    }
+                    d_y = mrdivide(x6, d_y);
                     if (1U > d_y) {
                         ii_sizes_idx_0 = 0;
                     } else {
                         ii_sizes_idx_0 = 1;
                     }
                     EMLRTPOPRTSTACK(&d_emlrtRSI);
-                    if ((uint32_T)last_R_index > (uint32_T)ii_sizes_idx_0) {
+                    if ((uint32_T)Ds_1 > (uint32_T)ii_sizes_idx_0) {
                         /* if(shouldPlot) */
                         /* fprintf('Ds1: %f Ds2: %f Ds1 wins\n', Ds_1, Ds_2); */
                         /* end */
                         emlrtDynamicBoundsCheck(1, 1, ii_sizes_idx_1 + 1, &j_emlrtBCI);
                         emlrtDynamicBoundsCheck(1, 1, R_peak_indices_channel_1_sizes[1], &k_emlrtBCI);
+                        R_peak_indices_combined_data[0] = R_peak_indices_channel_1_data[0];
                     } else {
                         /* if(shouldPlot) */
                         /* fprintf('Ds1: %f Ds2: %f Ds2 wins\n', Ds_1, Ds_2); */
                         /* end */
                         emlrtDynamicBoundsCheck(1, 1, ii_sizes_idx_1 + 1, &h_emlrtBCI);
                         emlrtDynamicBoundsCheck(1, 1, R_peak_indices_channel_2_sizes[1], &i_emlrtBCI);
+                        R_peak_indices_combined_data[0] = 0U;
                     }
                 }
             }
@@ -1083,6 +1109,7 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
     /* if (shouldPlot) */
     /* fprintf('Combined Post: There are %i non-zero values\n',length(find(R_peak_indices_combined ~= 0))); */
     /* end */
+    /*  Grabs the result of both channels     */
     /*  UNCOMMENT TO SEE THE NUMBER OF PEAKS AFTER LEVEL 4 PROCESSING */
     /* if (shouldPlot) */
     /*     fprintf('\n4th level Original: There are %i non-zero values\n',length(find(R_peak_indices_channel_3 ~= 0))); */
@@ -1093,11 +1120,11 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
     /*     fprintf('4th level Post: There are %i non-zero values\n',length(find(R_peak_indices_channel_3 ~= 0))); */
     /* end */
     /*  Sets R values to zero which failed any of the previous phases */
-    last_R_index = 0;
+    d_y = 0U;
     i = 0;
     while (i <= R_value_sizes[1] - 1) {
-        emlrtDynamicBoundsCheck(1, 1, left_sizes_idx_0 + 1, &g_emlrtBCI);
-        if (R_peak_indices_channel_3_data[0] == 0) {
+        emlrtDynamicBoundsCheck(1, 1, ii_sizes_idx_1 + 1, &g_emlrtBCI);
+        if (R_peak_indices_combined_data[0] == 0U) {
             emlrtDynamicBoundsCheck(1, 1, R_value_sizes[1], &f_emlrtBCI);
             R_peak_vals_data[0] = 0U;
             /*  Level 5 Detection: Refines heart beat detection by considering a heart */
@@ -1105,19 +1132,19 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
         } else {
             /*  Filters out any R_values which happen too soon after a previous */
             /*  beat detection */
-            emlrtDynamicBoundsCheck(1, 1, left_sizes_idx_0 + 1, &e_emlrtBCI);
-            if (last_R_index != 0) {
-                emlrtBoundsCheck(1, &d_emlrtBCI);
+            emlrtDynamicBoundsCheck(1, 1, ii_sizes_idx_1 + 1, &e_emlrtBCI);
+            if (d_y != 0U) {
+                emlrtBoundsCheck((int32_T)(real_T)R_peak_indices_combined_data[0], &d_emlrtBCI);
                 /* fprintf('Getting rid of a value\n'); */
                 emlrtDynamicBoundsCheck(1, 1, R_value_sizes[1], &c_emlrtBCI);
                 R_peak_vals_data[0] = 0U;
-                emlrtDynamicBoundsCheck(1, 1, left_sizes_idx_0 + 1, &b_emlrtBCI);
-                R_peak_indices_channel_3_data[0] = 0;
+                emlrtDynamicBoundsCheck(1, 1, ii_sizes_idx_1 + 1, &b_emlrtBCI);
+                R_peak_indices_combined_data[0] = 0U;
                 /*  Updates the last index if the R_value is valid */
             } else {
                 /*  Updates the last index */
-                emlrtDynamicBoundsCheck(1, 1, left_sizes_idx_0 + 1, &emlrtBCI);
-                last_R_index = 1;
+                emlrtDynamicBoundsCheck(1, 1, ii_sizes_idx_1 + 1, &emlrtBCI);
+                d_y = R_peak_indices_combined_data[0];
             }
         }
         i = 1;
@@ -1125,19 +1152,19 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
     }
     /*  Removes all zero values from both the indice and value array */
     EMLRTPUSHRTSTACK(&c_emlrtRSI);
-    R_peak_indices_channel_3_sizes[0] = 1;
-    R_peak_indices_channel_3_sizes[1] = left_sizes_idx_0 + 1;
-    loop_ub = left_sizes_idx_0;
+    R_peak_indices_combined_sizes[0] = 1;
+    R_peak_indices_combined_sizes[1] = ii_sizes_idx_1 + 1;
+    loop_ub = ii_sizes_idx_1;
     i = 0;
     while (i <= loop_ub) {
-        b_R_loc_data[0] = (R_peak_indices_channel_3_data[0] != 0);
+        b_R_loc_data[0] = (R_peak_indices_combined_data[0] != 0U);
         i = 1;
     }
-    eml_li_find(b_R_loc_data, R_peak_indices_channel_3_sizes, tmp_data, tmp_sizes);
-    last_R_index = tmp_sizes[1];
+    eml_li_find(b_R_loc_data, R_peak_indices_combined_sizes, tmp_data, tmp_sizes);
+    Ds_1 = tmp_sizes[1];
     loop_ub = tmp_sizes[1] - 1;
     for (i = 0; i <= loop_ub; i++) {
-        emlrtDynamicBoundsCheck(tmp_data[tmp_sizes[0] * i], 1, left_sizes_idx_0 + 1, &bb_emlrtBCI);
+        emlrtDynamicBoundsCheck(tmp_data[tmp_sizes[0] * i], 1, ii_sizes_idx_1 + 1, &db_emlrtBCI);
     }
     EMLRTPOPRTSTACK(&c_emlrtRSI);
     EMLRTPUSHRTSTACK(&b_emlrtRSI);
@@ -1152,7 +1179,7 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
     eml_li_find(b_R_loc_data, R_peak_vals_sizes, tmp_data, tmp_sizes);
     loop_ub = tmp_sizes[0] * tmp_sizes[1] - 1;
     for (i = 0; i <= loop_ub; i++) {
-        emlrtDynamicBoundsCheck(tmp_data[i], 1, R_value_sizes[1], &cb_emlrtBCI);
+        emlrtDynamicBoundsCheck(tmp_data[i], 1, R_value_sizes[1], &eb_emlrtBCI);
     }
     EMLRTPOPRTSTACK(&b_emlrtRSI);
     /* plots R peaks after all level processing */
@@ -1167,13 +1194,13 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
     d_y = 0U;
     /*  Counts how many R peak counts are found in N seconds */
     i = 0;
-    while (i <= last_R_index - 1) {
+    while (i <= Ds_1 - 1) {
         /*  Counts how many R wave peaks are found in a  */
-        x1 = d_y + 65536U;
-        if (x1 < d_y) {
-            x1 = MAX_uint32_T;
+        x6 = d_y + 65536U;
+        if (x6 < d_y) {
+            x6 = MAX_uint32_T;
         }
-        d_y = x1;
+        d_y = x6;
         i = 1;
         emlrtBreakCheck();
     }
@@ -1181,7 +1208,6 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T threshol
     d_y = mrdivide(d_y, sample_time);
     heart_rate = mul_u32_u32_u32_sr10_sat_near(d_y, 4026531840U);
     EMLRTPOPRTSTACK(&emlrtRSI);
-    emlrtDisplayR2011a(emlrt_marshallOut(heart_rate), "heart_rate");
     /* heart_rate = R_peak_count; */
     return heart_rate;
 }

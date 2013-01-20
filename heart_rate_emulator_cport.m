@@ -30,15 +30,35 @@ data = filter(low_pass, data);
  data = idresamp(datar, fs/300);
  data = data.y;
  fs = 300; % Updates fs to the new value
- 
-% Emulates front end filters
-data = filters(data, fs);
-
 %[GB] Ensures the the input args are of the correct data type
 % T4 = numerictype('WordLength', 80, 'FractionLength', 40);
-Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 16, 'Signed',false);
-F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 16,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 16, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
+Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 24, 'Signed',false);
+F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 24,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 20, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
 
+indata = fi(front_end_filters(data, fs), Fixed_Point_Properties, F);
+% Normalizes the signal 
+indata = divide(Fixed_Point_Properties, indata, max( abs(indata )));
+% indatadouble = double(indata);
+% indatadouble = indatadouble(1:3000);
+% filtered_full_signal = front_end_filters(data, fs);
+% filtered_full_signal = filtered_full_signal(1:3000);
+
+% figure(34)
+% fprintf('Min, Median, and Mean of original signal\n');
+% min(filtered_full_signal)
+% median(filtered_full_signal)
+% mean(filtered_full_signal)
+% plot(filtered_full_signal);
+
+% figure(35)
+% fprintf('Min, Median, and Mean of fixed point signal\n');
+% min(indatadouble)
+% median(indatadouble)
+% mean(indatadouble)
+% plot(indata);
+
+% figure(36)
+% plot(indatadouble);
 % Holds the length of the signal
 N = length(data);
 window_size =  sample_size * fs
@@ -56,18 +76,37 @@ for step=0:(num_windows - 1)
     t = [t (step_size + step * step_size)/fs];
     %begin_index = (index - 1) * window_size + 1;
     %end_index = begin_index + (window_size - 1);
-    sample_size_t = length(data(begin_index:end_index)) / fs;
-    if (step == 10)
+    sample_size_t = length(indata(begin_index:end_index)) / fs;
+%     fprintf('In loop');
+%     fprintf('Min, Median, and Mean of original signal\n');
+    
+%     filtered_signal = filtered_full_signal(begin_index:end_index);
+%     figure(37)
+%     plot(filtered_signal)
+    
+%     min(filtered_signal)
+%     median(filtered_signal)
+%     mean(filtered_signal)
+    
+%     fprintf('Min, Median, and Mean of fixed point signal\n');
+%     figure(38)
+%     plot(indatadouble(begin_index:end_index)); 
+%     min(indatadouble(begin_index:end_index))
+%     median(indatadouble(begin_index:end_index))   
+%     mean(indatadouble(begin_index:end_index))
+
+    
+    if (step == 0)
 %         heart_rate = heart_rate_official_cport(data(begin_index:end_index), fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size_t, 1);
-        heart_rate = heart_rate_official_cport(fi(data(begin_index:end_index), Fixed_Point_Properties, F), fi(fs, Fixed_Point_Properties, F), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), fi(sample_size_t, Fixed_Point_Properties, F), uint32(1));
+        heart_rate = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(1));
 
         heart_rates = [heart_rates heart_rate];
     else
 %         heart_rate = heart_rate_official_cport(data(begin_index:end_index), fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size_t, 0);
-        heart_rate = heart_rate_official_cport(fi(data(begin_index:end_index), Fixed_Point_Properties, F), fi(fs, Fixed_Point_Properties, F), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), fi(sample_size_t, Fixed_Point_Properties, F), uint32(0));
+        heart_rate = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(0));
         heart_rates = [heart_rates heart_rate];
     end
-    break;
+%     break;
 end
 toc
     
@@ -78,7 +117,7 @@ t = t + sample_size;
 scatter(t, heart_rates);
 
 % Offsets the x-axis and extends the y-axis
-axis([sample_size, t(length(t)), 60, 250])
+axis([sample_size, t(length(t)), 30, 250])
 % grid on
 hold on
 % Plots the average HR on top of the graph

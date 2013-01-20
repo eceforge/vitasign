@@ -13,7 +13,7 @@
 <A NAME="3"><FONT COLOR="#888888"><I>    3   </I></FONT></A><FONT COLOR="#117755"><I> *</I></FONT>
 <A NAME="4"><FONT COLOR="#888888"><I>    4   </I></FONT></A><FONT COLOR="#117755"><I> * Code generation for function 'heart_rate_official_cport_api'</I></FONT>
 <A NAME="5"><FONT COLOR="#888888"><I>    5   </I></FONT></A><FONT COLOR="#117755"><I> *</I></FONT>
-<A NAME="6"><FONT COLOR="#888888"><I>    6   </I></FONT></A><FONT COLOR="#117755"><I> * C source code generated on: Mon Jan 14 13:44:05 2013</I></FONT>
+<A NAME="6"><FONT COLOR="#888888"><I>    6   </I></FONT></A><FONT COLOR="#117755"><I> * C source code generated on: Tue Jan 15 00:51:21 2013</I></FONT>
 <A NAME="7"><FONT COLOR="#888888"><I>    7   </I></FONT></A><FONT COLOR="#117755"><I> *</I></FONT>
 <A NAME="8"><FONT COLOR="#888888"><I>    8   </I></FONT></A><FONT COLOR="#117755"><I> */</I></FONT>
 <A NAME="9"><FONT COLOR="#888888"><I>    9   </I></FONT></A>
@@ -23,27 +23,28 @@
 <A NAME="13"><FONT COLOR="#888888"><I>   13   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&lt;math.h&gt;</FONT>
 <A NAME="14"><FONT COLOR="#888888"><I>   14   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&lt;stdlib.h&gt;</FONT>
 <A NAME="15"><FONT COLOR="#888888"><I>   15   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&lt;string.h&gt;</FONT>
-<A NAME="16"><FONT COLOR="#888888"><I>   16   </I></FONT></A>
-<A NAME="17"><FONT COLOR="#888888"><I>   17   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;tmwtypes.h&quot;</FONT>
-<A NAME="18"><FONT COLOR="#888888"><I>   18   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;mex.h&quot;</FONT>
-<A NAME="19"><FONT COLOR="#888888"><I>   19   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;emlrt.h&quot;</FONT>
-<A NAME="20"><FONT COLOR="#888888"><I>   20   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;blascompat32.h&quot;</FONT>
-<A NAME="21"><FONT COLOR="#888888"><I>   21   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;rtwtypes.h&quot;</FONT>
-<A NAME="22"><FONT COLOR="#888888"><I>   22   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;heart_rate_official_cport_types.h&quot;</FONT>
-<A NAME="23"><FONT COLOR="#888888"><I>   23   </I></FONT></A>
-<A NAME="24"><FONT COLOR="#888888"><I>   24   </I></FONT></A><FONT COLOR="#117755"><I>/* Type Definitions */</I></FONT>
-<A NAME="25"><FONT COLOR="#888888"><I>   25   </I></FONT></A>
-<A NAME="26"><FONT COLOR="#888888"><I>   26   </I></FONT></A><FONT COLOR="#117755"><I>/* Named Constants */</I></FONT>
-<A NAME="27"><FONT COLOR="#888888"><I>   27   </I></FONT></A>
-<A NAME="28"><FONT COLOR="#888888"><I>   28   </I></FONT></A><FONT COLOR="#117755"><I>/* Variable Declarations */</I></FONT>
-<A NAME="29"><FONT COLOR="#888888"><I>   29   </I></FONT></A>
-<A NAME="30"><FONT COLOR="#888888"><I>   30   </I></FONT></A><FONT COLOR="#117755"><I>/* Variable Definitions */</I></FONT>
-<A NAME="31"><FONT COLOR="#888888"><I>   31   </I></FONT></A>
-<A NAME="32"><FONT COLOR="#888888"><I>   32   </I></FONT></A><FONT COLOR="#117755"><I>/* Function Declarations */</I></FONT>
-<A NAME="33"><FONT COLOR="#888888"><I>   33   </I></FONT></A><FONT COLOR="#112266"><B>extern</B></FONT> <FONT COLOR="#112266"><B>void</B></FONT> <A HREF="heart_rate_official_cport_api_c.html#fcn_heart_rate_official_cport_api" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_heart_rate_official_cport_api');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">heart_rate_official_cport_api</FONT></A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray * <FONT COLOR="#112266"><B>const</B></FONT> prhs[9], <FONT COLOR="#112266"><B>const</B></FONT> mxArray *plhs[1]);
-<A NAME="34"><FONT COLOR="#888888"><I>   34   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>endif</B></FONT>
-<A NAME="35"><FONT COLOR="#888888"><I>   35   </I></FONT></A><FONT COLOR="#117755"><I>/* End of code generation (heart_rate_official_cport_api.h) */</I></FONT>
-<A NAME="36"><FONT COLOR="#888888"><I>   36   </I></FONT></A></PRE>
+<A NAME="16"><FONT COLOR="#888888"><I>   16   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;mwmathutil.h&quot;</FONT>
+<A NAME="17"><FONT COLOR="#888888"><I>   17   </I></FONT></A>
+<A NAME="18"><FONT COLOR="#888888"><I>   18   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;tmwtypes.h&quot;</FONT>
+<A NAME="19"><FONT COLOR="#888888"><I>   19   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;mex.h&quot;</FONT>
+<A NAME="20"><FONT COLOR="#888888"><I>   20   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;emlrt.h&quot;</FONT>
+<A NAME="21"><FONT COLOR="#888888"><I>   21   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;blascompat32.h&quot;</FONT>
+<A NAME="22"><FONT COLOR="#888888"><I>   22   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;rtwtypes.h&quot;</FONT>
+<A NAME="23"><FONT COLOR="#888888"><I>   23   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;heart_rate_official_cport_types.h&quot;</FONT>
+<A NAME="24"><FONT COLOR="#888888"><I>   24   </I></FONT></A>
+<A NAME="25"><FONT COLOR="#888888"><I>   25   </I></FONT></A><FONT COLOR="#117755"><I>/* Type Definitions */</I></FONT>
+<A NAME="26"><FONT COLOR="#888888"><I>   26   </I></FONT></A>
+<A NAME="27"><FONT COLOR="#888888"><I>   27   </I></FONT></A><FONT COLOR="#117755"><I>/* Named Constants */</I></FONT>
+<A NAME="28"><FONT COLOR="#888888"><I>   28   </I></FONT></A>
+<A NAME="29"><FONT COLOR="#888888"><I>   29   </I></FONT></A><FONT COLOR="#117755"><I>/* Variable Declarations */</I></FONT>
+<A NAME="30"><FONT COLOR="#888888"><I>   30   </I></FONT></A>
+<A NAME="31"><FONT COLOR="#888888"><I>   31   </I></FONT></A><FONT COLOR="#117755"><I>/* Variable Definitions */</I></FONT>
+<A NAME="32"><FONT COLOR="#888888"><I>   32   </I></FONT></A>
+<A NAME="33"><FONT COLOR="#888888"><I>   33   </I></FONT></A><FONT COLOR="#117755"><I>/* Function Declarations */</I></FONT>
+<A NAME="34"><FONT COLOR="#888888"><I>   34   </I></FONT></A><FONT COLOR="#112266"><B>extern</B></FONT> <FONT COLOR="#112266"><B>void</B></FONT> <A HREF="heart_rate_official_cport_api_c.html#fcn_heart_rate_official_cport_api" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_heart_rate_official_cport_api');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">heart_rate_official_cport_api</FONT></A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray * <FONT COLOR="#112266"><B>const</B></FONT> prhs[9], <FONT COLOR="#112266"><B>const</B></FONT> mxArray *plhs[1]);
+<A NAME="35"><FONT COLOR="#888888"><I>   35   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>endif</B></FONT>
+<A NAME="36"><FONT COLOR="#888888"><I>   36   </I></FONT></A><FONT COLOR="#117755"><I>/* End of code generation (heart_rate_official_cport_api.h) */</I></FONT>
+<A NAME="37"><FONT COLOR="#888888"><I>   37   </I></FONT></A></PRE>
 </TD></TR></TABLE>
 </P>
 </BODY>

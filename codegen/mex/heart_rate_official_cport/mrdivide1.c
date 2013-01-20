@@ -3,7 +3,7 @@
  *
  * Code generation for function 'mrdivide1'
  *
- * C source code generated on: Mon Jan 14 13:44:05 2013
+ * C source code generated on: Tue Jan 15 00:51:21 2013
  *
  */
 
@@ -29,11 +29,11 @@
 uint32_T mrdivide(uint32_T a, uint32_T b)
 {
     uint32_T c;
+    EMLRTPUSHRTSTACK(&ib_emlrtRSI);
     EMLRTPUSHRTSTACK(&jb_emlrtRSI);
-    EMLRTPUSHRTSTACK(&kb_emlrtRSI);
     c = div_u32_near(a, b);
-    EMLRTPOPRTSTACK(&kb_emlrtRSI);
     EMLRTPOPRTSTACK(&jb_emlrtRSI);
+    EMLRTPOPRTSTACK(&ib_emlrtRSI);
     return c;
 }
 /* End of code generation (mrdivide1.c) */

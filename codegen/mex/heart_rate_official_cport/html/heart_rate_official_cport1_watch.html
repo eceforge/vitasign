@@ -316,7 +316,7 @@
 <td id=""><a href="#">shouldPlot</a></td>
 <td>Input</td><td class="watchsize" id="4">1 x 1</td>
 <td class="watchcomplex">No</td>
-<td class="watchclass">int32</td>
+<td class="watchclass">uint32</td>
 <td class="signed">-</td>
 <td class="wl">-</td>
 <td class="fl">-</td>
@@ -440,10 +440,20 @@
 </table>
 </td>
 </tr>
-<tr class="haschild var type1" id="S29T4">
+<tr class="var type1" id="S25T28">
+<td id="blank"></td><td>16</td>
+<td id=""><a href="#">h</a></td>
+<td>Local</td><td class="watchsize" id="18">1 x 31</td>
+<td class="watchcomplex">No</td>
+<td class="watchclass">double</td>
+<td class="signed">-</td>
+<td class="wl">-</td>
+<td class="fl">-</td>
+</tr>
+<tr class="haschild var type1" id="S27T4">
 <td rowspan="2" class="collapsible"><a class="collapsed" href="#" /></td>
-<td>16</td>
-<td id="" rowspan="2" class="expr collapsible-alt"><a href="#">x5</a></td>
+<td>17</td>
+<td id="" rowspan="2" class="expr collapsible-alt"><a href="#">x6 &gt; 1</a></td>
 <td>Local</td><td class="watchsize" id="4">1 x 1</td>
 <td class="watchcomplex">No</td>
 <td class="watchclass">embedded.fi</td>
@@ -451,7 +461,7 @@
 <td class="wl">32</td>
 <td class="fl">16</td>
 </tr>
-<tr class="expand-child var type1" id="S29T4C"><td style="display:none;" />
+<tr class="expand-child var type1" id="S27T4C"><td style="display:none;" />
 <td colspan="7" style="display:none;">
 <table class="detail">
 <tr><td class="fimathheader" colspan="4">Local fimath:</td></tr>
@@ -473,20 +483,43 @@
 </table>
 </td>
 </tr>
-<tr class="var type1" id="S31T35">
-<td id="blank"></td><td>17</td>
-<td id=""><a href="#">h</a></td>
-<td>Local</td><td class="watchsize" id="19">1 x 31</td>
+<tr class="haschild var type1" id="S27T33">
+<td rowspan="2" class="collapsible"><a class="collapsed" href="#" /></td>
+<td>18</td>
+<td id="" rowspan="2" class="expr collapsible-alt"><a href="#">x6 &gt; 2</a></td>
+<td>Local</td><td class="watchsize" id="18">1 x 31</td>
 <td class="watchcomplex">No</td>
-<td class="watchclass">double</td>
-<td class="signed">-</td>
-<td class="wl">-</td>
-<td class="fl">-</td>
+<td class="watchclass">embedded.fi</td>
+<td class="signed">Unsigned</td>
+<td class="wl">32</td>
+<td class="fl">16</td>
+</tr>
+<tr class="expand-child var type1" id="S27T33C"><td style="display:none;" />
+<td colspan="7" style="display:none;">
+<table class="detail">
+<tr><td class="fimathheader" colspan="4">Local fimath:</td></tr>
+<tr><th>Round mode:</th><td>nearest</td>
+<th>Sum mode:</th><td>SpecifyPrecision</td>
+</tr>
+<tr><th>Overflow mode:</th><td>saturate</td>
+<th>Sum word length:</th><td>32</td>
+</tr>
+<tr><th>Product mode:</th><td>SpecifyPrecision</td>
+<th>Sum fraction length:</th><td>16</td>
+</tr>
+<tr><th>Product word length:</th><td>32</td>
+<th>Cast before sum:</th><td>Yes</td>
+</tr>
+<tr><th>Product fraction length:</th><td>16</td>
+<th></th><td></td>
+</tr>
+</table>
+</td>
 </tr>
 <tr class="haschild var type1" id="S33T4">
 <td rowspan="2" class="collapsible"><a class="collapsed" href="#" /></td>
-<td>18</td>
-<td id="" rowspan="2" class="expr collapsible-alt"><a href="#">x6 &gt; 1</a></td>
+<td>19</td>
+<td id="" rowspan="2" class="expr collapsible-alt"><a href="#">max_h</a></td>
 <td>Local</td><td class="watchsize" id="4">1 x 1</td>
 <td class="watchcomplex">No</td>
 <td class="watchclass">embedded.fi</td>
@@ -516,75 +549,9 @@
 </table>
 </td>
 </tr>
-<tr class="haschild var type1" id="S33T38">
-<td rowspan="2" class="collapsible"><a class="collapsed" href="#" /></td>
-<td>19</td>
-<td id="" rowspan="2" class="expr collapsible-alt"><a href="#">x6 &gt; 2</a></td>
-<td>Local</td><td class="watchsize" id="19">1 x 31</td>
-<td class="watchcomplex">No</td>
-<td class="watchclass">embedded.fi</td>
-<td class="signed">Unsigned</td>
-<td class="wl">32</td>
-<td class="fl">16</td>
-</tr>
-<tr class="expand-child var type1" id="S33T38C"><td style="display:none;" />
-<td colspan="7" style="display:none;">
-<table class="detail">
-<tr><td class="fimathheader" colspan="4">Local fimath:</td></tr>
-<tr><th>Round mode:</th><td>nearest</td>
-<th>Sum mode:</th><td>SpecifyPrecision</td>
-</tr>
-<tr><th>Overflow mode:</th><td>saturate</td>
-<th>Sum word length:</th><td>32</td>
-</tr>
-<tr><th>Product mode:</th><td>SpecifyPrecision</td>
-<th>Sum fraction length:</th><td>16</td>
-</tr>
-<tr><th>Product word length:</th><td>32</td>
-<th>Cast before sum:</th><td>Yes</td>
-</tr>
-<tr><th>Product fraction length:</th><td>16</td>
-<th></th><td></td>
-</tr>
-</table>
-</td>
-</tr>
-<tr class="haschild var type1" id="S35T4">
+<tr class="haschild var type1" id="S34T4">
 <td rowspan="2" class="collapsible"><a class="collapsed" href="#" /></td>
 <td>20</td>
-<td id="" rowspan="2" class="expr collapsible-alt"><a href="#">max_h</a></td>
-<td>Local</td><td class="watchsize" id="4">1 x 1</td>
-<td class="watchcomplex">No</td>
-<td class="watchclass">embedded.fi</td>
-<td class="signed">Unsigned</td>
-<td class="wl">32</td>
-<td class="fl">16</td>
-</tr>
-<tr class="expand-child var type1" id="S35T4C"><td style="display:none;" />
-<td colspan="7" style="display:none;">
-<table class="detail">
-<tr><td class="fimathheader" colspan="4">Local fimath:</td></tr>
-<tr><th>Round mode:</th><td>nearest</td>
-<th>Sum mode:</th><td>SpecifyPrecision</td>
-</tr>
-<tr><th>Overflow mode:</th><td>saturate</td>
-<th>Sum word length:</th><td>32</td>
-</tr>
-<tr><th>Product mode:</th><td>SpecifyPrecision</td>
-<th>Sum fraction length:</th><td>16</td>
-</tr>
-<tr><th>Product word length:</th><td>32</td>
-<th>Cast before sum:</th><td>Yes</td>
-</tr>
-<tr><th>Product fraction length:</th><td>16</td>
-<th></th><td></td>
-</tr>
-</table>
-</td>
-</tr>
-<tr class="haschild var type1" id="S36T4">
-<td rowspan="2" class="collapsible"><a class="collapsed" href="#" /></td>
-<td>21</td>
 <td id="" rowspan="2" class="expr collapsible-alt"><a href="#">max_voltage</a></td>
 <td>Local</td><td class="watchsize" id="4">1 x 1</td>
 <td class="watchcomplex">No</td>
@@ -593,7 +560,7 @@
 <td class="wl">32</td>
 <td class="fl">16</td>
 </tr>
-<tr class="expand-child var type1" id="S36T4C"><td style="display:none;" />
+<tr class="expand-child var type1" id="S34T4C"><td style="display:none;" />
 <td colspan="7" style="display:none;">
 <table class="detail">
 <tr><td class="fimathheader" colspan="4">Local fimath:</td></tr>
@@ -615,9 +582,9 @@
 </table>
 </td>
 </tr>
-<tr class="haschild var type1" id="S37T30">
+<tr class="haschild var type1" id="S35T36">
 <td rowspan="2" class="collapsible"><a class="collapsed" href="#" /></td>
-<td>22</td>
+<td>21</td>
 <td id="" rowspan="2" class="expr collapsible-alt"><a href="#">thresh</a></td>
 <td>Local</td><td class="watchsize" id="4">1 x 1</td>
 <td class="watchcomplex">No</td>
@@ -626,7 +593,7 @@
 <td class="wl">32</td>
 <td class="fl">16</td>
 </tr>
-<tr class="expand-child var type1" id="S37T30C"><td style="display:none;" />
+<tr class="expand-child var type1" id="S35T36C"><td style="display:none;" />
 <td colspan="7" style="display:none;">
 <table class="detail">
 <tr><td class="fimathheader" colspan="4">Global fimath:</td></tr>
@@ -645,8 +612,8 @@
 </table>
 </td>
 </tr>
-<tr class="var type1" id="S38T6">
-<td id="blank"></td><td>23</td>
+<tr class="var type1" id="S37T6">
+<td id="blank"></td><td>22</td>
 <td id=""><a href="#">poss_reg</a></td>
 <td>Local</td><td class="watchsize" id="4">1 x 1</td>
 <td class="watchcomplex">-</td>
@@ -655,28 +622,28 @@
 <td class="wl">-</td>
 <td class="fl">-</td>
 </tr>
-<tr class="var type1" id="S39T60">
-<td id="blank"></td><td>24</td>
+<tr class="var type1" id="S38T60">
+<td id="blank"></td><td>23</td>
 <td id=""><a href="#">left</a></td>
-<td>Local</td><td class="watchsize" id="25"><b>:</b>1 x <b>:</b>1</td>
+<td>Local</td><td class="watchsize" id="24"><b>:</b>1 x <b>:</b>1</td>
 <td class="watchcomplex">No</td>
 <td class="watchclass">double</td>
 <td class="signed">-</td>
 <td class="wl">-</td>
 <td class="fl">-</td>
 </tr>
-<tr class="var type1" id="S42T60">
-<td id="blank"></td><td>25</td>
+<tr class="var type1" id="S41T60">
+<td id="blank"></td><td>24</td>
 <td id=""><a href="#">right</a></td>
-<td>Local</td><td class="watchsize" id="25"><b>:</b>1 x <b>:</b>1</td>
+<td>Local</td><td class="watchsize" id="24"><b>:</b>1 x <b>:</b>1</td>
 <td class="watchcomplex">No</td>
 <td class="watchclass">double</td>
 <td class="signed">-</td>
 <td class="wl">-</td>
 <td class="fl">-</td>
 </tr>
-<tr class="var type1" id="S43T2">
-<td id="blank"></td><td>26</td>
+<tr class="var type1" id="S42T2">
+<td id="blank"></td><td>25</td>
 <td id=""><a href="#">left_num_cols</a></td>
 <td>Local</td><td class="watchsize" id="4">1 x 1</td>
 <td class="watchcomplex">No</td>
@@ -685,18 +652,18 @@
 <td class="wl">-</td>
 <td class="fl">-</td>
 </tr>
-<tr class="haschild var type1" id="S45T61">
+<tr class="haschild var type1" id="S44T61">
 <td rowspan="2" class="collapsible"><a class="collapsed" href="#" /></td>
-<td>27</td>
+<td>26</td>
 <td id="" rowspan="2" class="expr collapsible-alt"><a href="#">R_value</a></td>
-<td>Local</td><td class="watchsize" id="23">1 x <b>:</b>1</td>
+<td>Local</td><td class="watchsize" id="22">1 x <b>:</b>1</td>
 <td class="watchcomplex">No</td>
 <td class="watchclass">embedded.fi</td>
 <td class="signed">Unsigned</td>
 <td class="wl">32</td>
 <td class="fl">16</td>
 </tr>
-<tr class="expand-child var type1" id="S45T61C"><td style="display:none;" />
+<tr class="expand-child var type1" id="S44T61C"><td style="display:none;" />
 <td colspan="7" style="display:none;">
 <table class="detail">
 <tr><td class="fimathheader" colspan="4">Local fimath:</td></tr>
@@ -718,18 +685,18 @@
 </table>
 </td>
 </tr>
-<tr class="var type1" id="S47T62">
-<td id="blank"></td><td>28</td>
+<tr class="var type1" id="S46T62">
+<td id="blank"></td><td>27</td>
 <td id=""><a href="#">R_loc</a></td>
-<td>Local</td><td class="watchsize" id="23">1 x <b>:</b>1</td>
+<td>Local</td><td class="watchsize" id="22">1 x <b>:</b>1</td>
 <td class="watchcomplex">No</td>
 <td class="watchclass">double</td>
 <td class="signed">-</td>
 <td class="wl">-</td>
 <td class="fl">-</td>
 </tr>
-<tr class="var type1" id="S48T2">
-<td id="blank"></td><td>29</td>
+<tr class="var type1" id="S47T2">
+<td id="blank"></td><td>28</td>
 <td id=""><a href="#">i</a></td>
 <td>Local</td><td class="watchsize" id="4">1 x 1</td>
 <td class="watchcomplex">No</td>
@@ -738,18 +705,18 @@
 <td class="wl">-</td>
 <td class="fl">-</td>
 </tr>
-<tr class="haschild var type1" id="S49T61">
+<tr class="haschild var type1" id="S48T61">
 <td rowspan="2" class="collapsible"><a class="collapsed" href="#" /></td>
-<td>30</td>
+<td>29</td>
 <td id="" rowspan="2" class="expr collapsible-alt"><a href="#">R_peak_vals</a></td>
-<td>Local</td><td class="watchsize" id="23">1 x <b>:</b>1</td>
+<td>Local</td><td class="watchsize" id="22">1 x <b>:</b>1</td>
 <td class="watchcomplex">No</td>
 <td class="watchclass">embedded.fi</td>
 <td class="signed">Unsigned</td>
 <td class="wl">32</td>
 <td class="fl">16</td>
 </tr>
-<tr class="expand-child var type1" id="S49T61C"><td style="display:none;" />
+<tr class="expand-child var type1" id="S48T61C"><td style="display:none;" />
 <td colspan="7" style="display:none;">
 <table class="detail">
 <tr><td class="fimathheader" colspan="4">Local fimath:</td></tr>
@@ -771,18 +738,18 @@
 </table>
 </td>
 </tr>
-<tr class="var type1" id="S50T62">
-<td id="blank"></td><td>31</td>
+<tr class="var type1" id="S49T62">
+<td id="blank"></td><td>30</td>
 <td id=""><a href="#">R_peak_indices</a></td>
-<td>Local</td><td class="watchsize" id="23">1 x <b>:</b>1</td>
+<td>Local</td><td class="watchsize" id="22">1 x <b>:</b>1</td>
 <td class="watchcomplex">No</td>
 <td class="watchclass">double</td>
 <td class="signed">-</td>
 <td class="wl">-</td>
 <td class="fl">-</td>
 </tr>
-<tr class="var type1" id="S51T2">
-<td id="blank"></td><td>32</td>
+<tr class="var type1" id="S50T2">
+<td id="blank"></td><td>31</td>
 <td id=""><a href="#">num_cols_indices</a></td>
 <td>Local</td><td class="watchsize" id="4">1 x 1</td>
 <td class="watchcomplex">No</td>
@@ -791,47 +758,57 @@
 <td class="wl">-</td>
 <td class="fl">-</td>
 </tr>
-<tr class="var type1" id="S52T62">
-<td id="blank"></td><td>33</td>
-<td id=""><a href="#">R_peak_indices_channel_1</a></td>
-<td>Local</td><td class="watchsize" id="23">1 x <b>:</b>1</td>
+<tr class="var type1" id="S51T62">
+<td id="blank"></td><td>32</td>
+<td id=""><a href="#">R_peak_indices_channel_1 &gt; 1</a></td>
+<td>Local</td><td class="watchsize" id="22">1 x <b>:</b>1</td>
 <td class="watchcomplex">No</td>
 <td class="watchclass">double</td>
+<td class="signed">-</td>
+<td class="wl">-</td>
+<td class="fl">-</td>
+</tr>
+<tr class="var type1" id="S51T63">
+<td id="blank"></td><td>33</td>
+<td id=""><a href="#">R_peak_indices_channel_1 &gt; 2</a></td>
+<td>Local</td><td class="watchsize" id="22">1 x <b>:</b>1</td>
+<td class="watchcomplex">No</td>
+<td class="watchclass">uint32</td>
+<td class="signed">-</td>
+<td class="wl">-</td>
+<td class="fl">-</td>
+</tr>
+<tr class="var type1" id="S52T62">
+<td id="blank"></td><td>34</td>
+<td id=""><a href="#">R_peak_indices_channel_2 &gt; 1</a></td>
+<td>Local</td><td class="watchsize" id="22">1 x <b>:</b>1</td>
+<td class="watchcomplex">No</td>
+<td class="watchclass">double</td>
+<td class="signed">-</td>
+<td class="wl">-</td>
+<td class="fl">-</td>
+</tr>
+<tr class="var type1" id="S52T63">
+<td id="blank"></td><td>35</td>
+<td id=""><a href="#">R_peak_indices_channel_2 &gt; 2</a></td>
+<td>Local</td><td class="watchsize" id="22">1 x <b>:</b>1</td>
+<td class="watchcomplex">No</td>
+<td class="watchclass">uint32</td>
 <td class="signed">-</td>
 <td class="wl">-</td>
 <td class="fl">-</td>
 </tr>
 <tr class="var type1" id="S53T62">
-<td id="blank"></td><td>34</td>
-<td id=""><a href="#">R_peak_indices_channel_2</a></td>
-<td>Local</td><td class="watchsize" id="23">1 x <b>:</b>1</td>
-<td class="watchcomplex">No</td>
-<td class="watchclass">double</td>
-<td class="signed">-</td>
-<td class="wl">-</td>
-<td class="fl">-</td>
-</tr>
-<tr class="var type1" id="S54T62">
-<td id="blank"></td><td>35</td>
-<td id=""><a href="#">R_peak_indices_channel_3</a></td>
-<td>Local</td><td class="watchsize" id="23">1 x <b>:</b>1</td>
-<td class="watchcomplex">No</td>
-<td class="watchclass">double</td>
-<td class="signed">-</td>
-<td class="wl">-</td>
-<td class="fl">-</td>
-</tr>
-<tr class="var type1" id="S55T62">
 <td id="blank"></td><td>36</td>
 <td id=""><a href="#">R_peak_indices_combined</a></td>
-<td>Local</td><td class="watchsize" id="23">1 x <b>:</b>1</td>
+<td>Local</td><td class="watchsize" id="22">1 x <b>:</b>1</td>
 <td class="watchcomplex">No</td>
 <td class="watchclass">double</td>
 <td class="signed">-</td>
 <td class="wl">-</td>
 <td class="fl">-</td>
 </tr>
-<tr class="haschild var type1" id="S56T4">
+<tr class="haschild var type1" id="S54T4">
 <td rowspan="2" class="collapsible"><a class="collapsed" href="#" /></td>
 <td>37</td>
 <td id="" rowspan="2" class="expr collapsible-alt"><a href="#">noise_lvl_channel_1</a></td>
@@ -842,7 +819,7 @@
 <td class="wl">32</td>
 <td class="fl">16</td>
 </tr>
-<tr class="expand-child var type1" id="S56T4C"><td style="display:none;" />
+<tr class="expand-child var type1" id="S54T4C"><td style="display:none;" />
 <td colspan="7" style="display:none;">
 <table class="detail">
 <tr><td class="fimathheader" colspan="4">Local fimath:</td></tr>
@@ -864,7 +841,7 @@
 </table>
 </td>
 </tr>
-<tr class="haschild var type1" id="S57T4">
+<tr class="haschild var type1" id="S55T4">
 <td rowspan="2" class="collapsible"><a class="collapsed" href="#" /></td>
 <td>38</td>
 <td id="" rowspan="2" class="expr collapsible-alt"><a href="#">signal_lvl_channel_1</a></td>
@@ -875,7 +852,40 @@
 <td class="wl">32</td>
 <td class="fl">16</td>
 </tr>
-<tr class="expand-child var type1" id="S57T4C"><td style="display:none;" />
+<tr class="expand-child var type1" id="S55T4C"><td style="display:none;" />
+<td colspan="7" style="display:none;">
+<table class="detail">
+<tr><td class="fimathheader" colspan="4">Local fimath:</td></tr>
+<tr><th>Round mode:</th><td>nearest</td>
+<th>Sum mode:</th><td>SpecifyPrecision</td>
+</tr>
+<tr><th>Overflow mode:</th><td>saturate</td>
+<th>Sum word length:</th><td>32</td>
+</tr>
+<tr><th>Product mode:</th><td>SpecifyPrecision</td>
+<th>Sum fraction length:</th><td>16</td>
+</tr>
+<tr><th>Product word length:</th><td>32</td>
+<th>Cast before sum:</th><td>Yes</td>
+</tr>
+<tr><th>Product fraction length:</th><td>16</td>
+<th></th><td></td>
+</tr>
+</table>
+</td>
+</tr>
+<tr class="haschild var type1" id="S58T4">
+<td rowspan="2" class="collapsible"><a class="collapsed" href="#" /></td>
+<td>39</td>
+<td id="" rowspan="2" class="expr collapsible-alt"><a href="#">noise_lvl_channel_2</a></td>
+<td>Local</td><td class="watchsize" id="4">1 x 1</td>
+<td class="watchcomplex">No</td>
+<td class="watchclass">embedded.fi</td>
+<td class="signed">Unsigned</td>
+<td class="wl">32</td>
+<td class="fl">16</td>
+</tr>
+<tr class="expand-child var type1" id="S58T4C"><td style="display:none;" />
 <td colspan="7" style="display:none;">
 <table class="detail">
 <tr><td class="fimathheader" colspan="4">Local fimath:</td></tr>
@@ -899,8 +909,8 @@
 </tr>
 <tr class="haschild var type1" id="S59T4">
 <td rowspan="2" class="collapsible"><a class="collapsed" href="#" /></td>
-<td>39</td>
-<td id="" rowspan="2" class="expr collapsible-alt"><a href="#">noise_lvl_channel_2</a></td>
+<td>40</td>
+<td id="" rowspan="2" class="expr collapsible-alt"><a href="#">signal_lvl_channel_2</a></td>
 <td>Local</td><td class="watchsize" id="4">1 x 1</td>
 <td class="watchcomplex">No</td>
 <td class="watchclass">embedded.fi</td>
@@ -930,40 +940,7 @@
 </table>
 </td>
 </tr>
-<tr class="haschild var type1" id="S60T4">
-<td rowspan="2" class="collapsible"><a class="collapsed" href="#" /></td>
-<td>40</td>
-<td id="" rowspan="2" class="expr collapsible-alt"><a href="#">signal_lvl_channel_2</a></td>
-<td>Local</td><td class="watchsize" id="4">1 x 1</td>
-<td class="watchcomplex">No</td>
-<td class="watchclass">embedded.fi</td>
-<td class="signed">Unsigned</td>
-<td class="wl">32</td>
-<td class="fl">16</td>
-</tr>
-<tr class="expand-child var type1" id="S60T4C"><td style="display:none;" />
-<td colspan="7" style="display:none;">
-<table class="detail">
-<tr><td class="fimathheader" colspan="4">Local fimath:</td></tr>
-<tr><th>Round mode:</th><td>nearest</td>
-<th>Sum mode:</th><td>SpecifyPrecision</td>
-</tr>
-<tr><th>Overflow mode:</th><td>saturate</td>
-<th>Sum word length:</th><td>32</td>
-</tr>
-<tr><th>Product mode:</th><td>SpecifyPrecision</td>
-<th>Sum fraction length:</th><td>16</td>
-</tr>
-<tr><th>Product word length:</th><td>32</td>
-<th>Cast before sum:</th><td>Yes</td>
-</tr>
-<tr><th>Product fraction length:</th><td>16</td>
-<th></th><td></td>
-</tr>
-</table>
-</td>
-</tr>
-<tr class="haschild var type1" id="S61T54">
+<tr class="haschild var type1" id="S62T54">
 <td rowspan="2" class="collapsible"><a class="collapsed" href="#" /></td>
 <td>41</td>
 <td id="" rowspan="2" class="expr collapsible-alt"><a href="#">Ds_1</a></td>
@@ -974,7 +951,7 @@
 <td class="wl">32</td>
 <td class="fl">0</td>
 </tr>
-<tr class="expand-child var type1" id="S61T54C"><td style="display:none;" />
+<tr class="expand-child var type1" id="S62T54C"><td style="display:none;" />
 <td colspan="7" style="display:none;">
 <table class="detail">
 <tr><td class="fimathheader" colspan="4">Local fimath:</td></tr>
@@ -996,7 +973,7 @@
 </table>
 </td>
 </tr>
-<tr class="haschild var type1" id="S63T54">
+<tr class="haschild var type1" id="S64T54">
 <td rowspan="2" class="collapsible"><a class="collapsed" href="#" /></td>
 <td>42</td>
 <td id="" rowspan="2" class="expr collapsible-alt"><a href="#">Ds_2</a></td>
@@ -1007,7 +984,7 @@
 <td class="wl">32</td>
 <td class="fl">0</td>
 </tr>
-<tr class="expand-child var type1" id="S63T54C"><td style="display:none;" />
+<tr class="expand-child var type1" id="S64T54C"><td style="display:none;" />
 <td colspan="7" style="display:none;">
 <table class="detail">
 <tr><td class="fimathheader" colspan="4">Local fimath:</td></tr>
@@ -1029,8 +1006,18 @@
 </table>
 </td>
 </tr>
-<tr class="var type1" id="S64T2">
+<tr class="var type1" id="S65T62">
 <td id="blank"></td><td>43</td>
+<td id=""><a href="#">R_peak_indices_channel_3</a></td>
+<td>Local</td><td class="watchsize" id="22">1 x <b>:</b>1</td>
+<td class="watchcomplex">No</td>
+<td class="watchclass">double</td>
+<td class="signed">-</td>
+<td class="wl">-</td>
+<td class="fl">-</td>
+</tr>
+<tr class="var type1" id="S66T2">
+<td id="blank"></td><td>44</td>
 <td id=""><a href="#">last_R_index</a></td>
 <td>Local</td><td class="watchsize" id="4">1 x 1</td>
 <td class="watchcomplex">No</td>
@@ -1039,8 +1026,8 @@
 <td class="wl">-</td>
 <td class="fl">-</td>
 </tr>
-<tr class="var type1" id="S65T2">
-<td id="blank"></td><td>44</td>
+<tr class="var type1" id="S67T2">
+<td id="blank"></td><td>45</td>
 <td id=""><a href="#">current_R_index</a></td>
 <td>Local</td><td class="watchsize" id="4">1 x 1</td>
 <td class="watchcomplex">No</td>
@@ -1049,9 +1036,9 @@
 <td class="wl">-</td>
 <td class="fl">-</td>
 </tr>
-<tr class="haschild var type1" id="S66T4">
+<tr class="haschild var type1" id="S68T4">
 <td rowspan="2" class="collapsible"><a class="collapsed" href="#" /></td>
-<td>45</td>
+<td>46</td>
 <td id="" rowspan="2" class="expr collapsible-alt"><a href="#">R_peak_count</a></td>
 <td>Local</td><td class="watchsize" id="4">1 x 1</td>
 <td class="watchcomplex">No</td>
@@ -1060,7 +1047,7 @@
 <td class="wl">32</td>
 <td class="fl">16</td>
 </tr>
-<tr class="expand-child var type1" id="S66T4C"><td style="display:none;" />
+<tr class="expand-child var type1" id="S68T4C"><td style="display:none;" />
 <td colspan="7" style="display:none;">
 <table class="detail">
 <tr><td class="fimathheader" colspan="4">Local fimath:</td></tr>

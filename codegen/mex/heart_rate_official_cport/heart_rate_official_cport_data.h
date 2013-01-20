@@ -3,7 +3,7 @@
  *
  * Code generation for function 'heart_rate_official_cport_data'
  *
- * C source code generated on: Mon Jan 14 13:44:05 2013
+ * C source code generated on: Tue Jan 15 00:51:21 2013
  *
  */
 
@@ -13,6 +13,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include "mwmathutil.h"
 
 #include "tmwtypes.h"
 #include "mex.h"
@@ -28,14 +29,16 @@
 /* Variable Declarations */
 extern const mxArray *eml_mx;
 extern const mxArray *b_eml_mx;
+extern const mxArray *c_eml_mx;
 extern emlrtMCInfo emlrtMCI;
+extern emlrtMCInfo b_emlrtMCI;
 extern emlrtRSInfo r_emlrtRSI;
 extern emlrtRSInfo s_emlrtRSI;
 extern emlrtRSInfo ab_emlrtRSI;
+extern emlrtRSInfo ib_emlrtRSI;
 extern emlrtRSInfo jb_emlrtRSI;
-extern emlrtRSInfo kb_emlrtRSI;
-extern emlrtMCInfo e_emlrtMCI;
 extern emlrtMCInfo f_emlrtMCI;
+extern emlrtMCInfo g_emlrtMCI;
 
 /* Variable Definitions */
 

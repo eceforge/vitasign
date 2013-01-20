@@ -1,4 +1,4 @@
-function [ y ] = filters( data, fs)
+function [ filtered_output ] = front_end_filters( data, fs)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 %[GB] Ensures the the input args are of the correct data type
@@ -49,8 +49,33 @@ h = [-1 -2 0 2 1]/8;
 % Apply filter
 x4 = conv (x3 ,h);
 x4 = x4 (2+ (1: N));
-x4 = x4/ max( abs(x4 ));
-min(x4)
-y = x4 + abs(min(x4));
+x4 = x4/ max( abs(x4));
+
+
+%SQUARING
+
+x5 = x4 .^2;
+x5 = x5/ max( abs(x5 ));
+% x5 = x5 * 1000; 
+% x5 = x5 + abs(min(x4));
+filtered_output = x5;
+% figure(10)
+% plot(filtered_output);
+
+%MOVING WINDOW INTEGRATION
+
+% Make impulse response
+h = ones (1 ,31)/31;
+% Delay = 15; % Delay in samples
+
+% Apply filter
+x6 = conv (x5 ,h);
+x6 = x6 (15+(1: N));
+% Normalizes the signal 
+x6 = x6 / max( abs(x6 ));
+% figure(41)
+% plot(x6);
+%figure(23)
+% plot(x5);
 
 end

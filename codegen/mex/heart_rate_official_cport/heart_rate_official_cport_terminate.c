@@ -3,7 +3,7 @@
  *
  * Code generation for function 'heart_rate_official_cport_terminate'
  *
- * C source code generated on: Mon Jan 14 13:44:05 2013
+ * C source code generated on: Tue Jan 15 00:51:21 2013
  *
  */
 
@@ -30,6 +30,7 @@ void heart_rate_official_cport_atexit(void)
     emlrtExitTimeCleanup(&emlrtContextGlobal);
     emlrtDestroyArray(&eml_mx);
     emlrtDestroyArray(&b_eml_mx);
+    emlrtDestroyArray(&c_eml_mx);
 }
 
 void heart_rate_official_cport_terminate(void)

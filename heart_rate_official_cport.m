@@ -22,33 +22,32 @@ function [heart_rate] = heart_rate_official_cport(data, fs, threshold_1, thresho
 %close all
 %[GB] Ensures the the input args are of the correct data type
 % T4 = numerictype('WordLength', 80, 'FractionLength', 40);
-Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 16, 'Signed',false);
-F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 16,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 16, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
-
+Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 24, 'Signed',false);
+F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 24,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 20, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
 % DEBUG CODE
 % fipref('DataTypeOverride', 'TrueDoubles', 'LoggingMode', 'on'); % turns on datatype override to see the dynamic range of algo's values
-fipref('DataTypeOverride', 'ForceOff'); % turns off datatype override
+% fipref('DataTypeOverride', 'ForceOff'); % turns off datatype override
 
 % F.sub(fi(3), fi(2))
 % asserts that the input parameters are of fixed point
 assert(isa(shouldPlot,'uint32'));
 assert(isfi(data));
-assert(isfi(fs));
+assert(isa(fs, 'uint32'));
 assert(isfi(threshold_1));
 assert(isfi(threshold_2));
 assert(isfi(threshold_3));
 assert(isfi(pos_deviance_threshold));
 assert(isfi(neg_deviance_threshold));
-assert(isfi(sample_time));
+assert(isa(sample_time, 'uint32'));
 % asserts that input parameters are of specific fixed point parameters
 assert(isequal(numerictype(data), Fixed_Point_Properties) && isequal(fimath(data), F));
-assert(isequal(numerictype(fs),Fixed_Point_Properties) && isequal(fimath(fs), F));
+% assert(isequal(numerictype(fs),Fixed_Point_Properties) && isequal(fimath(fs), F));
 assert(isequal(numerictype(threshold_1),Fixed_Point_Properties) && isequal(fimath(threshold_1), F));
 assert(isequal(numerictype(threshold_2),Fixed_Point_Properties) && isequal(fimath(threshold_2), F));
 assert(isequal(numerictype(threshold_3),Fixed_Point_Properties) && isequal(fimath(threshold_3), F));
 assert(isequal(numerictype(pos_deviance_threshold),Fixed_Point_Properties) && isequal(fimath(pos_deviance_threshold), F));
 assert(isequal(numerictype(neg_deviance_threshold),Fixed_Point_Properties) && isequal(fimath(neg_deviance_threshold), F));
-assert(isequal(numerictype(sample_time),Fixed_Point_Properties) && isequal(fimath(sample_time), F));
+% assert(isequal(numerictype(sample_time),Fixed_Point_Properties) && isequal(fimath(sample_time), F));
        
 % [GB] Assures that the first threshold is less than the second threshold
 assert(threshold_1 < threshold_2);
@@ -59,8 +58,10 @@ assert(threshold_3 < threshold_2 && threshold_3 > threshold_1);
 %x1 = load('ecg3.dat'); % load the ECG signal from the file
 
 x1 = data;
+% figure(30)
+% plot(data);
 N = length (x1);       % Signal length
-t = (0:N-1)/fs;        % time index
+% t = (0:N-1)/fs;        % time index
 % NFFT = 2 ^(ceil(log2(N))); %[GB] Next power of 2 from length of the signal
 
 % Assures that the number of samples sent in aren't greater than the
@@ -81,20 +82,20 @@ assert(N/fs >= sample_time);
 %CANCELLATION DC DRIFT AND NORMALIZATION
 %x1 = x1 - mean (x1 );    % cancel DC conponents
 % x1 = x1/ max( abs(x1 )); % normalize to one
-% x1 = divide(Fixed_Point_Properties, x1, max( abs(x1 ))); % normalize to one
+x1 = divide(Fixed_Point_Properties, x1, max( abs(x1 ))); % normalize to one
 assert(isequal(numerictype(x1),Fixed_Point_Properties) && isequal(fimath(x1), F));
 
 
 % UNCOMMENT TO SEE PLOT OF EKG AFTER NORMALIZATION AND REMOVAL OF DC DRIFT
     if(shouldPlot)
-        figure(3)
-        subplot(2,1,1)
-        plot(t,x1)
-        xlabel('second');ylabel('Volts');title(' ECG Signal after cancellation DC drift and normalization')
-        subplot(2,1,2)
-        plot(t(200:600),x1(200:600))
-        xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
-        xlim([1 3]);
+        %figure(3)
+        %subplot(2,1,1)
+        %plot(t,x1)
+        %xlabel('second');ylabel('Volts');title(' ECG Signal after cancellation DC drift and normalization')
+        %subplot(2,1,2)
+        %plot(t(200:600),x1(200:600))
+        %xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
+        %xlim([1 3]);
     end
  % UNCOMMENT TO SEE FFT OF ORIGINAL EKG
     if (shouldPlot)
@@ -231,24 +232,26 @@ assert(isequal(numerictype(x1),Fixed_Point_Properties) && isequal(fimath(x1), F)
  
 %SQUARING
 
-x5 = fi(x1 .^2, Fixed_Point_Properties, F);
-assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F));
+% x5 = fi(x1 .^2, Fixed_Point_Properties, F);
+% assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F));
 % x5 = mpower(x1, 2);
 % x5 = x5/ max( abs(x5 ));
-x5 = divide(Fixed_Point_Properties, x5, max( abs(x5 ))); % normalize to one
-assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F));
+% x5 = divide(Fixed_Point_Properties, x5, max( abs(x5 ))); % normalize to one
+% figure(24)
+% plot(x5);
+% assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F));
 
 
 % UNCOMMENT TO SEE PLOT OF EKG AFTER SQUARING
     if(shouldPlot)
-        figure(8)
-        subplot(2,1,1)
-        plot([0:length(x5)-1]/fs,x5)
-        xlabel('second');ylabel('Volts');title(' ECG Signal Squaring')
-        subplot(2,1,2)
-        plot(t(200:600),x5(200:600))
-        xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
-        xlim([1 3]);
+        %figure(8)
+        %subplot(2,1,1)
+        %plot([0:length(x5)-1]/fs,x5)
+        %xlabel('second');ylabel('Volts');title(' ECG Signal Squaring')
+        %subplot(2,1,2)
+        %plot(t(200:600),x5(200:600))
+        %xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
+        %xlim([1 3]);
     end
 %MOVING WINDOW INTEGRATION
 
@@ -257,23 +260,26 @@ h = ones (1 ,31)/31;
 % Delay = 15; % Delay in samples
 
 % Apply filter
-x6 = fi(conv (x5 ,h), Fixed_Point_Properties, F);
+x6 = fi(conv (x1 ,h), Fixed_Point_Properties, F);
 x6 = x6 (15+(1: N));
+
 % Normalizes the signal 
 % x6 = x6 / max( abs(x6 ));
 x6 = divide(Fixed_Point_Properties, x6, max( abs(x6 ))); % normalize to one
+% figure(25)
+% plot(x6);
 assert(isequal(numerictype(x6),Fixed_Point_Properties) && isequal(fimath(x6), F));
 
 % UNCOMMENT TO SEE PLOT OF EKG AFTER A MWI IS APPLIED
     if(shouldPlot)
-        figure(9)
-        subplot(2,1,1)
-        plot([0:length(x6)-1]/fs,x6)
-        xlabel('second');ylabel('Volts');title(' ECG Signal after Averaging')
-        subplot(2,1,2)
-        plot(t(200:600),x6(200:600))
-        xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
-        xlim([1 3]);
+        %figure(9)
+        %subplot(2,1,1)
+        %plot([0:length(x6)-1]/fs,x6)
+        %xlabel('second');ylabel('Volts');title(' ECG Signal after Averaging')
+        %subplot(2,1,2)
+        %plot(t(200:600),x6(200:600))
+        %xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
+        %xlim([1 3]);
     end
 %FIND QRS POINTS. NOTE: THE PEAK FINDING IS DIFFERENT THAN PAN-TOMPKINS ALGORITHM
 
@@ -357,13 +363,13 @@ R_peak_indices = R_loc;
 % NEEDS OPTIMIZATION. NEED TO AVOID COPYING LARGE ARRAYS 
 R_peak_indices_channel_1 = R_peak_indices(1:num_cols_indices); 
 R_peak_indices_channel_2 = R_peak_indices(1:num_cols_indices);
-R_peak_indices_channel_3 = R_peak_indices(1:num_cols_indices);
+% R_peak_indices_channel_3 = R_peak_indices(1:num_cols_indices);
 R_peak_indices_combined = R_peak_indices(1:num_cols_indices); % REPLACE THIS WITH A ZEROS ARRAY
 
 % UNCOMMENT TO SEE THE NUMBER OF PEAKS BEFORE CHANNEL 1 PROCESSING
-    %if (shouldPlot)
-    %    fprintf('Channel 1 Original: There are %i non-zero values\n',length(find(R_peak_indices_channel_1 ~= 0)));
-    %end
+    if (shouldPlot)
+        fprintf('Channel 1 Original: There are %i non-zero values\n',length(find(R_peak_indices_channel_1 ~= 0)));
+    end
 
 [R_peak_indices_channel_1, noise_lvl_channel_1, signal_lvl_channel_1] = dualThreshold(R_peak_vals, threshold_1, uint32(R_peak_indices_channel_1), max_voltage, pos_deviance_threshold, neg_deviance_threshold);
 [R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(R_peak_vals, threshold_2, uint32(R_peak_indices_channel_2), max_voltage, pos_deviance_threshold, neg_deviance_threshold);
@@ -380,9 +386,9 @@ assert(isequal(numerictype(signal_lvl_channel_2),Fixed_Point_Properties) && iseq
 
 
 % UNCOMMENT TO SEE THE NUMBER OF PEAKS AFTER CHANNEL 1 PROCESSING
-    %if (shouldPlot)
-    %    fprintf('Channel 1 Post: There are %i non-zero values\n',length(find(R_peak_indices_channel_1 ~= 0)));
-    %end
+    if (shouldPlot)
+        fprintf('Channel 1 Post: There are %i non-zero values\n',length(find(R_peak_indices_channel_1 ~= 0)));
+    end
 
 
 % UNCOMMENT TO SEE PLOT OF EKG AFTER BEING PASSED THROUGH THE FIRST CHANNEL
@@ -484,13 +490,14 @@ for i=1:length(R_peak_indices_combined)
         % strength(Ds)
 %         signal_lvl_channel_1
 %         noise_lvl_channel_1
-%         diff1 = (R_peak_vals(i) - noise_lvl_channel_1) / (signal_lvl_channel_1 - noise_lvl_channel_1)
-%         diff2 = (R_peak_vals(i) - noise_lvl_channel_2) / (signal_lvl_channel_2 - noise_lvl_channel_2)
+%           fprintf('In here');
+%           diff1 = ((R_peak_vals(i) - noise_lvl_channel_1) * 100) / (signal_lvl_channel_1 - noise_lvl_channel_1)
+%           diff2 = ((R_peak_vals(i) - noise_lvl_channel_2) * 100) / (signal_lvl_channel_2 - noise_lvl_channel_2)
 %         minlog(diff1)
 %         minlog(diff2)
-        Ds_1 = min(1, (R_peak_vals(i) - noise_lvl_channel_1) / (signal_lvl_channel_1 - noise_lvl_channel_1));
+        Ds_1 = min(1, ((R_peak_vals(i) - noise_lvl_channel_1) * 100) / (signal_lvl_channel_1 - noise_lvl_channel_1));
         Ds_1 = max(0, Ds_1);
-        Ds_2 = min(1, (R_peak_vals(i) - noise_lvl_channel_2) / (signal_lvl_channel_2 - noise_lvl_channel_2));
+        Ds_2 = min(1, ((R_peak_vals(i) - noise_lvl_channel_2) * 100)/ (signal_lvl_channel_2 - noise_lvl_channel_2));
         Ds_2 = max(0, Ds_2);
       
         if (Ds_1 > Ds_2)
@@ -507,10 +514,13 @@ for i=1:length(R_peak_indices_combined)
     end
 end
 % UNCOMMENT TO SEE THE NUMBER OF PEAKS AFTER LEVEL 3 PROCESSING
-    %if (shouldPlot)
-        %fprintf('Combined Post: There are %i non-zero values\n',length(find(R_peak_indices_combined ~= 0)));
-    %end
+    if (shouldPlot)
+        fprintf('Combined Post: There are %i non-zero values\n',length(find(R_peak_indices_combined ~= 0)));
+    end
     
+% Grabs the result of both channels    
+R_peak_indices_channel_3 = R_peak_indices_combined;
+
 % UNCOMMENT TO SEE THE NUMBER OF PEAKS AFTER LEVEL 4 PROCESSING
     %if (shouldPlot)
     %    fprintf('\n4th level Original: There are %i non-zero values\n',length(find(R_peak_indices_channel_3 ~= 0)));
@@ -523,6 +533,7 @@ end
     %end
 % Sets R values to zero which failed any of the previous phases
 last_R_index = 0;
+time_delta = fi(.00333, Fixed_Point_Properties, F);
 for i=1:length(R_peak_vals)
     if (R_peak_indices_channel_3(i) == 0)
         R_peak_vals(i) = 0;
@@ -532,7 +543,9 @@ for i=1:length(R_peak_vals)
         % Filters out any R_values which happen too soon after a previous
         % beat detection
         current_R_index = R_peak_indices_channel_3(i);
-        if (last_R_index ~= 0 && (t(current_R_index) - t(last_R_index)) < .200)
+%         if (last_R_index ~= 0 && (t(current_R_index) - t(last_R_index)) < .200)
+       if (last_R_index ~= 0 && ((current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta) < .200)
+
             %fprintf('Getting rid of a value\n');
             R_peak_vals(i) = 0;
             R_peak_indices_channel_3(i) = 0;
@@ -545,7 +558,7 @@ for i=1:length(R_peak_vals)
 end
 % Removes all zero values from both the indice and value array
 R_peak_indices_channel_3 = R_peak_indices_channel_3(R_peak_indices_channel_3 ~= 0);
-R_peak_vals = R_peak_vals(R_peak_vals ~= 0);   
+R_peak_vals = R_peak_vals(R_peak_vals ~= 0);
 
 %plots R peaks after all level processing
 if (shouldPlot)
@@ -586,7 +599,7 @@ for i=1:length(R_peak_indices_channel_3)
     % Counts how many R wave peaks are found in a 
     R_peak_count = R_peak_count + 1;
 end
-
+% R_peak_count
 heart_rate = (R_peak_count / sample_time) * 60;
 %heart_rate = R_peak_count;
 end
@@ -594,8 +607,8 @@ end
 % RETURNS TRUE IF THE INPUT SIGNAL VALUE MEETS THE DEVIANCE REQS. NOTE
 % THE THRESHOLD VALUE CHANGES BASED ON WHETHER DEVIANCE IS NEG OR POS
 function [meets_deviance_req] = meets_deviance_threshold(hr_value, signal_level, pos_deviance_threshold, neg_deviance_threshold)
-        Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 16, 'Signed',false);
-        F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 16,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 16, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
+        Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 24, 'Signed',false);
+        F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 24,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 20, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
         % asserts that the input parameters are of fixed point
         assert(isfi(hr_value));
         assert(isfi(signal_level));
@@ -611,17 +624,25 @@ function [meets_deviance_req] = meets_deviance_threshold(hr_value, signal_level,
         meets_deviance_req = 1;
         return;
     end
-    raw_deviance = (hr_value - signal_level) / signal_level;
-    deviance = abs(raw_deviance);
+%     signal_level
+%     hr_value
+    if (hr_value < signal_level)
+        deviance = ((signal_level - hr_value) * 100) / signal_level;
+        is_neg = 1;
+    else
+        deviance = ((hr_value - signal_level) * 100) / signal_level;
+        is_neg = 0;
+    end
+%     deviance = abs(raw_deviance);
     % APPLIES CHECK 
-    if (raw_deviance < 0)
-        if (deviance < neg_deviance_threshold)
+    if (is_neg)
+        if (deviance < neg_deviance_threshold * 100)
             meets_deviance_req = 1;
         else
             meets_deviance_req = 0;
         end
     else
-        if (deviance < pos_deviance_threshold)
+        if (deviance < pos_deviance_threshold * 100)
             meets_deviance_req = 1;
         else
             meets_deviance_req = 0;
@@ -632,8 +653,8 @@ end
 %DUAL THRESHOLD PROCESSSING
 % Filters out R_peaks which don't meet the threshold reqs
     function [indices, noise_lvl, signal_lvl] = dualThreshold(R_peak_vals, threshold, indices, max_voltage, pos_deviance_threshold, neg_deviance_threshold)
-        Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 16, 'Signed',false);
-        F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 16,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 16, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
+        Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 24, 'Signed',false);
+        F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 24,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 20, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
         % asserts that the input parameters are of fixed point
         assert(isfi(R_peak_vals));
         assert(isfi(threshold));
@@ -650,6 +671,7 @@ end
         noise_sum = fi(0, Fixed_Point_Properties, F); signal_sum = fi(0, Fixed_Point_Properties, F);
         noise_count = fi(0, Fixed_Point_Properties, F); signal_count = fi(0, Fixed_Point_Properties, F);
         noise_lvl = fi(0, Fixed_Point_Properties, F); signal_lvl = fi(0,Fixed_Point_Properties, F);
+        
         for index=1:length(R_peak_vals)
                % DELETE AFTER DEBUGGING
                %if (shouldPlot && channel == 2)
@@ -661,7 +683,7 @@ end
                % Filters out any signal value which exceeds the allowed deviance from
                % the average signal value 
                if (~meets_deviance_threshold(R_peak_vals(index), signal_lvl, pos_deviance_threshold, neg_deviance_threshold))
-                  %fprintf('%f, %f Does not meet the deviance threshold\n', R_peak_vals(index), signal_lvl);
+%                   fprintf('%f, %f Does not meet the deviance threshold\n', R_peak_vals(index), signal_lvl);
                    % Sets all the indices which R_vals don't meet the threshold to 0
                    indices(index) = 0; 
                    % Updates the average noise signal lvl

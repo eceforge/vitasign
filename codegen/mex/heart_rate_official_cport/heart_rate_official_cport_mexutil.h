@@ -3,7 +3,7 @@
  *
  * Code generation for function 'heart_rate_official_cport_mexutil'
  *
- * C source code generated on: Mon Jan 14 13:44:05 2013
+ * C source code generated on: Tue Jan 15 00:51:21 2013
  *
  */
 
@@ -13,6 +13,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include "mwmathutil.h"
 
 #include "tmwtypes.h"
 #include "mex.h"
@@ -31,6 +32,5 @@
 
 /* Function Declarations */
 extern uint32_T div_u32_near(uint32_T numerator, uint32_T denominator);
-extern const mxArray *emlrt_marshallOut(uint32_T u);
 #endif
 /* End of code generation (heart_rate_official_cport_mexutil.h) */

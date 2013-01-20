@@ -3,7 +3,7 @@
  *
  * Code generation for function 'heart_rate_official_cport_api'
  *
- * C source code generated on: Mon Jan 14 13:44:05 2013
+ * C source code generated on: Tue Jan 15 00:51:21 2013
  *
  */
 
@@ -11,7 +11,6 @@
 #include "rt_nonfinite.h"
 #include "heart_rate_official_cport.h"
 #include "heart_rate_official_cport_api.h"
-#include "heart_rate_official_cport_mexutil.h"
 #include "heart_rate_official_cport_data.h"
 
 /* Type Definitions */
@@ -24,26 +23,27 @@
 
 /* Function Declarations */
 static uint32_T b_emlrt_marshallIn(const mxArray *u, const emlrtMsgIdentifier *parentId);
-static int32_T c_emlrt_marshallIn(const mxArray *shouldPlot, const char_T *identifier);
-static int32_T d_emlrt_marshallIn(const mxArray *u, const emlrtMsgIdentifier *parentId);
+static uint32_T c_emlrt_marshallIn(const mxArray *shouldPlot, const char_T *identifier);
+static uint32_T d_emlrt_marshallIn(const mxArray *u, const emlrtMsgIdentifier *parentId);
 static uint32_T e_emlrt_marshallIn(const mxArray *src, const emlrtMsgIdentifier *msgId);
 static uint32_T emlrt_marshallIn(const mxArray *data, const char_T *identifier);
-static int32_T f_emlrt_marshallIn(const mxArray *src, const emlrtMsgIdentifier *msgId);
+static const mxArray *emlrt_marshallOut(uint32_T u);
+static uint32_T f_emlrt_marshallIn(const mxArray *src, const emlrtMsgIdentifier *msgId);
 
 /* Function Definitions */
 
 static uint32_T b_emlrt_marshallIn(const mxArray *u, const emlrtMsgIdentifier *parentId)
 {
     uint32_T y;
-    emlrtCheckFiCtxR2011b(&emlrtContextGlobal, parentId, u, FALSE, 0U, 0, eml_mx, b_eml_mx);
+    emlrtCheckFiCtxR2011b(&emlrtContextGlobal, parentId, u, FALSE, 0U, 0, eml_mx, c_eml_mx);
     y = e_emlrt_marshallIn(emlrtAlias(u), parentId);
     emlrtDestroyArray(&u);
     return y;
 }
 
-static int32_T c_emlrt_marshallIn(const mxArray *shouldPlot, const char_T *identifier)
+static uint32_T c_emlrt_marshallIn(const mxArray *shouldPlot, const char_T *identifier)
 {
-    int32_T y;
+    uint32_T y;
     emlrtMsgIdentifier thisId;
     thisId.fIdentifier = identifier;
     thisId.fParent = NULL;
@@ -52,9 +52,9 @@ static int32_T c_emlrt_marshallIn(const mxArray *shouldPlot, const char_T *ident
     return y;
 }
 
-static int32_T d_emlrt_marshallIn(const mxArray *u, const emlrtMsgIdentifier *parentId)
+static uint32_T d_emlrt_marshallIn(const mxArray *u, const emlrtMsgIdentifier *parentId)
 {
-    int32_T y;
+    uint32_T y;
     y = f_emlrt_marshallIn(emlrtAlias(u), parentId);
     emlrtDestroyArray(&u);
     return y;
@@ -82,11 +82,25 @@ static uint32_T emlrt_marshallIn(const mxArray *data, const char_T *identifier)
     return y;
 }
 
-static int32_T f_emlrt_marshallIn(const mxArray *src, const emlrtMsgIdentifier *msgId)
+static const mxArray *emlrt_marshallOut(uint32_T u)
 {
-    int32_T ret;
-    emlrtCheckBuiltInCtxR2011b(&emlrtContextGlobal, msgId, src, "int32", FALSE, 0U, 0);
-    ret = *(int32_T *)mxGetData(src);
+    const mxArray *y;
+    const mxArray *b_y;
+    const mxArray *m2;
+    y = NULL;
+    b_y = NULL;
+    m2 = mxCreateNumericMatrix(1, 1, mxUINT32_CLASS, mxREAL);
+    *(uint32_T *)mxGetData(m2) = u;
+    emlrtAssign(&b_y, m2);
+    emlrtAssign(&y, emlrtCreateFIR2009a(eml_mx, c_eml_mx, "simulinkarray", b_y, TRUE));
+    return y;
+}
+
+static uint32_T f_emlrt_marshallIn(const mxArray *src, const emlrtMsgIdentifier *msgId)
+{
+    uint32_T ret;
+    emlrtCheckBuiltInCtxR2011b(&emlrtContextGlobal, msgId, src, "uint32", FALSE, 0U, 0);
+    ret = *(uint32_T *)mxGetData(src);
     emlrtDestroyArray(&src);
     return ret;
 }
@@ -101,7 +115,7 @@ void heart_rate_official_cport_api(const mxArray * const prhs[9], const mxArray 
     uint32_T pos_deviance_threshold;
     uint32_T neg_deviance_threshold;
     uint32_T sample_time;
-    int32_T shouldPlot;
+    uint32_T shouldPlot;
     /* Marshall function inputs */
     data = emlrt_marshallIn(emlrtAliasP(prhs[0]), "data");
     fs = emlrt_marshallIn(emlrtAliasP(prhs[1]), "fs");

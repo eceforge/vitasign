@@ -3,7 +3,7 @@
  *
  * Code generation for function 'heart_rate_official_cport_initialize'
  *
- * C source code generated on: Mon Jan 14 13:44:05 2013
+ * C source code generated on: Tue Jan 15 00:51:21 2013
  *
  */
 
@@ -22,6 +22,7 @@
 /* Variable Definitions */
 static emlrtMCInfo i_emlrtMCI = { -1, -1, "", "" };
 static emlrtMCInfo j_emlrtMCI = { -1, -1, "", "" };
+static emlrtMCInfo k_emlrtMCI = { -1, -1, "", "" };
 
 /* Function Declarations */
 static const mxArray *fimath(const char * b, const char * c, const char * d, const char * e, const char * f, const char * g, const char * h, real_T i, const char * j, real_T k, const char * l, real_T m, const char * n, real_T o, const char * p, real_T q, const char * r, real_T s, const char * t, real_T u, const char * v, const char * w, const char * x, real_T y, const char * ab, real_T bb, const char * cb, real_T db, const char * eb, real_T fb, const char * gb, real_T hb, const char * ib, real_T jb, const char * kb, real_T lb, const char * mb, boolean_T nb, emlrtMCInfo *location);
@@ -77,9 +78,11 @@ static const mxArray *fimath(const char * b, const char * c, const char * d, con
 
 static void heart_rate_official_cport_once(void)
 {
+    emlrtAssignP(&c_eml_mx, NULL);
     emlrtAssignP(&b_eml_mx, NULL);
     emlrtAssignP(&eml_mx, NULL);
-    emlrtAssignP(&b_eml_mx, numerictype("SignednessBool", FALSE, "Signedness", "Unsigned", "WordLength", 32.0, "FractionLength", 16.0, "BinaryPoint", 16.0, "Slope", 1.52587890625E-5, "FixedExponent", -16.0, &j_emlrtMCI));
+    emlrtAssignP(&c_eml_mx, numerictype("SignednessBool", FALSE, "Signedness", "Unsigned", "WordLength", 32.0, "FractionLength", 16.0, "BinaryPoint", 16.0, "Slope", 1.52587890625E-5, "FixedExponent", -16.0, &k_emlrtMCI));
+    emlrtAssignP(&b_eml_mx, numerictype("SignednessBool", FALSE, "Signedness", "Unsigned", "WordLength", 32.0, "FractionLength", 0.0, "BinaryPoint", 0.0, "Slope", 1.0, "FixedExponent", 0.0, &j_emlrtMCI));
     emlrtAssignP(&eml_mx, fimath("RoundMode", "nearest", "OverflowMode", "saturate", "ProductMode", "SpecifyPrecision", "ProductWordLength", 32.0, "MaxProductWordLength", 32.0, "ProductFractionLength", 16.0, "ProductFixedExponent", -16.0, "ProductSlope", 1.52587890625E-5, "ProductSlopeAdjustmentFactor", 1.0, "ProductBias", 0.0, "SumMode", "SpecifyPrecision", "SumWordLength", 32.0, "MaxSumWordLength", 32.0, "SumFractionLength", 16.0, "SumFixedExponent", -16.0, "SumSlope", 1.52587890625E-5, "SumSlopeAdjustmentFactor", 1.0, "SumBias", 0.0, "CastBeforeSum", TRUE, &i_emlrtMCI));
 }
 

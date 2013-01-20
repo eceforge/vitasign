@@ -223,6 +223,7 @@ x6 = x6 (15+(1: N));
 % Normalizes the signal 
 x6 = x6 / max( abs(x6 ));
 
+
 % UNCOMMENT TO SEE PLOT OF EKG AFTER A MWI IS APPLIED
 
     %figure(9)
@@ -519,6 +520,7 @@ for i=1:length(R_peak_indices_combined)
         end
     end
 end
+R_peak_indices_channel_3 = R_peak_indices_combined;
 % UNCOMMENT TO SEE THE NUMBER OF PEAKS AFTER LEVEL 3 PROCESSING
     %if (shouldPlot)
         %fprintf('Combined Post: There are %i non-zero values\n',length(find(R_peak_indices_combined ~= 0)));

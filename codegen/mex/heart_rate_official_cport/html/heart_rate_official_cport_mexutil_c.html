@@ -13,7 +13,7 @@
 <A NAME="3"><FONT COLOR="#888888"><I>    3   </I></FONT></A><FONT COLOR="#117755"><I> *</I></FONT>
 <A NAME="4"><FONT COLOR="#888888"><I>    4   </I></FONT></A><FONT COLOR="#117755"><I> * Code generation for function 'heart_rate_official_cport_mexutil'</I></FONT>
 <A NAME="5"><FONT COLOR="#888888"><I>    5   </I></FONT></A><FONT COLOR="#117755"><I> *</I></FONT>
-<A NAME="6"><FONT COLOR="#888888"><I>    6   </I></FONT></A><FONT COLOR="#117755"><I> * C source code generated on: Mon Jan 14 13:44:05 2013</I></FONT>
+<A NAME="6"><FONT COLOR="#888888"><I>    6   </I></FONT></A><FONT COLOR="#117755"><I> * C source code generated on: Tue Jan 15 00:51:21 2013</I></FONT>
 <A NAME="7"><FONT COLOR="#888888"><I>    7   </I></FONT></A><FONT COLOR="#117755"><I> *</I></FONT>
 <A NAME="8"><FONT COLOR="#888888"><I>    8   </I></FONT></A><FONT COLOR="#117755"><I> */</I></FONT>
 <A NAME="9"><FONT COLOR="#888888"><I>    9   </I></FONT></A>
@@ -21,51 +21,36 @@
 <A NAME="11"><FONT COLOR="#888888"><I>   11   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;rt_nonfinite.h&quot;</FONT>
 <A NAME="12"><FONT COLOR="#888888"><I>   12   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;heart_rate_official_cport.h&quot;</FONT>
 <A NAME="13"><FONT COLOR="#888888"><I>   13   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;heart_rate_official_cport_mexutil.h&quot;</FONT>
-<A NAME="14"><FONT COLOR="#888888"><I>   14   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;heart_rate_official_cport_data.h&quot;</FONT>
-<A NAME="15"><FONT COLOR="#888888"><I>   15   </I></FONT></A>
-<A NAME="16"><FONT COLOR="#888888"><I>   16   </I></FONT></A><FONT COLOR="#117755"><I>/* Type Definitions */</I></FONT>
-<A NAME="17"><FONT COLOR="#888888"><I>   17   </I></FONT></A>
-<A NAME="18"><FONT COLOR="#888888"><I>   18   </I></FONT></A><FONT COLOR="#117755"><I>/* Named Constants */</I></FONT>
-<A NAME="19"><FONT COLOR="#888888"><I>   19   </I></FONT></A>
-<A NAME="20"><FONT COLOR="#888888"><I>   20   </I></FONT></A><FONT COLOR="#117755"><I>/* Variable Declarations */</I></FONT>
-<A NAME="21"><FONT COLOR="#888888"><I>   21   </I></FONT></A>
-<A NAME="22"><FONT COLOR="#888888"><I>   22   </I></FONT></A><FONT COLOR="#117755"><I>/* Variable Definitions */</I></FONT>
-<A NAME="23"><FONT COLOR="#888888"><I>   23   </I></FONT></A>
-<A NAME="24"><FONT COLOR="#888888"><I>   24   </I></FONT></A><FONT COLOR="#117755"><I>/* Function Declarations */</I></FONT>
-<A NAME="25"><FONT COLOR="#888888"><I>   25   </I></FONT></A>
-<A NAME="26"><FONT COLOR="#888888"><I>   26   </I></FONT></A><FONT COLOR="#117755"><I>/* Function Definitions */</I></FONT>
-<A NAME="27"><FONT COLOR="#888888"><I>   27   </I></FONT></A>
-<A NAME="28"><FONT COLOR="#888888"><I>   28   </I></FONT></A>uint32_T <A NAME="fcn_div_u32_near">div_u32_near</A>(uint32_T numerator, uint32_T denominator)
-<A NAME="29"><FONT COLOR="#888888"><I>   29   </I></FONT></A><B>{</B>
-<A NAME="30"><FONT COLOR="#888888"><I>   30   </I></FONT></A>    uint32_T quotient;
-<A NAME="31"><FONT COLOR="#888888"><I>   31   </I></FONT></A>    <FONT COLOR="#112266"><B>if</B></FONT> (denominator == (uint32_T)0) <B>{</B>
-<A NAME="32"><FONT COLOR="#888888"><I>   32   </I></FONT></A>        quotient = MAX_uint32_T;
-<A NAME="33"><FONT COLOR="#888888"><I>   33   </I></FONT></A>        emlrtDivisionByZeroErrorR2008a(0);
-<A NAME="34"><FONT COLOR="#888888"><I>   34   </I></FONT></A>    <B>}</B> <FONT COLOR="#112266"><B>else</B></FONT> <B>{</B>
-<A NAME="35"><FONT COLOR="#888888"><I>   35   </I></FONT></A>        quotient = numerator / denominator;
-<A NAME="36"><FONT COLOR="#888888"><I>   36   </I></FONT></A>        numerator %= denominator;
-<A NAME="37"><FONT COLOR="#888888"><I>   37   </I></FONT></A>        <FONT COLOR="#112266"><B>if</B></FONT> ((numerator &gt; 2147483647U) || ((numerator &lt;&lt; 1) &gt;= denominator)) <B>{</B>
-<A NAME="38"><FONT COLOR="#888888"><I>   38   </I></FONT></A>            quotient++;
-<A NAME="39"><FONT COLOR="#888888"><I>   39   </I></FONT></A>        <B>}</B>
-<A NAME="40"><FONT COLOR="#888888"><I>   40   </I></FONT></A>    <B>}</B>
-<A NAME="41"><FONT COLOR="#888888"><I>   41   </I></FONT></A>    <FONT COLOR="#112266"><B>return</B></FONT> quotient;
-<A NAME="42"><FONT COLOR="#888888"><I>   42   </I></FONT></A><B>}</B>
-<A NAME="43"><FONT COLOR="#888888"><I>   43   </I></FONT></A>
-<A NAME="44"><FONT COLOR="#888888"><I>   44   </I></FONT></A><FONT COLOR="#112266"><B>const</B></FONT> mxArray *<A NAME="fcn_emlrt_marshallOut">emlrt_marshallOut</A>(uint32_T u)
-<A NAME="45"><FONT COLOR="#888888"><I>   45   </I></FONT></A><B>{</B>
-<A NAME="46"><FONT COLOR="#888888"><I>   46   </I></FONT></A>    <FONT COLOR="#112266"><B>const</B></FONT> mxArray *y;
-<A NAME="47"><FONT COLOR="#888888"><I>   47   </I></FONT></A>    <FONT COLOR="#112266"><B>const</B></FONT> mxArray *b_y;
-<A NAME="48"><FONT COLOR="#888888"><I>   48   </I></FONT></A>    <FONT COLOR="#112266"><B>const</B></FONT> mxArray *m2;
-<A NAME="49"><FONT COLOR="#888888"><I>   49   </I></FONT></A>    y = NULL;
-<A NAME="50"><FONT COLOR="#888888"><I>   50   </I></FONT></A>    b_y = NULL;
-<A NAME="51"><FONT COLOR="#888888"><I>   51   </I></FONT></A>    m2 = mxCreateNumericMatrix(1, 1, mxUINT32_CLASS, mxREAL);
-<A NAME="52"><FONT COLOR="#888888"><I>   52   </I></FONT></A>    *(uint32_T *)mxGetData(m2) = u;
-<A NAME="53"><FONT COLOR="#888888"><I>   53   </I></FONT></A>    emlrtAssign(&amp;b_y, m2);
-<A NAME="54"><FONT COLOR="#888888"><I>   54   </I></FONT></A>    emlrtAssign(&amp;y, emlrtCreateFIR2009a(<A HREF="heart_rate_official_cport_data_c.html#var_eml_mx" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_eml_mx');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">eml_mx</FONT></A>, <A HREF="heart_rate_official_cport_data_c.html#var_b_eml_mx" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_b_eml_mx');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">b_eml_mx</FONT></A>, <FONT COLOR="#1122ff">&quot;simulinkarray&quot;</FONT>, b_y, TRUE));
-<A NAME="55"><FONT COLOR="#888888"><I>   55   </I></FONT></A>    <FONT COLOR="#112266"><B>return</B></FONT> y;
-<A NAME="56"><FONT COLOR="#888888"><I>   56   </I></FONT></A><B>}</B>
-<A NAME="57"><FONT COLOR="#888888"><I>   57   </I></FONT></A><FONT COLOR="#117755"><I>/* End of code generation (heart_rate_official_cport_mexutil.c) */</I></FONT>
-<A NAME="58"><FONT COLOR="#888888"><I>   58   </I></FONT></A></PRE>
+<A NAME="14"><FONT COLOR="#888888"><I>   14   </I></FONT></A>
+<A NAME="15"><FONT COLOR="#888888"><I>   15   </I></FONT></A><FONT COLOR="#117755"><I>/* Type Definitions */</I></FONT>
+<A NAME="16"><FONT COLOR="#888888"><I>   16   </I></FONT></A>
+<A NAME="17"><FONT COLOR="#888888"><I>   17   </I></FONT></A><FONT COLOR="#117755"><I>/* Named Constants */</I></FONT>
+<A NAME="18"><FONT COLOR="#888888"><I>   18   </I></FONT></A>
+<A NAME="19"><FONT COLOR="#888888"><I>   19   </I></FONT></A><FONT COLOR="#117755"><I>/* Variable Declarations */</I></FONT>
+<A NAME="20"><FONT COLOR="#888888"><I>   20   </I></FONT></A>
+<A NAME="21"><FONT COLOR="#888888"><I>   21   </I></FONT></A><FONT COLOR="#117755"><I>/* Variable Definitions */</I></FONT>
+<A NAME="22"><FONT COLOR="#888888"><I>   22   </I></FONT></A>
+<A NAME="23"><FONT COLOR="#888888"><I>   23   </I></FONT></A><FONT COLOR="#117755"><I>/* Function Declarations */</I></FONT>
+<A NAME="24"><FONT COLOR="#888888"><I>   24   </I></FONT></A>
+<A NAME="25"><FONT COLOR="#888888"><I>   25   </I></FONT></A><FONT COLOR="#117755"><I>/* Function Definitions */</I></FONT>
+<A NAME="26"><FONT COLOR="#888888"><I>   26   </I></FONT></A>
+<A NAME="27"><FONT COLOR="#888888"><I>   27   </I></FONT></A>uint32_T <A NAME="fcn_div_u32_near">div_u32_near</A>(uint32_T numerator, uint32_T denominator)
+<A NAME="28"><FONT COLOR="#888888"><I>   28   </I></FONT></A><B>{</B>
+<A NAME="29"><FONT COLOR="#888888"><I>   29   </I></FONT></A>    uint32_T quotient;
+<A NAME="30"><FONT COLOR="#888888"><I>   30   </I></FONT></A>    <FONT COLOR="#112266"><B>if</B></FONT> (denominator == (uint32_T)0) <B>{</B>
+<A NAME="31"><FONT COLOR="#888888"><I>   31   </I></FONT></A>        quotient = MAX_uint32_T;
+<A NAME="32"><FONT COLOR="#888888"><I>   32   </I></FONT></A>        emlrtDivisionByZeroErrorR2008a(0);
+<A NAME="33"><FONT COLOR="#888888"><I>   33   </I></FONT></A>    <B>}</B> <FONT COLOR="#112266"><B>else</B></FONT> <B>{</B>
+<A NAME="34"><FONT COLOR="#888888"><I>   34   </I></FONT></A>        quotient = numerator / denominator;
+<A NAME="35"><FONT COLOR="#888888"><I>   35   </I></FONT></A>        numerator %= denominator;
+<A NAME="36"><FONT COLOR="#888888"><I>   36   </I></FONT></A>        <FONT COLOR="#112266"><B>if</B></FONT> ((numerator &gt; 2147483647U) || ((numerator &lt;&lt; 1) &gt;= denominator)) <B>{</B>
+<A NAME="37"><FONT COLOR="#888888"><I>   37   </I></FONT></A>            quotient++;
+<A NAME="38"><FONT COLOR="#888888"><I>   38   </I></FONT></A>        <B>}</B>
+<A NAME="39"><FONT COLOR="#888888"><I>   39   </I></FONT></A>    <B>}</B>
+<A NAME="40"><FONT COLOR="#888888"><I>   40   </I></FONT></A>    <FONT COLOR="#112266"><B>return</B></FONT> quotient;
+<A NAME="41"><FONT COLOR="#888888"><I>   41   </I></FONT></A><B>}</B>
+<A NAME="42"><FONT COLOR="#888888"><I>   42   </I></FONT></A><FONT COLOR="#117755"><I>/* End of code generation (heart_rate_official_cport_mexutil.c) */</I></FONT>
+<A NAME="43"><FONT COLOR="#888888"><I>   43   </I></FONT></A></PRE>
 </TD></TR></TABLE>
 </P>
 </BODY>

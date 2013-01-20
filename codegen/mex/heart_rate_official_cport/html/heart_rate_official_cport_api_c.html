@@ -13,7 +13,7 @@
 <A NAME="3"><FONT COLOR="#888888"><I>    3   </I></FONT></A><FONT COLOR="#117755"><I> *</I></FONT>
 <A NAME="4"><FONT COLOR="#888888"><I>    4   </I></FONT></A><FONT COLOR="#117755"><I> * Code generation for function 'heart_rate_official_cport_api'</I></FONT>
 <A NAME="5"><FONT COLOR="#888888"><I>    5   </I></FONT></A><FONT COLOR="#117755"><I> *</I></FONT>
-<A NAME="6"><FONT COLOR="#888888"><I>    6   </I></FONT></A><FONT COLOR="#117755"><I> * C source code generated on: Mon Jan 14 13:44:05 2013</I></FONT>
+<A NAME="6"><FONT COLOR="#888888"><I>    6   </I></FONT></A><FONT COLOR="#117755"><I> * C source code generated on: Tue Jan 15 00:51:21 2013</I></FONT>
 <A NAME="7"><FONT COLOR="#888888"><I>    7   </I></FONT></A><FONT COLOR="#117755"><I> *</I></FONT>
 <A NAME="8"><FONT COLOR="#888888"><I>    8   </I></FONT></A><FONT COLOR="#117755"><I> */</I></FONT>
 <A NAME="9"><FONT COLOR="#888888"><I>    9   </I></FONT></A>
@@ -21,39 +21,39 @@
 <A NAME="11"><FONT COLOR="#888888"><I>   11   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;rt_nonfinite.h&quot;</FONT>
 <A NAME="12"><FONT COLOR="#888888"><I>   12   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;heart_rate_official_cport.h&quot;</FONT>
 <A NAME="13"><FONT COLOR="#888888"><I>   13   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;heart_rate_official_cport_api.h&quot;</FONT>
-<A NAME="14"><FONT COLOR="#888888"><I>   14   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;heart_rate_official_cport_mexutil.h&quot;</FONT>
-<A NAME="15"><FONT COLOR="#888888"><I>   15   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;heart_rate_official_cport_data.h&quot;</FONT>
-<A NAME="16"><FONT COLOR="#888888"><I>   16   </I></FONT></A>
-<A NAME="17"><FONT COLOR="#888888"><I>   17   </I></FONT></A><FONT COLOR="#117755"><I>/* Type Definitions */</I></FONT>
-<A NAME="18"><FONT COLOR="#888888"><I>   18   </I></FONT></A>
-<A NAME="19"><FONT COLOR="#888888"><I>   19   </I></FONT></A><FONT COLOR="#117755"><I>/* Named Constants */</I></FONT>
-<A NAME="20"><FONT COLOR="#888888"><I>   20   </I></FONT></A>
-<A NAME="21"><FONT COLOR="#888888"><I>   21   </I></FONT></A><FONT COLOR="#117755"><I>/* Variable Declarations */</I></FONT>
-<A NAME="22"><FONT COLOR="#888888"><I>   22   </I></FONT></A>
-<A NAME="23"><FONT COLOR="#888888"><I>   23   </I></FONT></A><FONT COLOR="#117755"><I>/* Variable Definitions */</I></FONT>
-<A NAME="24"><FONT COLOR="#888888"><I>   24   </I></FONT></A>
-<A NAME="25"><FONT COLOR="#888888"><I>   25   </I></FONT></A><FONT COLOR="#117755"><I>/* Function Declarations */</I></FONT>
-<A NAME="26"><FONT COLOR="#888888"><I>   26   </I></FONT></A><FONT COLOR="#112266"><B>static</B></FONT> uint32_T <A HREF="heart_rate_official_cport_api_c.html#fcn_b_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_b_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">b_emlrt_marshallIn</FONT></A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray *u, <FONT COLOR="#112266"><B>const</B></FONT> emlrtMsgIdentifier *parentId);
-<A NAME="27"><FONT COLOR="#888888"><I>   27   </I></FONT></A><FONT COLOR="#112266"><B>static</B></FONT> int32_T <A HREF="heart_rate_official_cport_api_c.html#fcn_c_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_c_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">c_emlrt_marshallIn</FONT></A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray *shouldPlot, <FONT COLOR="#112266"><B>const</B></FONT> char_T *identifier);
-<A NAME="28"><FONT COLOR="#888888"><I>   28   </I></FONT></A><FONT COLOR="#112266"><B>static</B></FONT> int32_T <A HREF="heart_rate_official_cport_api_c.html#fcn_d_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_d_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">d_emlrt_marshallIn</FONT></A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray *u, <FONT COLOR="#112266"><B>const</B></FONT> emlrtMsgIdentifier *parentId);
-<A NAME="29"><FONT COLOR="#888888"><I>   29   </I></FONT></A><FONT COLOR="#112266"><B>static</B></FONT> uint32_T <A HREF="heart_rate_official_cport_api_c.html#fcn_e_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_e_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">e_emlrt_marshallIn</FONT></A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray *src, <FONT COLOR="#112266"><B>const</B></FONT> emlrtMsgIdentifier *msgId);
-<A NAME="30"><FONT COLOR="#888888"><I>   30   </I></FONT></A><FONT COLOR="#112266"><B>static</B></FONT> uint32_T <A HREF="heart_rate_official_cport_api_c.html#fcn_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrt_marshallIn</FONT></A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray *data, <FONT COLOR="#112266"><B>const</B></FONT> char_T *identifier);
-<A NAME="31"><FONT COLOR="#888888"><I>   31   </I></FONT></A><FONT COLOR="#112266"><B>static</B></FONT> int32_T <A HREF="heart_rate_official_cport_api_c.html#fcn_f_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_f_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">f_emlrt_marshallIn</FONT></A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray *src, <FONT COLOR="#112266"><B>const</B></FONT> emlrtMsgIdentifier *msgId);
+<A NAME="14"><FONT COLOR="#888888"><I>   14   </I></FONT></A><FONT COLOR="#992211">#</FONT><FONT COLOR="#992211"><B>include</B></FONT> <FONT COLOR="#992211">&quot;heart_rate_official_cport_data.h&quot;</FONT>
+<A NAME="15"><FONT COLOR="#888888"><I>   15   </I></FONT></A>
+<A NAME="16"><FONT COLOR="#888888"><I>   16   </I></FONT></A><FONT COLOR="#117755"><I>/* Type Definitions */</I></FONT>
+<A NAME="17"><FONT COLOR="#888888"><I>   17   </I></FONT></A>
+<A NAME="18"><FONT COLOR="#888888"><I>   18   </I></FONT></A><FONT COLOR="#117755"><I>/* Named Constants */</I></FONT>
+<A NAME="19"><FONT COLOR="#888888"><I>   19   </I></FONT></A>
+<A NAME="20"><FONT COLOR="#888888"><I>   20   </I></FONT></A><FONT COLOR="#117755"><I>/* Variable Declarations */</I></FONT>
+<A NAME="21"><FONT COLOR="#888888"><I>   21   </I></FONT></A>
+<A NAME="22"><FONT COLOR="#888888"><I>   22   </I></FONT></A><FONT COLOR="#117755"><I>/* Variable Definitions */</I></FONT>
+<A NAME="23"><FONT COLOR="#888888"><I>   23   </I></FONT></A>
+<A NAME="24"><FONT COLOR="#888888"><I>   24   </I></FONT></A><FONT COLOR="#117755"><I>/* Function Declarations */</I></FONT>
+<A NAME="25"><FONT COLOR="#888888"><I>   25   </I></FONT></A><FONT COLOR="#112266"><B>static</B></FONT> uint32_T <A HREF="heart_rate_official_cport_api_c.html#fcn_b_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_b_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">b_emlrt_marshallIn</FONT></A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray *u, <FONT COLOR="#112266"><B>const</B></FONT> emlrtMsgIdentifier *parentId);
+<A NAME="26"><FONT COLOR="#888888"><I>   26   </I></FONT></A><FONT COLOR="#112266"><B>static</B></FONT> uint32_T <A HREF="heart_rate_official_cport_api_c.html#fcn_c_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_c_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">c_emlrt_marshallIn</FONT></A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray *shouldPlot, <FONT COLOR="#112266"><B>const</B></FONT> char_T *identifier);
+<A NAME="27"><FONT COLOR="#888888"><I>   27   </I></FONT></A><FONT COLOR="#112266"><B>static</B></FONT> uint32_T <A HREF="heart_rate_official_cport_api_c.html#fcn_d_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_d_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">d_emlrt_marshallIn</FONT></A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray *u, <FONT COLOR="#112266"><B>const</B></FONT> emlrtMsgIdentifier *parentId);
+<A NAME="28"><FONT COLOR="#888888"><I>   28   </I></FONT></A><FONT COLOR="#112266"><B>static</B></FONT> uint32_T <A HREF="heart_rate_official_cport_api_c.html#fcn_e_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_e_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">e_emlrt_marshallIn</FONT></A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray *src, <FONT COLOR="#112266"><B>const</B></FONT> emlrtMsgIdentifier *msgId);
+<A NAME="29"><FONT COLOR="#888888"><I>   29   </I></FONT></A><FONT COLOR="#112266"><B>static</B></FONT> uint32_T <A HREF="heart_rate_official_cport_api_c.html#fcn_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrt_marshallIn</FONT></A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray *data, <FONT COLOR="#112266"><B>const</B></FONT> char_T *identifier);
+<A NAME="30"><FONT COLOR="#888888"><I>   30   </I></FONT></A><FONT COLOR="#112266"><B>static</B></FONT> <FONT COLOR="#112266"><B>const</B></FONT> mxArray *<A HREF="heart_rate_official_cport_api_c.html#fcn_emlrt_marshallOut" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrt_marshallOut');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrt_marshallOut</FONT></A>(uint32_T u);
+<A NAME="31"><FONT COLOR="#888888"><I>   31   </I></FONT></A><FONT COLOR="#112266"><B>static</B></FONT> uint32_T <A HREF="heart_rate_official_cport_api_c.html#fcn_f_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_f_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">f_emlrt_marshallIn</FONT></A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray *src, <FONT COLOR="#112266"><B>const</B></FONT> emlrtMsgIdentifier *msgId);
 <A NAME="32"><FONT COLOR="#888888"><I>   32   </I></FONT></A>
 <A NAME="33"><FONT COLOR="#888888"><I>   33   </I></FONT></A><FONT COLOR="#117755"><I>/* Function Definitions */</I></FONT>
 <A NAME="34"><FONT COLOR="#888888"><I>   34   </I></FONT></A>
 <A NAME="35"><FONT COLOR="#888888"><I>   35   </I></FONT></A><FONT COLOR="#112266"><B>static</B></FONT> uint32_T <A NAME="fcn_b_emlrt_marshallIn">b_emlrt_marshallIn</A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray *u, <FONT COLOR="#112266"><B>const</B></FONT> emlrtMsgIdentifier *parentId)
 <A NAME="36"><FONT COLOR="#888888"><I>   36   </I></FONT></A><B>{</B>
 <A NAME="37"><FONT COLOR="#888888"><I>   37   </I></FONT></A>    uint32_T y;
-<A NAME="38"><FONT COLOR="#888888"><I>   38   </I></FONT></A>    emlrtCheckFiCtxR2011b(&amp;<A HREF="heart_rate_official_cport_mex_c.html#var_emlrtContextGlobal" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrtContextGlobal');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrtContextGlobal</FONT></A>, parentId, u, FALSE, 0U, 0, <A HREF="heart_rate_official_cport_data_c.html#var_eml_mx" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_eml_mx');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">eml_mx</FONT></A>, <A HREF="heart_rate_official_cport_data_c.html#var_b_eml_mx" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_b_eml_mx');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">b_eml_mx</FONT></A>);
+<A NAME="38"><FONT COLOR="#888888"><I>   38   </I></FONT></A>    emlrtCheckFiCtxR2011b(&amp;<A HREF="heart_rate_official_cport_mex_c.html#var_emlrtContextGlobal" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrtContextGlobal');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrtContextGlobal</FONT></A>, parentId, u, FALSE, 0U, 0, <A HREF="heart_rate_official_cport_data_c.html#var_eml_mx" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_eml_mx');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">eml_mx</FONT></A>, <A HREF="heart_rate_official_cport_data_c.html#var_c_eml_mx" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_c_eml_mx');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">c_eml_mx</FONT></A>);
 <A NAME="39"><FONT COLOR="#888888"><I>   39   </I></FONT></A>    y = <A HREF="heart_rate_official_cport_api_c.html#fcn_e_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_e_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">e_emlrt_marshallIn</FONT></A>(emlrtAlias(u), parentId);
 <A NAME="40"><FONT COLOR="#888888"><I>   40   </I></FONT></A>    emlrtDestroyArray(&amp;u);
 <A NAME="41"><FONT COLOR="#888888"><I>   41   </I></FONT></A>    <FONT COLOR="#112266"><B>return</B></FONT> y;
 <A NAME="42"><FONT COLOR="#888888"><I>   42   </I></FONT></A><B>}</B>
 <A NAME="43"><FONT COLOR="#888888"><I>   43   </I></FONT></A>
-<A NAME="44"><FONT COLOR="#888888"><I>   44   </I></FONT></A><FONT COLOR="#112266"><B>static</B></FONT> int32_T <A NAME="fcn_c_emlrt_marshallIn">c_emlrt_marshallIn</A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray *shouldPlot, <FONT COLOR="#112266"><B>const</B></FONT> char_T *identifier)
+<A NAME="44"><FONT COLOR="#888888"><I>   44   </I></FONT></A><FONT COLOR="#112266"><B>static</B></FONT> uint32_T <A NAME="fcn_c_emlrt_marshallIn">c_emlrt_marshallIn</A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray *shouldPlot, <FONT COLOR="#112266"><B>const</B></FONT> char_T *identifier)
 <A NAME="45"><FONT COLOR="#888888"><I>   45   </I></FONT></A><B>{</B>
-<A NAME="46"><FONT COLOR="#888888"><I>   46   </I></FONT></A>    int32_T y;
+<A NAME="46"><FONT COLOR="#888888"><I>   46   </I></FONT></A>    uint32_T y;
 <A NAME="47"><FONT COLOR="#888888"><I>   47   </I></FONT></A>    emlrtMsgIdentifier thisId;
 <A NAME="48"><FONT COLOR="#888888"><I>   48   </I></FONT></A>    thisId.fIdentifier = identifier;
 <A NAME="49"><FONT COLOR="#888888"><I>   49   </I></FONT></A>    thisId.fParent = NULL;
@@ -62,9 +62,9 @@
 <A NAME="52"><FONT COLOR="#888888"><I>   52   </I></FONT></A>    <FONT COLOR="#112266"><B>return</B></FONT> y;
 <A NAME="53"><FONT COLOR="#888888"><I>   53   </I></FONT></A><B>}</B>
 <A NAME="54"><FONT COLOR="#888888"><I>   54   </I></FONT></A>
-<A NAME="55"><FONT COLOR="#888888"><I>   55   </I></FONT></A><FONT COLOR="#112266"><B>static</B></FONT> int32_T <A NAME="fcn_d_emlrt_marshallIn">d_emlrt_marshallIn</A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray *u, <FONT COLOR="#112266"><B>const</B></FONT> emlrtMsgIdentifier *parentId)
+<A NAME="55"><FONT COLOR="#888888"><I>   55   </I></FONT></A><FONT COLOR="#112266"><B>static</B></FONT> uint32_T <A NAME="fcn_d_emlrt_marshallIn">d_emlrt_marshallIn</A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray *u, <FONT COLOR="#112266"><B>const</B></FONT> emlrtMsgIdentifier *parentId)
 <A NAME="56"><FONT COLOR="#888888"><I>   56   </I></FONT></A><B>{</B>
-<A NAME="57"><FONT COLOR="#888888"><I>   57   </I></FONT></A>    int32_T y;
+<A NAME="57"><FONT COLOR="#888888"><I>   57   </I></FONT></A>    uint32_T y;
 <A NAME="58"><FONT COLOR="#888888"><I>   58   </I></FONT></A>    y = <A HREF="heart_rate_official_cport_api_c.html#fcn_f_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_f_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">f_emlrt_marshallIn</FONT></A>(emlrtAlias(u), parentId);
 <A NAME="59"><FONT COLOR="#888888"><I>   59   </I></FONT></A>    emlrtDestroyArray(&amp;u);
 <A NAME="60"><FONT COLOR="#888888"><I>   60   </I></FONT></A>    <FONT COLOR="#112266"><B>return</B></FONT> y;
@@ -92,43 +92,57 @@
 <A NAME="82"><FONT COLOR="#888888"><I>   82   </I></FONT></A>    <FONT COLOR="#112266"><B>return</B></FONT> y;
 <A NAME="83"><FONT COLOR="#888888"><I>   83   </I></FONT></A><B>}</B>
 <A NAME="84"><FONT COLOR="#888888"><I>   84   </I></FONT></A>
-<A NAME="85"><FONT COLOR="#888888"><I>   85   </I></FONT></A><FONT COLOR="#112266"><B>static</B></FONT> int32_T <A NAME="fcn_f_emlrt_marshallIn">f_emlrt_marshallIn</A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray *src, <FONT COLOR="#112266"><B>const</B></FONT> emlrtMsgIdentifier *msgId)
+<A NAME="85"><FONT COLOR="#888888"><I>   85   </I></FONT></A><FONT COLOR="#112266"><B>static</B></FONT> <FONT COLOR="#112266"><B>const</B></FONT> mxArray *<A NAME="fcn_emlrt_marshallOut">emlrt_marshallOut</A>(uint32_T u)
 <A NAME="86"><FONT COLOR="#888888"><I>   86   </I></FONT></A><B>{</B>
-<A NAME="87"><FONT COLOR="#888888"><I>   87   </I></FONT></A>    int32_T ret;
-<A NAME="88"><FONT COLOR="#888888"><I>   88   </I></FONT></A>    emlrtCheckBuiltInCtxR2011b(&amp;<A HREF="heart_rate_official_cport_mex_c.html#var_emlrtContextGlobal" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrtContextGlobal');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrtContextGlobal</FONT></A>, msgId, src, <FONT COLOR="#1122ff">&quot;int32&quot;</FONT>, FALSE, 0U, 0);
-<A NAME="89"><FONT COLOR="#888888"><I>   89   </I></FONT></A>    ret = *(int32_T *)mxGetData(src);
-<A NAME="90"><FONT COLOR="#888888"><I>   90   </I></FONT></A>    emlrtDestroyArray(&amp;src);
-<A NAME="91"><FONT COLOR="#888888"><I>   91   </I></FONT></A>    <FONT COLOR="#112266"><B>return</B></FONT> ret;
-<A NAME="92"><FONT COLOR="#888888"><I>   92   </I></FONT></A><B>}</B>
-<A NAME="93"><FONT COLOR="#888888"><I>   93   </I></FONT></A>
-<A NAME="94"><FONT COLOR="#888888"><I>   94   </I></FONT></A><FONT COLOR="#112266"><B>void</B></FONT> <A NAME="fcn_heart_rate_official_cport_api">heart_rate_official_cport_api</A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray * <FONT COLOR="#112266"><B>const</B></FONT> prhs[9], <FONT COLOR="#112266"><B>const</B></FONT> mxArray *plhs[1])
-<A NAME="95"><FONT COLOR="#888888"><I>   95   </I></FONT></A><B>{</B>
-<A NAME="96"><FONT COLOR="#888888"><I>   96   </I></FONT></A>    uint32_T data;
-<A NAME="97"><FONT COLOR="#888888"><I>   97   </I></FONT></A>    uint32_T fs;
-<A NAME="98"><FONT COLOR="#888888"><I>   98   </I></FONT></A>    uint32_T threshold_1;
-<A NAME="99"><FONT COLOR="#888888"><I>   99   </I></FONT></A>    uint32_T threshold_2;
-<A NAME="100"><FONT COLOR="#888888"><I>  100   </I></FONT></A>    uint32_T threshold_3;
-<A NAME="101"><FONT COLOR="#888888"><I>  101   </I></FONT></A>    uint32_T pos_deviance_threshold;
-<A NAME="102"><FONT COLOR="#888888"><I>  102   </I></FONT></A>    uint32_T neg_deviance_threshold;
-<A NAME="103"><FONT COLOR="#888888"><I>  103   </I></FONT></A>    uint32_T sample_time;
-<A NAME="104"><FONT COLOR="#888888"><I>  104   </I></FONT></A>    int32_T shouldPlot;
-<A NAME="105"><FONT COLOR="#888888"><I>  105   </I></FONT></A>    <FONT COLOR="#117755"><I>/* Marshall function inputs */</I></FONT>
-<A NAME="106"><FONT COLOR="#888888"><I>  106   </I></FONT></A>    data = <A HREF="heart_rate_official_cport_api_c.html#fcn_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrt_marshallIn</FONT></A>(emlrtAliasP(prhs[0]), <FONT COLOR="#1122ff">&quot;data&quot;</FONT>);
-<A NAME="107"><FONT COLOR="#888888"><I>  107   </I></FONT></A>    fs = <A HREF="heart_rate_official_cport_api_c.html#fcn_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrt_marshallIn</FONT></A>(emlrtAliasP(prhs[1]), <FONT COLOR="#1122ff">&quot;fs&quot;</FONT>);
-<A NAME="108"><FONT COLOR="#888888"><I>  108   </I></FONT></A>    threshold_1 = <A HREF="heart_rate_official_cport_api_c.html#fcn_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrt_marshallIn</FONT></A>(emlrtAliasP(prhs[2]), <FONT COLOR="#1122ff">&quot;threshold_1&quot;</FONT>);
-<A NAME="109"><FONT COLOR="#888888"><I>  109   </I></FONT></A>    threshold_2 = <A HREF="heart_rate_official_cport_api_c.html#fcn_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrt_marshallIn</FONT></A>(emlrtAliasP(prhs[3]), <FONT COLOR="#1122ff">&quot;threshold_2&quot;</FONT>);
-<A NAME="110"><FONT COLOR="#888888"><I>  110   </I></FONT></A>    threshold_3 = <A HREF="heart_rate_official_cport_api_c.html#fcn_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrt_marshallIn</FONT></A>(emlrtAliasP(prhs[4]), <FONT COLOR="#1122ff">&quot;threshold_3&quot;</FONT>);
-<A NAME="111"><FONT COLOR="#888888"><I>  111   </I></FONT></A>    pos_deviance_threshold = <A HREF="heart_rate_official_cport_api_c.html#fcn_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrt_marshallIn</FONT></A>(emlrtAliasP(prhs[5]), <FONT COLOR="#1122ff">&quot;pos_deviance_threshold&quot;</FONT>);
-<A NAME="112"><FONT COLOR="#888888"><I>  112   </I></FONT></A>    neg_deviance_threshold = <A HREF="heart_rate_official_cport_api_c.html#fcn_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrt_marshallIn</FONT></A>(emlrtAliasP(prhs[6]), <FONT COLOR="#1122ff">&quot;neg_deviance_threshold&quot;</FONT>);
-<A NAME="113"><FONT COLOR="#888888"><I>  113   </I></FONT></A>    sample_time = <A HREF="heart_rate_official_cport_api_c.html#fcn_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrt_marshallIn</FONT></A>(emlrtAliasP(prhs[7]), <FONT COLOR="#1122ff">&quot;sample_time&quot;</FONT>);
-<A NAME="114"><FONT COLOR="#888888"><I>  114   </I></FONT></A>    shouldPlot = <A HREF="heart_rate_official_cport_api_c.html#fcn_c_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_c_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">c_emlrt_marshallIn</FONT></A>(emlrtAliasP(prhs[8]), <FONT COLOR="#1122ff">&quot;shouldPlot&quot;</FONT>);
-<A NAME="115"><FONT COLOR="#888888"><I>  115   </I></FONT></A>    <FONT COLOR="#117755"><I>/* Invoke the target function */</I></FONT>
-<A NAME="116"><FONT COLOR="#888888"><I>  116   </I></FONT></A>    data = <A HREF="heart_rate_official_cport_c.html#fcn_heart_rate_official_cport" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_heart_rate_official_cport');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">heart_rate_official_cport</FONT></A>(data, fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_time, shouldPlot);
-<A NAME="117"><FONT COLOR="#888888"><I>  117   </I></FONT></A>    <FONT COLOR="#117755"><I>/* Marshall function outputs */</I></FONT>
-<A NAME="118"><FONT COLOR="#888888"><I>  118   </I></FONT></A>    plhs[0] = <A HREF="heart_rate_official_cport_mexutil_c.html#fcn_emlrt_marshallOut" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrt_marshallOut');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrt_marshallOut</FONT></A>(data);
-<A NAME="119"><FONT COLOR="#888888"><I>  119   </I></FONT></A><B>}</B>
-<A NAME="120"><FONT COLOR="#888888"><I>  120   </I></FONT></A><FONT COLOR="#117755"><I>/* End of code generation (heart_rate_official_cport_api.c) */</I></FONT>
-<A NAME="121"><FONT COLOR="#888888"><I>  121   </I></FONT></A></PRE>
+<A NAME="87"><FONT COLOR="#888888"><I>   87   </I></FONT></A>    <FONT COLOR="#112266"><B>const</B></FONT> mxArray *y;
+<A NAME="88"><FONT COLOR="#888888"><I>   88   </I></FONT></A>    <FONT COLOR="#112266"><B>const</B></FONT> mxArray *b_y;
+<A NAME="89"><FONT COLOR="#888888"><I>   89   </I></FONT></A>    <FONT COLOR="#112266"><B>const</B></FONT> mxArray *m2;
+<A NAME="90"><FONT COLOR="#888888"><I>   90   </I></FONT></A>    y = NULL;
+<A NAME="91"><FONT COLOR="#888888"><I>   91   </I></FONT></A>    b_y = NULL;
+<A NAME="92"><FONT COLOR="#888888"><I>   92   </I></FONT></A>    m2 = mxCreateNumericMatrix(1, 1, mxUINT32_CLASS, mxREAL);
+<A NAME="93"><FONT COLOR="#888888"><I>   93   </I></FONT></A>    *(uint32_T *)mxGetData(m2) = u;
+<A NAME="94"><FONT COLOR="#888888"><I>   94   </I></FONT></A>    emlrtAssign(&amp;b_y, m2);
+<A NAME="95"><FONT COLOR="#888888"><I>   95   </I></FONT></A>    emlrtAssign(&amp;y, emlrtCreateFIR2009a(<A HREF="heart_rate_official_cport_data_c.html#var_eml_mx" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_eml_mx');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">eml_mx</FONT></A>, <A HREF="heart_rate_official_cport_data_c.html#var_c_eml_mx" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_c_eml_mx');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">c_eml_mx</FONT></A>, <FONT COLOR="#1122ff">&quot;simulinkarray&quot;</FONT>, b_y, TRUE));
+<A NAME="96"><FONT COLOR="#888888"><I>   96   </I></FONT></A>    <FONT COLOR="#112266"><B>return</B></FONT> y;
+<A NAME="97"><FONT COLOR="#888888"><I>   97   </I></FONT></A><B>}</B>
+<A NAME="98"><FONT COLOR="#888888"><I>   98   </I></FONT></A>
+<A NAME="99"><FONT COLOR="#888888"><I>   99   </I></FONT></A><FONT COLOR="#112266"><B>static</B></FONT> uint32_T <A NAME="fcn_f_emlrt_marshallIn">f_emlrt_marshallIn</A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray *src, <FONT COLOR="#112266"><B>const</B></FONT> emlrtMsgIdentifier *msgId)
+<A NAME="100"><FONT COLOR="#888888"><I>  100   </I></FONT></A><B>{</B>
+<A NAME="101"><FONT COLOR="#888888"><I>  101   </I></FONT></A>    uint32_T ret;
+<A NAME="102"><FONT COLOR="#888888"><I>  102   </I></FONT></A>    emlrtCheckBuiltInCtxR2011b(&amp;<A HREF="heart_rate_official_cport_mex_c.html#var_emlrtContextGlobal" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrtContextGlobal');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrtContextGlobal</FONT></A>, msgId, src, <FONT COLOR="#1122ff">&quot;uint32&quot;</FONT>, FALSE, 0U, 0);
+<A NAME="103"><FONT COLOR="#888888"><I>  103   </I></FONT></A>    ret = *(uint32_T *)mxGetData(src);
+<A NAME="104"><FONT COLOR="#888888"><I>  104   </I></FONT></A>    emlrtDestroyArray(&amp;src);
+<A NAME="105"><FONT COLOR="#888888"><I>  105   </I></FONT></A>    <FONT COLOR="#112266"><B>return</B></FONT> ret;
+<A NAME="106"><FONT COLOR="#888888"><I>  106   </I></FONT></A><B>}</B>
+<A NAME="107"><FONT COLOR="#888888"><I>  107   </I></FONT></A>
+<A NAME="108"><FONT COLOR="#888888"><I>  108   </I></FONT></A><FONT COLOR="#112266"><B>void</B></FONT> <A NAME="fcn_heart_rate_official_cport_api">heart_rate_official_cport_api</A>(<FONT COLOR="#112266"><B>const</B></FONT> mxArray * <FONT COLOR="#112266"><B>const</B></FONT> prhs[9], <FONT COLOR="#112266"><B>const</B></FONT> mxArray *plhs[1])
+<A NAME="109"><FONT COLOR="#888888"><I>  109   </I></FONT></A><B>{</B>
+<A NAME="110"><FONT COLOR="#888888"><I>  110   </I></FONT></A>    uint32_T data;
+<A NAME="111"><FONT COLOR="#888888"><I>  111   </I></FONT></A>    uint32_T fs;
+<A NAME="112"><FONT COLOR="#888888"><I>  112   </I></FONT></A>    uint32_T threshold_1;
+<A NAME="113"><FONT COLOR="#888888"><I>  113   </I></FONT></A>    uint32_T threshold_2;
+<A NAME="114"><FONT COLOR="#888888"><I>  114   </I></FONT></A>    uint32_T threshold_3;
+<A NAME="115"><FONT COLOR="#888888"><I>  115   </I></FONT></A>    uint32_T pos_deviance_threshold;
+<A NAME="116"><FONT COLOR="#888888"><I>  116   </I></FONT></A>    uint32_T neg_deviance_threshold;
+<A NAME="117"><FONT COLOR="#888888"><I>  117   </I></FONT></A>    uint32_T sample_time;
+<A NAME="118"><FONT COLOR="#888888"><I>  118   </I></FONT></A>    uint32_T shouldPlot;
+<A NAME="119"><FONT COLOR="#888888"><I>  119   </I></FONT></A>    <FONT COLOR="#117755"><I>/* Marshall function inputs */</I></FONT>
+<A NAME="120"><FONT COLOR="#888888"><I>  120   </I></FONT></A>    data = <A HREF="heart_rate_official_cport_api_c.html#fcn_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrt_marshallIn</FONT></A>(emlrtAliasP(prhs[0]), <FONT COLOR="#1122ff">&quot;data&quot;</FONT>);
+<A NAME="121"><FONT COLOR="#888888"><I>  121   </I></FONT></A>    fs = <A HREF="heart_rate_official_cport_api_c.html#fcn_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrt_marshallIn</FONT></A>(emlrtAliasP(prhs[1]), <FONT COLOR="#1122ff">&quot;fs&quot;</FONT>);
+<A NAME="122"><FONT COLOR="#888888"><I>  122   </I></FONT></A>    threshold_1 = <A HREF="heart_rate_official_cport_api_c.html#fcn_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrt_marshallIn</FONT></A>(emlrtAliasP(prhs[2]), <FONT COLOR="#1122ff">&quot;threshold_1&quot;</FONT>);
+<A NAME="123"><FONT COLOR="#888888"><I>  123   </I></FONT></A>    threshold_2 = <A HREF="heart_rate_official_cport_api_c.html#fcn_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrt_marshallIn</FONT></A>(emlrtAliasP(prhs[3]), <FONT COLOR="#1122ff">&quot;threshold_2&quot;</FONT>);
+<A NAME="124"><FONT COLOR="#888888"><I>  124   </I></FONT></A>    threshold_3 = <A HREF="heart_rate_official_cport_api_c.html#fcn_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrt_marshallIn</FONT></A>(emlrtAliasP(prhs[4]), <FONT COLOR="#1122ff">&quot;threshold_3&quot;</FONT>);
+<A NAME="125"><FONT COLOR="#888888"><I>  125   </I></FONT></A>    pos_deviance_threshold = <A HREF="heart_rate_official_cport_api_c.html#fcn_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrt_marshallIn</FONT></A>(emlrtAliasP(prhs[5]), <FONT COLOR="#1122ff">&quot;pos_deviance_threshold&quot;</FONT>);
+<A NAME="126"><FONT COLOR="#888888"><I>  126   </I></FONT></A>    neg_deviance_threshold = <A HREF="heart_rate_official_cport_api_c.html#fcn_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrt_marshallIn</FONT></A>(emlrtAliasP(prhs[6]), <FONT COLOR="#1122ff">&quot;neg_deviance_threshold&quot;</FONT>);
+<A NAME="127"><FONT COLOR="#888888"><I>  127   </I></FONT></A>    sample_time = <A HREF="heart_rate_official_cport_api_c.html#fcn_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrt_marshallIn</FONT></A>(emlrtAliasP(prhs[7]), <FONT COLOR="#1122ff">&quot;sample_time&quot;</FONT>);
+<A NAME="128"><FONT COLOR="#888888"><I>  128   </I></FONT></A>    shouldPlot = <A HREF="heart_rate_official_cport_api_c.html#fcn_c_emlrt_marshallIn" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_c_emlrt_marshallIn');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">c_emlrt_marshallIn</FONT></A>(emlrtAliasP(prhs[8]), <FONT COLOR="#1122ff">&quot;shouldPlot&quot;</FONT>);
+<A NAME="129"><FONT COLOR="#888888"><I>  129   </I></FONT></A>    <FONT COLOR="#117755"><I>/* Invoke the target function */</I></FONT>
+<A NAME="130"><FONT COLOR="#888888"><I>  130   </I></FONT></A>    data = <A HREF="heart_rate_official_cport_c.html#fcn_heart_rate_official_cport" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_heart_rate_official_cport');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">heart_rate_official_cport</FONT></A>(data, fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_time, shouldPlot);
+<A NAME="131"><FONT COLOR="#888888"><I>  131   </I></FONT></A>    <FONT COLOR="#117755"><I>/* Marshall function outputs */</I></FONT>
+<A NAME="132"><FONT COLOR="#888888"><I>  132   </I></FONT></A>    plhs[0] = <A HREF="heart_rate_official_cport_api_c.html#fcn_emlrt_marshallOut" ONCLICK="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_emlrt_marshallOut');" TARGET="rtwreport_document_frame"><FONT COLOR="#1122aa">emlrt_marshallOut</FONT></A>(data);
+<A NAME="133"><FONT COLOR="#888888"><I>  133   </I></FONT></A><B>}</B>
+<A NAME="134"><FONT COLOR="#888888"><I>  134   </I></FONT></A><FONT COLOR="#117755"><I>/* End of code generation (heart_rate_official_cport_api.c) */</I></FONT>
+<A NAME="135"><FONT COLOR="#888888"><I>  135   </I></FONT></A></PRE>
 </TD></TR></TABLE>
 </P>
 </BODY>

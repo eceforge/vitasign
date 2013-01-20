@@ -1,4 +1,4 @@
-function [ y ] = filters( data, fs)
+function [ filtered_output ] = front_end_filters( data, fs)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 %[GB] Ensures the the input args are of the correct data type
@@ -49,7 +49,13 @@ h = [-1 -2 0 2 1]/8;
 % Apply filter
 x4 = conv (x3 ,h);
 x4 = x4 (2+ (1: N));
-y = x4 + abs(min(x4));
-x4 = x4/ max( abs(x4 ));
+x4 = x4/ max( abs(x4));
+filtered_output = x4;
+min(x4)
+min(filtered_output)
+figure(22)
+plot(x4);
+figure(23)
+plot(filtered_output);
 
 end
