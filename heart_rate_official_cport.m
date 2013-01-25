@@ -363,7 +363,7 @@ R_peak_indices = R_loc;
 % NEEDS OPTIMIZATION. NEED TO AVOID COPYING LARGE ARRAYS 
 R_peak_indices_channel_1 = R_peak_indices(1:num_cols_indices); 
 R_peak_indices_channel_2 = R_peak_indices(1:num_cols_indices);
-% R_peak_indices_channel_3 = R_peak_indices(1:num_cols_indices);
+R_peak_indices_channel_3 = R_peak_indices(1:num_cols_indices);
 R_peak_indices_combined = R_peak_indices(1:num_cols_indices); % REPLACE THIS WITH A ZEROS ARRAY
 
 % UNCOMMENT TO SEE THE NUMBER OF PEAKS BEFORE CHANNEL 1 PROCESSING
