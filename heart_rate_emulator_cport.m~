@@ -1,7 +1,5 @@
 function [ heart_rate ] = heart_rate_emulator( data,fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size, averageHR)
-% RESETS MATLAB OUTPUT
-clc
-close all
+
 tic
 %data - EKG data
 %fs - sampling rate
@@ -38,41 +36,36 @@ F_signed = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFra
 
 Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
 F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
-% Applies front end filters
+
 [filtered_full_signal, dc_offset] = front_end_filters(data, fs);
-
-% Offsets DC offset
-filtered_full_signal = double(filtered_full_signal) - dc_offset;
-indata = fi(filtered_full_signal, Fixed_Point_Properties_signed, F_signed);
-
+indata = fi(filtered_full_signal - dc_offset, Fixed_Point_Properties_signed, F_signed);
 % Normalizes the signal 
 indata = divide(Fixed_Point_Properties_signed, indata, max(abs(indata)));
 
-% indatadouble = double(indata);
-% a = fi(4, Fixed_Point_Properties_signed, F_signed);
-% b = fi(3, Fixed_Point_Properties_signed, F_signed);
-% c = fi(1, Fixed_Point_Properties_signed, F_signed);
-% part1 = divide(Fixed_Point_Properties_signed, a, b);
-% part2 = abs(b * (part1 - c) - c);
+indatadouble = double(indata);
+a = fi(4, Fixed_Point_Properties_signed, F_signed);
+b = fi(3, Fixed_Point_Properties_signed, F_signed);
+c = fi(1, Fixed_Point_Properties_signed, F_signed);
+part1 = divide(Fixed_Point_Properties_signed, a, b);
+part2 = abs(b * (part1 - c) - c)
 
-% figure(34)
-% fprintf('Min, Median, and Mean of original signal\n');
-% min(filtered_full_signal)
-% median(filtered_full_signal)
-% mean(filtered_full_signal)
-% plot(filtered_full_signal);
+figure(34)
+fprintf('Min, Median, and Mean of original signal\n');
+min(filtered_full_signal)
+median(filtered_full_signal)
+mean(filtered_full_signal)
+plot(filtered_full_signal);
 
-% fprintf('Min, Median, and Mean of fixed point signal\n');
-% min(indatadouble)
-% median(indatadouble)
-% mean(indatadouble)
+fprintf('Min, Median, and Mean of fixed point signal\n');
+min(indatadouble)
+median(indatadouble)
+mean(indatadouble)
 
-% figure(36)
-% plot(indatadouble);
-
+figure(36)
+plot(indatadouble);
 % Holds the length of the signal
 N = length(data);
-window_size =  sample_size * fs;
+window_size =  sample_size * fs
 step_size = fs;%[GB]Step size should be one second
 num_windows = floor((N - window_size)/step_size) + 1;
 heart_rates = [];
@@ -88,22 +81,22 @@ for step=0:(num_windows - 1)
     %begin_index = (index - 1) * window_size + 1;
     %end_index = begin_index + (window_size - 1);
     sample_size_t = length(indata(begin_index:end_index)) / fs;
-%     fprintf('Min, Median, and Mean of original signal segment\n');
+    fprintf('Min, Median, and Mean of original signal segment\n');
     
-%     filtered_signal = filtered_full_signal(begin_index:end_index);
+    filtered_signal = filtered_full_signal(begin_index:end_index);
 %     figure(37)
 %     plot(filtered_signal)
     
-%     min(filtered_signal)
-%     median(filtered_signal)
-%     mean(filtered_signal)
+    min(filtered_signal)
+    median(filtered_signal)
+    mean(filtered_signal)
     
-%      fprintf('Min, Median, and Mean of fixed point signal segment\n');
+     fprintf('Min, Median, and Mean of fixed point signal segment\n');
 %     figure(38)
 %     plot(indatadouble(begin_index:end_index)); 
-%     min(indatadouble(begin_index:end_index))
-%     median(indatadouble(begin_index:end_index))   
-%     mean(indatadouble(begin_index:end_index))
+    min(indatadouble(begin_index:end_index))
+    median(indatadouble(begin_index:end_index))   
+    mean(indatadouble(begin_index:end_index))
 
     
     if (step == 0)
@@ -116,7 +109,7 @@ for step=0:(num_windows - 1)
         heart_rate = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(0));
         heart_rates = [heart_rates heart_rate];
     end
-%     break;
+    break;
 end
 toc
     

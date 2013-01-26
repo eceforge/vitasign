@@ -42,11 +42,11 @@ function [heart_rate] = heart_rate_official_cport(data, fs, threshold_1, thresho
 % Ensures the the input args are of the correct data type
 
 % Defines Signed and Unsigned Fixed point objects
-Fixed_Point_Properties_signed = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',true);
-F_signed = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
+Fixed_Point_Properties_signed = numerictype('WordLength', 32, 'FractionLength', 12, 'Signed',true);
+F_signed = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 12, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
 
-Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
-F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
+Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 12, 'Signed',false);
+F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 12, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
 
 % DEBUG CODE
 % fipref('DataTypeOverride', 'TrueDoubles', 'LoggingMode', 'on'); % turns on datatype override to see the dynamic range of algo's values
@@ -261,19 +261,15 @@ assert(isequal(numerictype(x1),Fixed_Point_Properties) && isequal(fimath(x1), F)
 %SQUARING
 
 x5 = fi(x1.^2, Fixed_Point_Properties, F);
-
 %assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F));
 %x5 = mpower(x1, 2);
 %x5 = x5/ max( abs(x5 ));
-
 x5 = divide(Fixed_Point_Properties, x5, max( abs(x5 ))); % normalize to one
-
 % figure(24)
 % plot(x5);
 % assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F));
-
-Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
-F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
+Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 24, 'Signed',false);
+F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 24,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 20, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
 x5 = fi(x5, F);
 
 % UNCOMMENT TO SEE PLOT OF EKG AFTER SQUARING
@@ -575,7 +571,6 @@ time_delta = fi(.00333, Fixed_Point_Properties, F);
 for i=1:length(R_peak_vals)
     if (R_peak_indices_channel_3(i) == 0)
         R_peak_vals(i) = 0;
-        
     % Level 5 Detection: Refines heart beat detection by considering a heart
     % beat's refactory period 
     else
@@ -587,7 +582,6 @@ for i=1:length(R_peak_vals)
             %fprintf('Getting rid of a value\n');
             R_peak_vals(i) = 0;
             R_peak_indices_channel_3(i) = 0;
-            
         % Updates the last index if the R_value is valid
         else
             % Updates the last index
@@ -645,8 +639,8 @@ end
 % RETURNS TRUE IF THE INPUT SIGNAL VALUE MEETS THE DEVIANCE REQS. NOTE
 % THE THRESHOLD VALUE CHANGES BASED ON WHETHER DEVIANCE IS NEG OR POS
 function [meets_deviance_req] = meets_deviance_threshold(hr_value, signal_level, pos_deviance_threshold, neg_deviance_threshold)
-        Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
-        F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
+        Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 12, 'Signed',false);
+        F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 12, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
         % asserts that the input parameters are of fixed point
         assert(isfi(hr_value));
         assert(isfi(signal_level));
@@ -670,7 +664,7 @@ function [meets_deviance_req] = meets_deviance_threshold(hr_value, signal_level,
         deviance = ((hr_value - signal_level) * 100) / signal_level;
         is_neg = 0;
     end
-    % Checks value against NEG and POS deviance threshold
+    % 
     if (is_neg)
         if (deviance < neg_deviance_threshold * 100)
             meets_deviance_req = 1;
@@ -689,8 +683,8 @@ end
 %DUAL THRESHOLD PROCESSSING
 % Filters out R_peaks which don't meet the threshold reqs
     function [indices, noise_lvl, signal_lvl] = dualThreshold(R_peak_vals, threshold, indices, max_voltage, pos_deviance_threshold, neg_deviance_threshold)
-        Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
-        F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
+        Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 12, 'Signed',false);
+        F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 12, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
         
         % asserts that the input parameters are of fixed point
         assert(isfi(R_peak_vals));
@@ -717,19 +711,15 @@ end
            if (R_peak_vals(index) * max_voltage > threshold) 
                %fprintf('mv: %f. Threshold is: %f\n', R_peak_vals(index) * max_voltage, threshold);
                %R_peak_vals(index)
-               
                % Filters out any signal value which exceeds the allowed deviance from
                % the average signal value 
                if (~meets_deviance_threshold(R_peak_vals(index), signal_lvl, pos_deviance_threshold, neg_deviance_threshold))
 %                   fprintf('%f, %f Does not meet the deviance threshold\n', R_peak_vals(index), signal_lvl);
-
                    % Sets all the indices which R_vals don't meet the threshold to 0
                    indices(index) = 0; 
-                   
                    % Updates the average noise signal lvl
                    noise_sum = noise_sum  + R_peak_vals(index);
                    noise_count = noise_count + 1;
-                   
                    % Calculates the noise level
 %                    noise_lvl = noise_sum / noise_count;
                    noise_lvl = divide(Fixed_Point_Properties, noise_sum, noise_count);
@@ -739,12 +729,11 @@ end
                %if (shouldPlot && channel == 2)
                %   fprintf('The peak val is: %f\n',R_peak_vals(index));
                %end
-               
                 % Updates the average signal lvl
                signal_sum = signal_sum + R_peak_vals(index);
                signal_count = signal_count + 1;
-               
                % Calculates the signal level
+%                signal_lvl = signal_sum / signal_count;
                signal_lvl = divide(Fixed_Point_Properties, signal_sum, signal_sum);
            else
                % Sets all the indices which R_vals don't meet the threshold to 0

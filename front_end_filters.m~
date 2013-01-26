@@ -1,4 +1,4 @@
-function [ filtered_output, dc_offset ] = front_end_filters( data, fs)
+function [ filtered_output ] = front_end_filters( data, fs)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 %[GB] Ensures the the input args are of the correct data type
@@ -50,8 +50,11 @@ h = [-1 -2 0 2 1]/8;
 x4 = conv (x3 ,h);
 x4 = x4 (2+ (1: N));
 x4 = x4/ max( abs(x4));
-  
+figure(40);
+plot(x
+x4 = x4 + max(abs(x4));
 filtered_output = x4;
+
 %SQUARING
 
 %x5 = x4 .^2;
@@ -77,9 +80,5 @@ filtered_output = x4;
 % plot(x6);
 %figure(23)
 % plot(x5);
-% Applies a dc offset
-dc_offset = max(abs(filtered_output));
-filtered_output = filtered_output + dc_offset;
-Fixed_Point_Properties = numerictype('WordLength', 12, 'FractionLength', 10, 'Signed', false);
-filtered_output = fi(filtered_output, Fixed_Point_Properties);
+
 end
