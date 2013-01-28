@@ -106,6 +106,7 @@ assert(N/fs >= sample_time);
 %CANCELLATION DC DRIFT AND NORMALIZATION
 %x1 = x1 - mean (x1 );    % cancel DC conponents
 % x1 = x1/ max( abs(x1 )); % normalize to one
+max(abs(x1))
 x1 = divide(Fixed_Point_Properties, x1, max( abs(x1 ))); % normalize to one
 assert(isequal(numerictype(x1),Fixed_Point_Properties) && isequal(fimath(x1), F));
 
@@ -405,7 +406,7 @@ R_peak_indices_combined = R_peak_indices(1:num_cols_indices); % REPLACE THIS WIT
 
 % UNCOMMENT TO SEE THE NUMBER OF PEAKS BEFORE CHANNEL 1 PROCESSING
     if (shouldPlot)
-        fprintf('Channel 1 Original: There are %i non-zero values\n',length(find(R_peak_indices_channel_1 ~= 0)));
+%         fprintf('Channel 1 Original: There are %i non-zero values\n',length(find(R_peak_indices_channel_1 ~= 0)));
     end
 
 [R_peak_indices_channel_1, noise_lvl_channel_1, signal_lvl_channel_1] = dualThreshold(R_peak_vals, threshold_1, uint32(R_peak_indices_channel_1), max_voltage, pos_deviance_threshold, neg_deviance_threshold);
@@ -424,7 +425,7 @@ assert(isequal(numerictype(signal_lvl_channel_2),Fixed_Point_Properties) && iseq
 
 % UNCOMMENT TO SEE THE NUMBER OF PEAKS AFTER CHANNEL 1 PROCESSING
     if (shouldPlot)
-        fprintf('Channel 1 Post: There are %i non-zero values\n',length(find(R_peak_indices_channel_1 ~= 0)));
+%         fprintf('Channel 1 Post: There are %i non-zero values\n',length(find(R_peak_indices_channel_1 ~= 0)));
     end
 
 
@@ -552,7 +553,7 @@ for i=1:length(R_peak_indices_combined)
 end
 % UNCOMMENT TO SEE THE NUMBER OF PEAKS AFTER LEVEL 3 PROCESSING
     if (shouldPlot)
-        fprintf('Combined Post: There are %i non-zero values\n',length(find(R_peak_indices_combined ~= 0)));
+%         fprintf('Combined Post: There are %i non-zero values\n',length(find(R_peak_indices_combined ~= 0)));
     end
     
 % Grabs the result of both channels    
@@ -570,7 +571,7 @@ R_peak_indices_channel_3 = R_peak_indices_combined;
     %end
     
 % Sets R values to zero which failed any of the previous phases
-last_R_index = 0;
+last_R_index = fi(0, Fixed_Point_Properties, F);
 time_delta = fi(.00333, Fixed_Point_Properties, F);
 for i=1:length(R_peak_vals)
     if (R_peak_indices_channel_3(i) == 0)
@@ -581,7 +582,7 @@ for i=1:length(R_peak_vals)
     else
         % Filters out any R_values which happen too soon after a previous
         % beat detection
-        current_R_index = R_peak_indices_channel_3(i);
+        current_R_index = fi(R_peak_indices_channel_3(i), Fixed_Point_Properties, F);
         if (last_R_index ~= 0 && ((current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta) < .200)
 
             %fprintf('Getting rid of a value\n');
@@ -591,7 +592,7 @@ for i=1:length(R_peak_vals)
         % Updates the last index if the R_value is valid
         else
             % Updates the last index
-            last_R_index = R_peak_indices_channel_3(i);
+            last_R_index = fi(R_peak_indices_channel_3(i), Fixed_Point_Properties, F);
         end
     end
 end

@@ -3,7 +3,7 @@
  *
  * Code generation for function 'heart_rate_official_cport_initialize'
  *
- * C source code generated on: Mon Jan 14 11:21:38 2013
+ * C source code generated on: Sat Jan 26 20:25:14 2013
  *
  */
 

@@ -1,8 +1,6 @@
 <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="4" WIDTH="100%" BGCOLOR="#ffffff"><TR><TD>
 <B>Generated Source Files</B>
 </TD></TR><TR></TR>
-<TR><TD><A HREF="diff_c.html" ONCLICK="if (top) if (top.tocHiliteMe) top.tocHiliteMe(window, this, false);" ID="diff_c.html" TARGET="rtwreport_document_frame" NAME="rtwIdGenFileLinks">diff.c</A><SPAN> </SPAN></TD></TR><TR></TR>
-<TR><TD><A HREF="diff_h.html" ONCLICK="if (top) if (top.tocHiliteMe) top.tocHiliteMe(window, this, false);" ID="diff_h.html" TARGET="rtwreport_document_frame" NAME="rtwIdGenFileLinks">diff.h</A><SPAN> </SPAN></TD></TR><TR></TR>
 <TR><TD><A HREF="heart_rate_official_cport_c.html" ONCLICK="if (top) if (top.tocHiliteMe) top.tocHiliteMe(window, this, false);" ID="heart_rate_official_cport_c.html" TARGET="rtwreport_document_frame" NAME="rtwIdGenFileLinks">heart_rate_official_cport.c</A><SPAN> </SPAN></TD></TR><TR></TR>
 <TR><TD><A HREF="heart_rate_official_cport_h.html" ONCLICK="if (top) if (top.tocHiliteMe) top.tocHiliteMe(window, this, false);" ID="heart_rate_official_cport_h.html" TARGET="rtwreport_document_frame" NAME="rtwIdGenFileLinks">heart_rate_official_cport.h</A><SPAN> </SPAN></TD></TR><TR></TR>
 <TR><TD><A HREF="heart_rate_official_cport_api_c.html" ONCLICK="if (top) if (top.tocHiliteMe) top.tocHiliteMe(window, this, false);" ID="heart_rate_official_cport_api_c.html" TARGET="rtwreport_document_frame" NAME="rtwIdGenFileLinks">heart_rate_official_cport_api.c</A><SPAN> </SPAN></TD></TR><TR></TR>

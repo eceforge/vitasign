@@ -8,9 +8,8 @@ SRC_FILES =  \
 	heart_rate_official_cport_mexutil.c \
 	heart_rate_official_cport_data.c \
 	heart_rate_official_cport.c \
-	mrdivide1.c \
 	max.c \
-	diff.c \
+	mrdivide1.c \
 	heart_rate_official_cport_initialize.c \
 	heart_rate_official_cport_terminate.c \
 	heart_rate_official_cport_api.c \

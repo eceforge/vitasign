@@ -1,7 +1,7 @@
 function [ heart_rate ] = heart_rate_emulator( data,fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size, averageHR)
 % RESETS MATLAB OUTPUT
-clc
-close all
+% clc
+% close all
 tic
 %data - EKG data
 %fs - sampling rate
@@ -46,7 +46,7 @@ filtered_full_signal = double(filtered_full_signal) - dc_offset;
 indata = fi(filtered_full_signal, Fixed_Point_Properties_signed, F_signed);
 
 % Normalizes the signal 
-indata = divide(Fixed_Point_Properties_signed, indata, max(abs(indata)));
+% indata = divide(Fixed_Point_Properties_signed, indata, max(abs(indata)));
 
 % indatadouble = double(indata);
 % a = fi(4, Fixed_Point_Properties_signed, F_signed);

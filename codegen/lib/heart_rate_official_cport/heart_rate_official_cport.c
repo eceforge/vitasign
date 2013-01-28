@@ -3,7 +3,7 @@
  *
  * Code generation for function 'heart_rate_official_cport'
  *
- * C source code generated on: Mon Jan 14 11:21:38 2013
+ * C source code generated on: Sat Jan 26 20:25:14 2013
  *
  */
 
@@ -20,41 +20,35 @@
 /* Variable Definitions */
 
 /* Function Declarations */
-static uint32_T MultiWord2uLong(const uint32_T u[]);
 static void MultiWordUnsignedWrap(const uint32_T u1[], int32_T n1, uint32_T n2,
   uint32_T y[]);
 static uint32_T div_repeat_u32_sat_near(uint32_T numerator, uint32_T denominator,
   uint32_T nRepeatSub);
+static uint32_T div_repeat_us32_sat_near(int32_T numerator, int32_T denominator,
+  uint32_T nRepeatSub);
 static uint32_T div_u32_near(uint32_T numerator, uint32_T denominator);
 static void dualThreshold(const uint32_T R_peak_vals_data[1], const int32_T
-  R_peak_vals_sizes[2], uint32_T threshold, real_T indices_data[1], int32_T
+  R_peak_vals_sizes[2], uint32_T threshold, uint32_T indices_data[1], int32_T
   indices_sizes[2], uint32_T max_voltage, uint32_T pos_deviance_threshold,
   uint32_T neg_deviance_threshold, uint32_T *noise_lvl, uint32_T *signal_lvl);
 static void eml_li_find(const boolean_T x_data[1], const int32_T x_sizes[2],
   int32_T y_data[1], int32_T y_sizes[2]);
-static uint32_T mul_u32_u32_u32_sr10_sat_near(uint32_T a, uint32_T b);
+static uint32_T mul_u32_u32_u32_sat(uint32_T a, uint32_T b);
+static uint32_T mul_u32_u32_u32_sr15_sat_near(uint32_T a, uint32_T b);
 static uint32_T mul_u32_u32_u32_sr16_sat_near(uint32_T a, uint32_T b);
+static uint32_T mul_u32_u32_u32_sr26_sat_near(uint32_T a, uint32_T b);
 static void mul_wide_u32(uint32_T in0, uint32_T in1, uint32_T *ptrOutBitsHi,
   uint32_T *ptrOutBitsLo);
 static void uLong2MultiWord(uint32_T u, uint32_T y[], int32_T n);
 static int32_T uMultiWordCmp(const uint32_T u1[], const uint32_T u2[], int32_T n);
+static boolean_T uMultiWordGt(const uint32_T u1[], const uint32_T u2[], int32_T
+  n);
 static boolean_T uMultiWordLt(const uint32_T u1[], const uint32_T u2[], int32_T
   n);
-static void uMultiWordMul(const uint32_T u1[], int32_T n1, const uint32_T u2[],
-  int32_T n2, uint32_T y[], int32_T n);
 static void uMultiWordShl(const uint32_T u1[], int32_T n1, uint32_T n2, uint32_T
   y[], int32_T n);
-static void uMultiWordShr(const uint32_T u1[], int32_T n1, uint32_T n2, uint32_T
-  y[], int32_T n);
-static void uMultiWordShrNear(const uint32_T u1[], int32_T n1, uint32_T n2,
-  uint32_T y[], int32_T n);
 
 /* Function Definitions */
-static uint32_T MultiWord2uLong(const uint32_T u[])
-{
-  return u[0];
-}
-
 static void MultiWordUnsignedWrap(const uint32_T u1[], int32_T n1, uint32_T n2,
   uint32_T y[])
 {
@@ -109,6 +103,30 @@ static uint32_T div_repeat_u32_sat_near(uint32_T numerator, uint32_T denominator
   return quotient;
 }
 
+static uint32_T div_repeat_us32_sat_near(int32_T numerator, int32_T denominator,
+  uint32_T nRepeatSub)
+{
+  uint32_T quotient;
+  uint32_T absNumerator;
+  uint32_T absDenominator;
+  int32_T quotientNeedsNegation;
+  if (denominator == 0) {
+    quotient = numerator >= 0 ? MAX_uint32_T : 0U;
+  } else {
+    absNumerator = (uint32_T)(numerator >= 0 ? numerator : -numerator);
+    absDenominator = (uint32_T)(denominator >= 0 ? denominator : -denominator);
+    quotientNeedsNegation = ((numerator < 0) != (denominator < 0));
+    if ((uint32_T)quotientNeedsNegation) {
+      quotient = 0U;
+    } else {
+      quotient = div_repeat_u32_sat_near(absNumerator, absDenominator,
+        nRepeatSub);
+    }
+  }
+
+  return quotient;
+}
+
 static uint32_T div_u32_near(uint32_T numerator, uint32_T denominator)
 {
   uint32_T quotient;
@@ -126,132 +144,169 @@ static uint32_T div_u32_near(uint32_T numerator, uint32_T denominator)
 }
 
 static void dualThreshold(const uint32_T R_peak_vals_data[1], const int32_T
-  R_peak_vals_sizes[2], uint32_T threshold, real_T indices_data[1], int32_T
+  R_peak_vals_sizes[2], uint32_T threshold, uint32_T indices_data[1], int32_T
   indices_sizes[2], uint32_T max_voltage, uint32_T pos_deviance_threshold,
   uint32_T neg_deviance_threshold, uint32_T *noise_lvl, uint32_T *signal_lvl)
 {
   uint32_T noise_sum;
   uint32_T signal_sum;
   uint32_T noise_count;
-  int32_T b_index;
-  int32_T meets_deviance_req;
-  uint32_T q0;
-  uint32_T qY;
-  uint64m_T r2;
+  int32_T is_neg;
   uint64m_T r3;
   uint64m_T r4;
+  uint64m_T r5;
+  uint64m_T r6;
+  uint32_T deviance;
+  uint32_T q0;
+  uint64m_T r7;
+  uint64m_T r8;
+  uint64m_T r9;
 
   /* DUAL THRESHOLD PROCESSSING */
   /*  Filters out R_peaks which don't meet the threshold reqs */
-  /*  Asserts that the input parameters are of fixed point */
-  /*  Asserts that input parameters are of specific fixed point parameters */
+  /*  asserts that the input parameters are of fixed point */
+  /*  asserts that input parameters are of specific fixed point parameters */
   noise_sum = 0U;
   signal_sum = 0U;
   noise_count = 0U;
   *noise_lvl = 0U;
   *signal_lvl = 0U;
-  b_index = 0;
-  while (0 <= R_peak_vals_sizes[1] - 1) {
+  is_neg = 0;
+  while (is_neg <= R_peak_vals_sizes[1] - 1) {
     /*  DELETE AFTER DEBUGGING */
     /* if (shouldPlot && channel == 2) */
     /*     fprintf('The peak val is: %f\n',R_peak_vals(index)); */
     /* end */
-    if (mul_u32_u32_u32_sr16_sat_near(R_peak_vals_data[(int32_T)(1.0 + (real_T)
-          b_index) - 1], max_voltage) > threshold) {
+    uLong2MultiWord(mul_u32_u32_u32_sat(R_peak_vals_data[0], max_voltage),
+                    &r3.chunks[0U], 2);
+    MultiWordUnsignedWrap(&r3.chunks[0U], 2, 22U, &r4.chunks[0U]);
+    uLong2MultiWord(threshold, &r5.chunks[0U], 2);
+    uMultiWordShl(&r5.chunks[0U], 2, 10U, &r6.chunks[0U], 2);
+    MultiWordUnsignedWrap(&r6.chunks[0U], 2, 22U, &r3.chunks[0U]);
+    if (uMultiWordGt(&r4.chunks[0U], &r3.chunks[0U], 2)) {
       /* fprintf('mv: %f. Threshold is: %f\n', R_peak_vals(index) * max_voltage, threshold); */
       /* R_peak_vals(index) */
       /*  Filters out any signal value which exceeds the allowed deviance from */
       /*  the average signal value  */
       /*  RETURNS TRUE IF THE INPUT SIGNAL VALUE MEETS THE DEVIANCE REQS. NOTE */
       /*  THE THRESHOLD VALUE CHANGES BASED ON WHETHER DEVIANCE IS NEG OR POS */
-      /*  Asserts that the input parameters are of fixed point */
-      /*  Asserts that input parameters are of specific fixed point parameters */
+      /*  asserts that the input parameters are of fixed point */
+      /*  asserts that input parameters are of specific fixed point parameters */
       /* Accounts for the first signal value */
       if (*signal_lvl == 0U) {
-        meets_deviance_req = 1;
+        is_neg = 1;
       } else {
-        /*  APPLIES CHECK  */
-        q0 = R_peak_vals_data[(int32_T)(1.0 + (real_T)b_index) - 1];
-        qY = q0 - *signal_lvl;
-        if (qY > q0) {
-          qY = 0U;
+        if (R_peak_vals_data[0] < *signal_lvl) {
+          deviance = *signal_lvl - R_peak_vals_data[0];
+          if (deviance > *signal_lvl) {
+            deviance = 0U;
+          }
+
+          deviance = div_u32_near(mul_u32_u32_u32_sr15_sat_near(deviance,
+            3355443200U), *signal_lvl);
+          is_neg = 1;
+        } else {
+          q0 = R_peak_vals_data[0];
+          deviance = q0 - *signal_lvl;
+          if (deviance > q0) {
+            deviance = 0U;
+          }
+
+          deviance = div_u32_near(mul_u32_u32_u32_sr15_sat_near(deviance,
+            3355443200U), *signal_lvl);
+          is_neg = 0;
         }
 
-        uLong2MultiWord(div_u32_near(qY, *signal_lvl), &r2.chunks[0U], 2);
-        uMultiWordShl(&r2.chunks[0U], 2, 16U, &r3.chunks[0U], 2);
-        MultiWordUnsignedWrap(&r3.chunks[0U], 2, 16U, &r4.chunks[0U]);
-        uLong2MultiWord(pos_deviance_threshold, &r2.chunks[0U], 2);
-        MultiWordUnsignedWrap(&r2.chunks[0U], 2, 16U, &r3.chunks[0U]);
-        if (uMultiWordLt(&r4.chunks[0U], &r3.chunks[0U], 2)) {
-          meets_deviance_req = 1;
+        /*  Checks value against NEG and POS deviance threshold */
+        if (is_neg != 0) {
+          uLong2MultiWord(deviance, &r7.chunks[0U], 2);
+          uMultiWordShl(&r7.chunks[0U], 2, 10U, &r8.chunks[0U], 2);
+          MultiWordUnsignedWrap(&r8.chunks[0U], 2, 22U, &r9.chunks[0U]);
+          uLong2MultiWord(mul_u32_u32_u32_sr15_sat_near(neg_deviance_threshold,
+            3355443200U), &r7.chunks[0U], 2);
+          MultiWordUnsignedWrap(&r7.chunks[0U], 2, 22U, &r8.chunks[0U]);
+          if (uMultiWordLt(&r9.chunks[0U], &r8.chunks[0U], 2)) {
+            is_neg = 1;
+          } else {
+            is_neg = 0;
+          }
         } else {
-          meets_deviance_req = 0;
+          uLong2MultiWord(deviance, &r9.chunks[0U], 2);
+          uMultiWordShl(&r9.chunks[0U], 2, 10U, &r5.chunks[0U], 2);
+          MultiWordUnsignedWrap(&r5.chunks[0U], 2, 22U, &r6.chunks[0U]);
+          uLong2MultiWord(mul_u32_u32_u32_sr15_sat_near(pos_deviance_threshold,
+            3355443200U), &r9.chunks[0U], 2);
+          MultiWordUnsignedWrap(&r9.chunks[0U], 2, 22U, &r5.chunks[0U]);
+          if (uMultiWordLt(&r6.chunks[0U], &r5.chunks[0U], 2)) {
+            is_neg = 1;
+          } else {
+            is_neg = 0;
+          }
         }
       }
 
-      if (!(meets_deviance_req != 0)) {
-        /* fprintf('%f, %f Does not meet the deviance threshold\n', R_peak_vals(index), signal_lvl); */
+      if (!(is_neg != 0)) {
+        /*                    fprintf('%f, %f Does not meet the deviance threshold\n', R_peak_vals(index), signal_lvl); */
         /*  Sets all the indices which R_vals don't meet the threshold to 0 */
-        indices_data[(int32_T)(1.0 + (real_T)b_index) - 1] = 0.0;
+        indices_data[0] = 0U;
 
         /*  Updates the average noise signal lvl */
-        qY = noise_sum + R_peak_vals_data[(int32_T)(1.0 + (real_T)b_index) - 1];
-        if (qY < noise_sum) {
-          qY = MAX_uint32_T;
+        deviance = noise_sum + R_peak_vals_data[0];
+        if (deviance < noise_sum) {
+          deviance = MAX_uint32_T;
         }
 
-        noise_sum = qY;
-        qY = noise_count + 65536U;
-        if (qY < noise_count) {
-          qY = MAX_uint32_T;
+        noise_sum = deviance;
+        deviance = noise_count + 1024U;
+        if (deviance < noise_count) {
+          deviance = MAX_uint32_T;
         }
 
-        noise_count = qY;
+        noise_count = deviance;
 
         /*  Calculates the noise level */
         /*                     noise_lvl = noise_sum / noise_count; */
-        *noise_lvl = div_repeat_u32_sat_near(noise_sum, noise_count, 16U);
+        *noise_lvl = div_repeat_u32_sat_near(noise_sum, noise_count, 10U);
       } else {
         /*  DELETE AFTER DEBUGGING */
         /* if (shouldPlot && channel == 2) */
         /*    fprintf('The peak val is: %f\n',R_peak_vals(index)); */
         /* end */
         /*  Updates the average signal lvl */
-        qY = signal_sum + R_peak_vals_data[(int32_T)(1.0 + (real_T)b_index) - 1];
-        if (qY < signal_sum) {
-          qY = MAX_uint32_T;
+        deviance = signal_sum + R_peak_vals_data[0];
+        if (deviance < signal_sum) {
+          deviance = MAX_uint32_T;
         }
 
-        signal_sum = qY;
+        signal_sum = deviance;
 
         /*  Calculates the signal level */
-        /*                 signal_lvl = signal_sum / signal_count; */
-        *signal_lvl = div_repeat_u32_sat_near(signal_sum, signal_sum, 16U);
+        *signal_lvl = div_repeat_u32_sat_near(signal_sum, signal_sum, 10U);
       }
     } else {
       /*  Sets all the indices which R_vals don't meet the threshold to 0 */
-      indices_data[(int32_T)(1.0 + (real_T)b_index) - 1] = 0.0;
+      indices_data[0] = 0U;
 
       /*  Updates the average noise signal lvl */
-      qY = noise_sum + R_peak_vals_data[(int32_T)(1.0 + (real_T)b_index) - 1];
-      if (qY < noise_sum) {
-        qY = MAX_uint32_T;
+      deviance = noise_sum + R_peak_vals_data[0];
+      if (deviance < noise_sum) {
+        deviance = MAX_uint32_T;
       }
 
-      noise_sum = qY;
-      qY = noise_count + 65536U;
-      if (qY < noise_count) {
-        qY = MAX_uint32_T;
+      noise_sum = deviance;
+      deviance = noise_count + 1024U;
+      if (deviance < noise_count) {
+        deviance = MAX_uint32_T;
       }
 
-      noise_count = qY;
+      noise_count = deviance;
 
       /*  Calculates the noise level */
       /*                 noise_lvl = noise_sum / noise_count; */
-      *noise_lvl = div_repeat_u32_sat_near(noise_sum, noise_count, 16U);
+      *noise_lvl = div_repeat_u32_sat_near(noise_sum, noise_count, 10U);
     }
 
-    b_index++;
+    is_neg = 1;
   }
 }
 
@@ -282,15 +337,27 @@ static void eml_li_find(const boolean_T x_data[1], const int32_T x_sizes[2],
   }
 }
 
-static uint32_T mul_u32_u32_u32_sr10_sat_near(uint32_T a, uint32_T b)
+static uint32_T mul_u32_u32_u32_sat(uint32_T a, uint32_T b)
+{
+  uint32_T result;
+  uint32_T u32_chi;
+  mul_wide_u32(a, b, &u32_chi, &result);
+  if (u32_chi) {
+    result = MAX_uint32_T;
+  }
+
+  return result;
+}
+
+static uint32_T mul_u32_u32_u32_sr15_sat_near(uint32_T a, uint32_T b)
 {
   uint32_T result;
   uint32_T u32_chi;
   boolean_T roundup;
   mul_wide_u32(a, b, &u32_chi, &result);
-  roundup = ((result & 512U) != 0U);
-  result = (u32_chi << 22U | result >> 10U) + (uint32_T)roundup;
-  u32_chi = (u32_chi >> 10U) + (uint32_T)(roundup && (result == 0U));
+  roundup = ((result & 16384U) != 0U);
+  result = (u32_chi << 17U | result >> 15U) + (uint32_T)roundup;
+  u32_chi = (u32_chi >> 15U) + (uint32_T)(roundup && (result == 0U));
   if (u32_chi) {
     result = MAX_uint32_T;
   }
@@ -307,6 +374,22 @@ static uint32_T mul_u32_u32_u32_sr16_sat_near(uint32_T a, uint32_T b)
   roundup = ((result & 32768U) != 0U);
   result = (u32_chi << 16U | result >> 16U) + (uint32_T)roundup;
   u32_chi = (u32_chi >> 16U) + (uint32_T)(roundup && (result == 0U));
+  if (u32_chi) {
+    result = MAX_uint32_T;
+  }
+
+  return result;
+}
+
+static uint32_T mul_u32_u32_u32_sr26_sat_near(uint32_T a, uint32_T b)
+{
+  uint32_T result;
+  uint32_T u32_chi;
+  boolean_T roundup;
+  mul_wide_u32(a, b, &u32_chi, &result);
+  roundup = ((result & 33554432U) != 0U);
+  result = (u32_chi << 6U | result >> 26U) + (uint32_T)roundup;
+  u32_chi = (u32_chi >> 26U) + (uint32_T)(roundup && (result == 0U));
   if (u32_chi) {
     result = MAX_uint32_T;
   }
@@ -381,71 +464,16 @@ static int32_T uMultiWordCmp(const uint32_T u1[], const uint32_T u2[], int32_T n
   return y;
 }
 
+static boolean_T uMultiWordGt(const uint32_T u1[], const uint32_T u2[], int32_T
+  n)
+{
+  return uMultiWordCmp(u1, u2, n) > 0 ? TRUE : FALSE;
+}
+
 static boolean_T uMultiWordLt(const uint32_T u1[], const uint32_T u2[], int32_T
   n)
 {
   return uMultiWordCmp(u1, u2, n) < 0 ? TRUE : FALSE;
-}
-
-static void uMultiWordMul(const uint32_T u1[], int32_T n1, const uint32_T u2[],
-  int32_T n2, uint32_T y[], int32_T n)
-{
-  int32_T k;
-  int32_T i;
-  uint32_T cb;
-  uint32_T u1i;
-  int32_T a1;
-  int32_T a0;
-  int32_T nj;
-  int32_T j;
-  uint32_T yk;
-  int32_T b1;
-  int32_T b0;
-  uint32_T w01;
-  uint32_T t;
-
-  /* Initialize output to zero */
-  for (k = 0; k <= n - 1; k++) {
-    y[k] = 0U;
-  }
-
-  for (i = 0; i <= n1 - 1; i++) {
-    cb = 0U;
-    u1i = u1[i];
-    a1 = (int32_T)(u1i >> 16U);
-    a0 = (int32_T)(u1i & 65535U);
-    k = n - i;
-    nj = n2 <= k ? n2 : k;
-    k = i;
-    for (j = 0; j <= nj - 1; j++) {
-      yk = y[k];
-      u1i = u2[j];
-      b1 = (int32_T)(u1i >> 16U);
-      b0 = (int32_T)(u1i & 65535U);
-      u1i = (uint32_T)a1 * (uint32_T)b0;
-      w01 = (uint32_T)a0 * (uint32_T)b1;
-      yk += cb;
-      cb = yk < cb ? 1U : 0U;
-      t = (uint32_T)a0 * (uint32_T)b0;
-      yk += t;
-      cb += yk < t ? 1U : 0U;
-      t = u1i << 16U;
-      yk += t;
-      cb += yk < t ? 1U : 0U;
-      t = w01 << 16U;
-      yk += t;
-      cb += yk < t ? 1U : 0U;
-      y[k] = yk;
-      cb += u1i >> 16U;
-      cb += w01 >> 16U;
-      cb += (uint32_T)a1 * (uint32_T)b1;
-      k++;
-    }
-
-    if (k < n) {
-      y[k] = cb;
-    }
-  }
 }
 
 static void uMultiWordShl(const uint32_T u1[], int32_T n1, uint32_T n2, uint32_T
@@ -502,146 +530,97 @@ static void uMultiWordShl(const uint32_T u1[], int32_T n1, uint32_T n2, uint32_T
   }
 }
 
-static void uMultiWordShr(const uint32_T u1[], int32_T n1, uint32_T n2, uint32_T
-  y[], int32_T n)
-{
-  int32_T nb;
-  int32_T i;
-  int32_T nc;
-  uint32_T nr;
-  uint32_T nl;
-  uint32_T u1i;
-  int32_T i1;
-  uint32_T yi;
-  nb = (int32_T)n2 / 32;
-  i = 0;
-  if (nb < n1) {
-    nc = n + nb;
-    if (nc > n1) {
-      nc = n1;
-    }
-
-    nr = n2 - (uint32_T)nb * 32U;
-    if (nr > 0U) {
-      nl = 32U - nr;
-      u1i = u1[nb];
-      for (i1 = nb + 1; i1 <= nc - 1; i1++) {
-        yi = u1i >> nr;
-        u1i = u1[i1];
-        y[i] = yi | u1i << nl;
-        i++;
-      }
-
-      yi = u1i >> nr;
-      if (nc < n1) {
-        yi |= u1[nc] << nl;
-      }
-
-      y[i] = yi;
-      i++;
-    } else {
-      for (i1 = nb; i1 <= nc - 1; i1++) {
-        y[i] = u1[i1];
-        i++;
-      }
-    }
-  }
-
-  while (i < n) {
-    y[i] = 0U;
-    i++;
-  }
-}
-
-static void uMultiWordShrNear(const uint32_T u1[], int32_T n1, uint32_T n2,
-  uint32_T y[], int32_T n)
-{
-  uint32_T n2m1;
-  int32_T nb;
-  boolean_T doNearest = FALSE;
-  n2m1 = n2 - 1U;
-  nb = (int32_T)n2m1 / 32;
-  if (nb < n1) {
-    n2m1 -= (uint32_T)(nb * 32);
-    n2m1 = 1U << n2m1;
-    doNearest = ((u1[nb] & n2m1) != 0U);
-  }
-
-  uMultiWordShr(u1, n1, n2, y, n);
-  nb = 0;
-  while (doNearest && (nb < n)) {
-    y[nb]++;
-    if (y[nb] != 0U) {
-      doNearest = FALSE;
-    }
-
-    nb++;
-  }
-}
-
-uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T
+uint32_T heart_rate_official_cport(int32_T data, uint32_T fs, uint32_T
   threshold_1, uint32_T threshold_2, uint32_T threshold_3, uint32_T
   pos_deviance_threshold, uint32_T neg_deviance_threshold, uint32_T sample_time,
-  int32_T shouldPlot)
+  uint32_T shouldPlot)
 {
-  uint32_T heart_rate;
+  int32_T y;
   uint32_T x1;
-  uint32_T y;
+  uint32_T x5;
   uint32_T x6[31];
   int32_T i0;
-  uint32_T signal_lvl_channel_1;
-  uint64m_T c;
+  uint32_T q0;
   uint64m_T r0;
-  uint64m_T b_c[31];
   uint64m_T r1;
-  uint32_T b_x6;
-  int32_T ii_sizes_idx_0;
+  uint64m_T r2;
   int32_T ii_sizes_idx_1;
   int32_T R_value_sizes[2];
   int32_T loop_ub;
   uint32_T R_value_data[1];
   int8_T R_loc_data[1];
-  int32_T i;
+  int32_T Ds_2;
   boolean_T b_R_loc_data[1];
   int32_T R_loc_sizes[2];
   int32_T tmp_sizes[2];
   int32_T tmp_data[1];
   int8_T c_R_loc_data[1];
-  int8_T R_peak_indices_channel_3_data[1];
+  uint32_T R_peak_indices_combined_data[1];
   int32_T R_peak_indices_channel_1_sizes[2];
-  real_T R_peak_indices_channel_1_data[1];
+  uint32_T R_peak_indices_channel_1_data[1];
+  uint32_T signal_lvl_channel_1;
   int32_T R_peak_indices_channel_2_sizes[2];
-  real_T R_peak_indices_channel_2_data[1];
-  int32_T R_peak_indices_channel_3_sizes[2];
+  uint32_T R_peak_indices_channel_2_data[1];
+  uint32_T signal_lvl_channel_2;
+  uint32_T noise_lvl_channel_2;
+  uint32_T qY;
+  boolean_T guard1 = FALSE;
+  real_T d0;
+  int32_T R_peak_indices_combined_sizes[2];
 
-  /* TO DO - */
-  /*  Uncomment the line: */
-  /*  REMOVE AFTER TESTING */
-  /* indices(i) = 0; */
-  /* data - EKG data */
-  /* fs - sampling rate */
-  /* threshold_1 - threshold for filtering out peaks for channel 1 */
-  /* threshold_2 - threshold for filtering out peaks for channel 2 */
-  /* threshold_3 - threshold for filtering out peaks for channel 3 */
-  /* sample_time - length in time(s) over which HR is estimated */
+  /* ------ Heart Rate Detection Algorithm ---------- */
+  /*   Detects and calculates Heart rate from an EKG Signal.  */
+  /*   The QRS Detection algorithm is based on Pan-Tompkin's famous paper */
+  /*  */
+  /*  Inputs:  */
+  /*    data                    EKG data */
+  /*    fs                      sampling rate */
+  /*    threshold_1             threshold for filtering out peaks for channel 1 */
+  /*                            used in dual threshold processing */
+  /*    threshold_2             threshold for filtering out peaks for channel 2 */
+  /*                            use in dual threshold processing */
+  /*    threshold_3             threshold for filtering out peaks for channel 3  */
+  /*                            used in 4th level processing */
+  /*    pos_deviance_threshold  threshold for filtering out peak values which  */
+  /*                            deviate above the average peak values  */
+  /*    neg_deviance_threshold  threshold for filtering out peak values which */
+  /*                            devivate below an average EKG signal */
+  /*                             */
+  /*    sample_time   length in time(s) over which HR is estimated */
+  /*     */
+  /*  */
+  /*  Outputs: */
+  /*    heart_rate  Estimated heart rate in beats per minute */
+  /*  */
+  /*  % % % % % % % % % % % % % % % */
+  /*  */
+  /*  Gbenga Badipe */
   /*  QRS Detection */
   /*  shows the effect of each filter according to Pan-Tompkins algorithm. */
   /*  Note that, the decision  algorithm is different then the mentioned algorithm. */
   /*  by Faruk UYSAL */
-  /* clear all */
+  /*  Clears outputs and figures */
+  /* clc */
   /* close all */
-  /* [GB] Ensures the the input args are of the correct data type */
-  /*  T4 = numerictype('WordLength', 80, 'FractionLength', 40); */
+  /*  Ensures the the input args are of the correct data type */
+  /*  Defines Signed and Unsigned Fixed point objects */
+  /*  DEBUG CODE */
+  /*  fipref('DataTypeOverride', 'TrueDoubles', 'LoggingMode', 'on'); % turns on datatype override to see the dynamic range of algo's values */
+  /*  fipref('DataTypeOverride', 'ForceOff'); % turns off datatype override */
   /*  F.sub(fi(3), fi(2)) */
-  /*  Asserts that the input parameters are of fixed point */
-  /*  Asserts that input parameters are of specific fixed point parameters */
-  /*  [GB] Assures that the first threshold is less than the second threshold */
-  /*  [GB] Assures that the third threshold is in between the first and the second */
+  /*  asserts that the input parameters are of fixed point */
+  /*  asserts that input parameters are of specific fixed point parameters */
+  /*  assert(isequal(numerictype(fs),Fixed_Point_Properties) && isequal(fimath(fs), F)); */
+  /*  assert(isequal(numerictype(sample_time),Fixed_Point_Properties) && isequal(fimath(sample_time), F)); */
+  /*   Assures that the first threshold is less than the second threshold */
+  /*   Assures that the third threshold is in between the first and the second */
   /*  threshold */
   /* x1 = load('ecg3.dat'); % load the ECG signal from the file */
+  /*  figure(30) */
+  /*  plot(data); */
   /*  Signal length */
-  /*  time index */
-  /*  NFFT = 2 ^(ceil(log2(N))); %[GB] Next power of 2 from length of the signal */
+  /*  t = (0:N-1)/fs;        % time index */
+  /*  NFFT = 2 ^(ceil(log2(N))); % Next power of 2 from length of the signal */
   /*  Assures that the number of samples sent in aren't greater than the */
   /*  specified sample size */
   /*  UNCOMMENT TO SEE PLOT OF ORIGINAL EKG */
@@ -654,21 +633,24 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T
   /* xlabel('second');ylabel('Volts');title('Input ECG Signal 1-3 second') */
   /* xlim([1 3]); */
   /* CANCELLATION DC DRIFT AND NORMALIZATION */
-  /*  cancel DC conponents */
+  /* x1 = x1 - mean (x1 );    % cancel DC conponents */
   /*  x1 = x1/ max( abs(x1 )); % normalize to one */
-  x1 = div_u32_near(0U, 0U);
+  if (data < 0) {
+    if (data <= MIN_int32_T) {
+      y = MAX_int32_T;
+    } else {
+      y = -data;
+    }
+  } else {
+    y = data;
+  }
+
+  x1 = div_repeat_us32_sat_near(data, y, 10U);
 
   /*  normalize to one */
   /*  UNCOMMENT TO SEE PLOT OF EKG AFTER NORMALIZATION AND REMOVAL OF DC DRIFT */
-  /* figure(3) */
-  /* sub%plot(2,1,1) */
-  /* plot(t,x1) */
-  /* xlabel('second');ylabel('Volts');title(' ECG Signal after cancellation DC drift and normalization') */
-  /* sub%plot(2,1,2) */
-  /* plot(t(200:600),x1(200:600)) */
-  /* xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second') */
-  /* xlim([1 3]); */
   /*  UNCOMMENT TO SEE FFT OF ORIGINAL EKG */
+  /* ------ MOST FILTERING NOW OCCURS IN ANALOG SEE 'front_end_filters.m' FOR EMULATED FRONT END FILTERS */
   /* LOW PASS FILTERING */
   /*  LPF (1-z^-6)^2/(1-z^-1)^2 */
   /* b=[1 0 0 0 0 0 -2 0 0 0 0 0 1]; */
@@ -699,11 +681,11 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T
   /*  UNCOMMENT TO SEE FFT PLOT OF EKG AFTER BEING LOW PASSED */
   /* if(shouldPlot) */
   /*  Takes the fft of the signal % */
-  /* transform=fft(x2,NFFT)/N;%[GB] Transform from discrete values to the frequency domain */
+  /* transform=fft(x2,NFFT)/N;% Transform from discrete values to the frequency domain */
   /*  Plots the fft of the filtered signal */
   /*    transform=transform; */
   /* windows=[windows,abs(transform)]; */
-  /* freq = fs/2*linspace(0,1,NFFT/2+1);%[GB]Frequency index */
+  /* freq = fs/2*linspace(0,1,NFFT/2+1);%Frequency index */
   /*     fprintf('Plotting\n'); */
   /* figure(4) */
   /* plot(freq,2*abs(transform(1:NFFT/2+1))); */
@@ -740,11 +722,11 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T
   /*  UNCOMMENT TO SEE FFT PLOT OF EKG AFTER BEING HIGH PASSED */
   /* if(shouldPlot) */
   /*  Takes the fft of the signal % */
-  /* transform=fft(x3,NFFT)/N;%[GB] Transform from discrete values to the frequency domain */
+  /* transform=fft(x3,NFFT)/N;% Transform from discrete values to the frequency domain */
   /*  Plots the fft of the filtered signal */
   /*   transform=transform; */
   /* windows=[windows,abs(transform)]; */
-  /* freq = fs/2*linspace(0,1,NFFT/2+1);%[GB]Frequency index */
+  /* freq = fs/2*linspace(0,1,NFFT/2+1);%Frequency index */
   /* fprintf('Plotting\n'); */
   /* figure(6) */
   /* plot(freq,2*abs(transform(1:NFFT/2+1))); */
@@ -769,55 +751,41 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T
   /* xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second') */
   /* xlim([1 3]); */
   /* SQUARING */
-  /*  x5 = x4 .^2; */
-  y = mul_u32_u32_u32_sr16_sat_near(x1, x1);
+  x5 = mul_u32_u32_u32_sat(x1, x1);
+  x5 = (x5 >> 10) + ((x5 & 512U) != 0U);
 
-  /*  x5 = x5/ max( abs(x5 )); */
-  y = div_repeat_u32_sat_near(y, y, 16U);
+  /* assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F)); */
+  /* x5 = mpower(x1, 2); */
+  /* x5 = x5/ max( abs(x5 )); */
+  x5 = div_repeat_u32_sat_near(x5, x5, 10U);
 
   /*  normalize to one */
+  /*  figure(24) */
+  /*  plot(x5); */
+  /*  assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F)); */
   /*  UNCOMMENT TO SEE PLOT OF EKG AFTER SQUARING */
-  /* figure(8) */
-  /* subplot(2,1,1) */
-  /* plot([0:length(x5)-1]/fs,x5) */
-  /* xlabel('second');ylabel('Volts');title(' ECG Signal Squarting') */
-  /* subplot(2,1,2) */
-  /* plot(t(200:600),x5(200:600)) */
-  /* xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second') */
-  /* xlim([1 3]); */
   /* MOVING WINDOW INTEGRATION */
   /*  Make impulse response */
   /*  Delay = 15; % Delay in samples */
   /*  Apply filter */
   for (i0 = 0; i0 < 31; i0++) {
-    signal_lvl_channel_1 = 2216757314U;
-    uMultiWordMul(&y, 1, &signal_lvl_channel_1, 1, &c.chunks[0U], 2);
-    uMultiWordShrNear(&c.chunks[0U], 2, 36U, &r0.chunks[0U], 2);
-    x6[i0] = MultiWord2uLong(&r0.chunks[0U]);
-    b_c[i0] = c;
+    q0 = mul_u32_u32_u32_sr26_sat_near(x5, 2216757314U);
+    x6[i0] = (q0 >> 10) + ((q0 & 512U) != 0U);
   }
 
   /*  Normalizes the signal  */
   /*  x6 = x6 / max( abs(x6 )); */
-  uMultiWordShrNear(&b_c[15].chunks[0U], 2, 36U, &r1.chunks[0U], 2);
-  MultiWord2uLong(&r1.chunks[0U]);
-  y = x6[15];
-  b_x6 = div_repeat_u32_sat_near(x6[15], y, 16U);
+  x5 = x6[15];
+  x5 = div_repeat_u32_sat_near(x6[15], x5, 10U);
 
   /*  normalize to one */
+  /*  figure(25) */
+  /*  plot(x6); */
   /*  UNCOMMENT TO SEE PLOT OF EKG AFTER A MWI IS APPLIED */
-  /* figure(9) */
-  /* subplot(2,1,1) */
-  /* plot([0:length(x6)-1]/fs,x6) */
-  /* xlabel('second');ylabel('Volts');title(' ECG Signal after Averaging') */
-  /* subplot(2,1,2) */
-  /* plot(t(200:600),x6(200:600)) */
-  /* xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second') */
-  /* xlim([1 3]); */
   /* FIND QRS POINTS. NOTE: THE PEAK FINDING IS DIFFERENT THAN PAN-TOMPKINS ALGORITHM */
   /* figure(7) */
   /* subplot(2,1,1) */
-  /* [GB] Outputs an array with each value indicating whether the value at that */
+  /*  Outputs an array with each value indicating whether the value at that */
   /*  index is greater than thresh * max_h */
   /*  UNCOMMENT TO SEE PLOT OF EKG AFTER BEING INTEGRATED? */
   /* figure (10) */
@@ -831,17 +799,22 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T
   /* plot (t(200:600),x6(200:600)/max(x6)) */
   /* xlabel('second');ylabel('Integrated') */
   /* xlim([1 3]); */
-  /*  [GB] Finds(the indices) all the heart beats which are preceded by a non-beat */
-  if ((b_x6 > mul_u32_u32_u32_sr16_sat_near(b_x6, b_x6)) == 1) {
-    ii_sizes_idx_0 = 1;
+  /*   Finds(the indices) all the heart beats which are preceded by a non-beat */
+  uLong2MultiWord(x5, &r0.chunks[0U], 2);
+  uMultiWordShl(&r0.chunks[0U], 2, 10U, &r1.chunks[0U], 2);
+  MultiWordUnsignedWrap(&r1.chunks[0U], 2, 22U, &r2.chunks[0U]);
+  uLong2MultiWord(mul_u32_u32_u32_sat(x5, x5), &r0.chunks[0U], 2);
+  MultiWordUnsignedWrap(&r0.chunks[0U], 2, 22U, &r1.chunks[0U]);
+  if (uMultiWordGt(&r2.chunks[0U], &r1.chunks[0U], 2) == 1) {
+    y = 1;
     ii_sizes_idx_1 = 1;
   } else {
-    ii_sizes_idx_0 = 0;
+    y = 0;
     ii_sizes_idx_1 = 0;
   }
 
-  /* [GB] Gets all the indices in the resultant diff vector for which X[n] - X[n-1] = 1 */
-  /*  [GB] Finds all the heart beats where  the heart beats are proceeded by a */
+  /*  Gets all the indices in the resultant diff vector for which X[n] - X[n-1] = 1 */
+  /*  Finds all the heart beats where  the heart beats are proceeded by a */
   /*  non-beat */
   /* left(1:10); */
   /* left=left-(6+16);  % cancel delay because of LP and HP */
@@ -862,14 +835,14 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T
     i0 = 1;
   }
 
-  if ((ii_sizes_idx_0 == 0) || (ii_sizes_idx_1 == 0)) {
-    ii_sizes_idx_0 = -1;
+  if ((y == 0) || (ii_sizes_idx_1 == 0)) {
+    y = -1;
   } else {
-    ii_sizes_idx_0 = 0;
+    y = 0;
   }
 
-  i = 0;
-  while (i <= ii_sizes_idx_0) {
+  Ds_2 = 0;
+  while (Ds_2 <= y) {
     R_value_data[0] = x1;
     R_loc_data[0] = 1;
     R_loc_data[0] = 1;
@@ -879,7 +852,7 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T
     /*      Q_loc(i) = Q_loc(i)-1+left(i); % add offset */
     /*      [S_value(i) S_loc(i)] = min( x1(left(i):right(i)) ); */
     /*      S_loc(i) = S_loc(i)-1+left(i); % add offset */
-    i = 1;
+    Ds_2 = 1;
   }
 
   /*  there is no selective wave */
@@ -928,9 +901,9 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T
   }
 
   if (1 > tmp_sizes[1]) {
-    ii_sizes_idx_0 = -1;
+    y = -1;
   } else {
-    ii_sizes_idx_0 = 0;
+    y = 0;
   }
 
   if (1 > tmp_sizes[1]) {
@@ -940,48 +913,47 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T
   }
 
   loop_ub = ii_sizes_idx_1;
-  i = 0;
-  while (i <= loop_ub) {
-    R_peak_indices_channel_3_data[0] = R_loc_data[0];
-    i = 1;
+  Ds_2 = 0;
+  while (Ds_2 <= loop_ub) {
+    R_peak_indices_combined_data[0] = (uint32_T)R_loc_data[0];
+    Ds_2 = 1;
   }
 
   /*  REPLACE THIS WITH A ZEROS ARRAY */
   /*  UNCOMMENT TO SEE THE NUMBER OF PEAKS BEFORE CHANNEL 1 PROCESSING */
-  /* if (shouldPlot) */
-  /*     fprintf('Channel 1 Original: There are %i non-zero values\n',length(find(R_peak_indices_channel_1 ~= 0))); */
-  /* end */
   R_peak_indices_channel_1_sizes[0] = 1;
   R_peak_indices_channel_1_sizes[1] = i0 + 1;
   loop_ub = i0;
   i0 = 0;
   while (i0 <= loop_ub) {
-    R_peak_indices_channel_1_data[0] = (real_T)R_loc_data[0];
+    i0 = (int32_T)R_loc_data[0];
+    i0 = (int32_T)(real32_T)floor((real_T)i0 + 0.5);
+    R_peak_indices_channel_1_data[0] = (uint32_T)i0;
     i0 = 1;
   }
 
   dualThreshold(R_value_data, R_value_sizes, threshold_1,
                 R_peak_indices_channel_1_data, R_peak_indices_channel_1_sizes,
-                b_x6, pos_deviance_threshold, neg_deviance_threshold, &y,
+                x5, pos_deviance_threshold, neg_deviance_threshold, &x1,
                 &signal_lvl_channel_1);
   R_peak_indices_channel_2_sizes[0] = 1;
-  R_peak_indices_channel_2_sizes[1] = ii_sizes_idx_0 + 1;
-  loop_ub = ii_sizes_idx_0;
+  R_peak_indices_channel_2_sizes[1] = y + 1;
+  loop_ub = y;
   i0 = 0;
   while (i0 <= loop_ub) {
-    R_peak_indices_channel_2_data[0] = (real_T)R_loc_data[0];
+    i0 = (int32_T)R_loc_data[0];
+    i0 = (int32_T)(real32_T)floor((real_T)i0 + 0.5);
+    R_peak_indices_channel_2_data[0] = (uint32_T)i0;
     i0 = 1;
   }
 
   dualThreshold(R_value_data, R_value_sizes, threshold_2,
                 R_peak_indices_channel_2_data, R_peak_indices_channel_2_sizes,
-                b_x6, pos_deviance_threshold, neg_deviance_threshold, &y,
-                &signal_lvl_channel_1);
+                x5, pos_deviance_threshold, neg_deviance_threshold,
+                &noise_lvl_channel_2, &signal_lvl_channel_2);
 
+  /*  Ensures that noise and signal levels are fixed point */
   /*  UNCOMMENT TO SEE THE NUMBER OF PEAKS AFTER CHANNEL 1 PROCESSING */
-  /* if (shouldPlot) */
-  /*     fprintf('Channel 1 Post: There are %i non-zero values\n',length(find(R_peak_indices_channel_1 ~= 0))); */
-  /* end */
   /*  UNCOMMENT TO SEE PLOT OF EKG AFTER BEING PASSED THROUGH THE FIRST CHANNEL */
   /*  UNCOMMENT TO SEE PLOT OF EKG AFTER BEING PASSED THROUGH THE SECOND CHANNEL */
   /*  Level 3 DETECTION: REFINES HEART BEAT DETECTION ACCURACY BY CHANNEL */
@@ -991,10 +963,94 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T
   /*     fprintf('\nCombined Original: There are %i non-zero values\n',length(find(R_peak_indices_combined ~= 0))); */
   /* end */
   /*  Combines both channels to refine beat detection */
+  Ds_2 = 0;
+  while (Ds_2 <= ii_sizes_idx_1) {
+    /*  Documents the other cases % */
+    /*  If the signal's amplitude passes both the channels then there is a */
+    /*  high chance of a beat */
+    /* if (R_peak_indices_channel_1(i) ~= 0 && R_peak_indices_channel_2(i) ~=0) */
+    /*  If the signal's amplitude is less than channel 1's threshold(the */
+    /*  lower threshold) and higher than channel 2's threshold(the higher */
+    /*  threshold) then there's a chance that there is a beat */
+    /* This case will not happen b/c channel 1's threshold is < channel's 2 threshold */
+    /* if (R_peak_indices_channel_1(i) == 0 && R_peak_indices_channel_2(i) ~=0)    */
+    /*  If the signal's amplitude fails both the channels then there is a */
+    /*  high chance that the it's not a beat */
+    if ((R_peak_indices_channel_1_data[0] == 0U) &&
+        (R_peak_indices_channel_2_data[0] == 0U)) {
+      R_peak_indices_combined_data[0] = 0U;
+    } else {
+      if ((R_peak_indices_channel_1_data[0] != 0U) &&
+          (R_peak_indices_channel_2_data[0] == 0U)) {
+        /*  DELETE DEBUGGING */
+        /* if (shouldPlot) */
+        /*    fprintf('The peak val is: %f\n',R_peak_vals(i)); */
+        /* end */
+        /*  Uses the decision of the channel w/ the highest Detection. */
+        /*  Ensures that Ds is between 0 and 1 */
+        /*  strength(Ds) */
+        /*          signal_lvl_channel_1 */
+        /*          noise_lvl_channel_1 */
+        /*            fprintf('In here'); */
+        /*            diff1 = ((R_peak_vals(i) - noise_lvl_channel_1) * 100) / (signal_lvl_channel_1 - noise_lvl_channel_1) */
+        /*            diff2 = ((R_peak_vals(i) - noise_lvl_channel_2) * 100) / (signal_lvl_channel_2 - noise_lvl_channel_2) */
+        /*          minlog(diff1) */
+        /*          minlog(diff2) */
+        q0 = R_value_data[0];
+        qY = q0 - x1;
+        if (qY > q0) {
+          qY = 0U;
+        }
+
+        x5 = signal_lvl_channel_1 - x1;
+        if (x5 > signal_lvl_channel_1) {
+          x5 = 0U;
+        }
+
+        q0 = div_u32_near(mul_u32_u32_u32_sr15_sat_near(qY, 3355443200U), x5);
+        if (1024U > q0) {
+          y = (int32_T)q0;
+        } else {
+          y = 1024;
+        }
+
+        q0 = R_value_data[0];
+        qY = q0 - noise_lvl_channel_2;
+        if (qY > q0) {
+          qY = 0U;
+        }
+
+        x5 = signal_lvl_channel_2 - noise_lvl_channel_2;
+        if (x5 > signal_lvl_channel_2) {
+          x5 = 0U;
+        }
+
+        q0 = div_u32_near(mul_u32_u32_u32_sr15_sat_near(qY, 3355443200U), x5);
+        if (1024U > q0) {
+          Ds_2 = (int32_T)q0;
+        } else {
+          Ds_2 = 1024;
+        }
+
+        if ((uint32_T)y > (uint32_T)Ds_2) {
+          /* if(shouldPlot) */
+          /* fprintf('Ds1: %f Ds2: %f Ds1 wins\n', Ds_1, Ds_2); */
+          /* end */
+          R_peak_indices_combined_data[0] = R_peak_indices_channel_1_data[0];
+        } else {
+          /* if(shouldPlot) */
+          /* fprintf('Ds1: %f Ds2: %f Ds2 wins\n', Ds_1, Ds_2); */
+          /* end */
+          R_peak_indices_combined_data[0] = 0U;
+        }
+      }
+    }
+
+    Ds_2 = 1;
+  }
+
   /*  UNCOMMENT TO SEE THE NUMBER OF PEAKS AFTER LEVEL 3 PROCESSING */
-  /* if (shouldPlot) */
-  /* fprintf('Combined Post: There are %i non-zero values\n',length(find(R_peak_indices_combined ~= 0))); */
-  /* end */
+  /*  Grabs the result of both channels     */
   /*  UNCOMMENT TO SEE THE NUMBER OF PEAKS AFTER LEVEL 4 PROCESSING */
   /* if (shouldPlot) */
   /*     fprintf('\n4th level Original: There are %i non-zero values\n',length(find(R_peak_indices_channel_3 ~= 0))); */
@@ -1005,40 +1061,81 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T
   /*     fprintf('4th level Post: There are %i non-zero values\n',length(find(R_peak_indices_channel_3 ~= 0))); */
   /* end */
   /*  Sets R values to zero which failed any of the previous phases */
-  ii_sizes_idx_0 = 0;
-  i = 0;
-  while (i <= R_value_sizes[1] - 1) {
-    if (R_peak_indices_channel_3_data[0] == 0) {
+  x1 = 0U;
+  Ds_2 = 0;
+  while (Ds_2 <= R_value_sizes[1] - 1) {
+    if (R_peak_indices_combined_data[0] == 0U) {
       /*  Level 5 Detection: Refines heart beat detection by considering a heart */
       /*  beat's refactory period  */
     } else {
       /*  Filters out any R_values which happen too soon after a previous */
       /*  beat detection */
-      if (ii_sizes_idx_0 != 0) {
-        /* fprintf('Getting rid of a value\n'); */
-        R_peak_indices_channel_3_data[0] = 0;
+      guard1 = FALSE;
+      if (x1 != 0U) {
+        d0 = (real_T)R_peak_indices_combined_data[0] * 1024.0;
+        d0 = floor(d0 + 0.5);
+        if (d0 < 4.294967296E+9) {
+          q0 = (uint32_T)d0;
+        } else {
+          q0 = MAX_uint32_T;
+        }
 
-        /*  Updates the last index if the R_value is valid */
+        qY = q0 - 1024U;
+        if (qY > q0) {
+          qY = 0U;
+        }
+
+        x5 = mul_u32_u32_u32_sat(qY, 3U);
+        q0 = (x5 >> 10) + ((x5 & 512U) != 0U);
+        qY = x1 - 1024U;
+        if (qY > x1) {
+          qY = 0U;
+        }
+
+        x5 = mul_u32_u32_u32_sat(qY, 3U);
+        qY = (q0 - (x5 >> 10)) - ((x5 & 512U) != 0U);
+        if (qY > q0) {
+          qY = 0U;
+        }
+
+        if (qY < 205U) {
+          /* fprintf('Getting rid of a value\n'); */
+          R_peak_indices_combined_data[0] = 0U;
+
+          /*  Updates the last index if the R_value is valid */
+        } else {
+          guard1 = TRUE;
+        }
       } else {
+        guard1 = TRUE;
+      }
+
+      if (guard1 == TRUE) {
         /*  Updates the last index */
-        ii_sizes_idx_0 = 1;
+        d0 = (real_T)R_peak_indices_combined_data[0] * 1024.0;
+        d0 = floor(d0 + 0.5);
+        if (d0 < 4.294967296E+9) {
+          x1 = (uint32_T)d0;
+        } else {
+          x1 = MAX_uint32_T;
+        }
       }
     }
 
-    i = 1;
+    Ds_2 = 1;
   }
 
   /*  Removes all zero values from both the indice and value array */
-  R_peak_indices_channel_3_sizes[0] = 1;
-  R_peak_indices_channel_3_sizes[1] = ii_sizes_idx_1 + 1;
+  R_peak_indices_combined_sizes[0] = 1;
+  R_peak_indices_combined_sizes[1] = ii_sizes_idx_1 + 1;
   loop_ub = ii_sizes_idx_1;
   i0 = 0;
   while (i0 <= loop_ub) {
-    b_R_loc_data[0] = (R_peak_indices_channel_3_data[0] != 0);
+    b_R_loc_data[0] = (R_peak_indices_combined_data[0] != 0U);
     i0 = 1;
   }
 
-  eml_li_find(b_R_loc_data, R_peak_indices_channel_3_sizes, tmp_data, tmp_sizes);
+  eml_li_find(b_R_loc_data, R_peak_indices_combined_sizes, tmp_data, tmp_sizes);
 
   /* plots R peaks after all level processing */
   /* xlim([1 3]); */
@@ -1049,26 +1146,24 @@ uint32_T heart_rate_official_cport(uint32_T data, uint32_T fs, uint32_T
   /*  CALCULATES HEART RATE */
   /*  NOTE: This will assume that only 1-min windows of the EKG are sent in as */
   /*  the data type */
-  y = 0U;
+  x5 = 0U;
 
   /*  Counts how many R peak counts are found in N seconds */
-  i = 0;
-  while (i <= tmp_sizes[1] - 1) {
+  Ds_2 = 0;
+  while (Ds_2 <= tmp_sizes[1] - 1) {
     /*  Counts how many R wave peaks are found in a  */
-    signal_lvl_channel_1 = y + 65536U;
-    if (signal_lvl_channel_1 < y) {
-      signal_lvl_channel_1 = MAX_uint32_T;
+    qY = x5 + 1024U;
+    if (qY < x5) {
+      qY = MAX_uint32_T;
     }
 
-    y = signal_lvl_channel_1;
-    i = 1;
+    x5 = qY;
+    Ds_2 = 1;
   }
 
-  heart_rate = mul_u32_u32_u32_sr10_sat_near(div_u32_near(y, sample_time),
+  /*  R_peak_count */
+  return mul_u32_u32_u32_sr16_sat_near(div_u32_near(x5, sample_time),
     4026531840U);
-
-  /* heart_rate = R_peak_count; */
-  return heart_rate;
 }
 
 /* End of code generation (heart_rate_official_cport.c) */
