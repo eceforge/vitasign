@@ -1,4 +1,37 @@
 function [ heart_rate ] = heart_rate_emulator( data,fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size, averageHR)
+%------ Heart Rate Detection Emulator ----------
+%  Emulates a live EKG data stream by buffering fs * sample_time data samples.
+%  Effectively feeds chunks of EKG data to Heart rate algorithm to reflect what 
+%  will happen in Hardware
+%
+% Inputs: 
+%   data                    EKG data
+%   fs                      sampling rate
+%   threshold_1             threshold for filtering out peaks for channel 1
+%                           used in dual threshold processing
+%   threshold_2             threshold for filtering out peaks for channel 2
+%                           use in dual threshold processing
+%   threshold_3             threshold for filtering out peaks for channel 3 
+%                           used in 4th level processing
+%   pos_deviance_threshold  threshold for filtering out peak values which 
+%                           deviate above the average peak values 
+%   neg_deviance_threshold  threshold for filtering out peak values which
+%                           devivate below an average EKG signal
+%                           
+%   sample_time             length in time(s) over which HR is estimated
+%   
+%   averageHR               the expected average HR over the sample_time. Used for plotting
+%
+% Outputs:
+%   heart_rate  Estimated heart rate in beats per minute
+%
+% % % % % % % % % % % % % % % %
+%
+% Gbenga Badipe
+
+
+
+
 % RESETS MATLAB OUTPUT
 % clc
 % close all

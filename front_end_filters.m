@@ -1,6 +1,17 @@
 function [ filtered_output, dc_offset ] = front_end_filters( data, fs)
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+%-----Front end filters ------
+%   Emulates the analog filters which will be implemented in hardware
+%
+%	Inputs:
+%		data	EKG data
+%		fs 		Sampling rate
+%	Outputs:
+%		filtered_output		data after being filtered_output
+%		dc_offset			DC offset applied to data
+% % % % % % % % % % % % % % % %
+%
+% Gbenga Badipe
+
 %[GB] Ensures the the input args are of the correct data type
 % T4 = numerictype('WordLength', 80, 'FractionLength', 40);
 % Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 16, 'Signed',false);
