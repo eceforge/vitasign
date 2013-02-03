@@ -344,7 +344,7 @@ R_peak_indices_combined = R_peak_indices(1:num_cols_indices); % REPLACE THIS WIT
 
 
 %DUAL THRESHOLD PROCESSSING
-    function [indices, noise_lvl, signal_lvl] = dualThreshold(threshold, indices, channel)
+    function [indices, noise_lvl, signal_lvl] = dualThreshold(threshold, indices, channel, shouldPlot)
         noise_sum = 0; signal_sum = 0;
         noise_count = 0; signal_count = 0;
         noise_lvl = 0; signal_lvl = 0;
@@ -378,6 +378,10 @@ R_peak_indices_combined = R_peak_indices(1:num_cols_indices); % REPLACE THIS WIT
                signal_count = signal_count + 1;
                % Calculates the signal level
                signal_lvl = signal_sum / signal_count;
+               if(shouldPlot)
+                 R_peak_vals(index)
+                 signal_lvl
+               end
            else
                % Sets all the indices which R_vals don't meet the threshold to 0
                indices(index) = 0; 
@@ -396,8 +400,8 @@ R_peak_indices_combined = R_peak_indices(1:num_cols_indices); % REPLACE THIS WIT
     %    fprintf('Channel 1 Original: There are %i non-zero values\n',length(find(R_peak_indices_channel_1 ~= 0)));
     %end
 
-[R_peak_indices_channel_1, noise_lvl_channel_1, signal_lvl_channel_1] = dualThreshold(threshold_1, R_peak_indices_channel_1, 1);
-[R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(threshold_2, R_peak_indices_channel_2, 2);
+[R_peak_indices_channel_1, noise_lvl_channel_1, signal_lvl_channel_1] = dualThreshold(threshold_1, R_peak_indices_channel_1, 1, shouldPlot);
+[R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(threshold_2, R_peak_indices_channel_2, 2, shouldPlot);
 
 % UNCOMMENT TO SEE THE NUMBER OF PEAKS AFTER CHANNEL 1 PROCESSING
     %if (shouldPlot)
@@ -583,6 +587,15 @@ R_peak_indices_channel_3 = R_peak_indices_combined;
     %end
 % Sets R values to zero which failed any of the previous phases
 last_R_index = 0;
+
+% Heart beat delta sum is the summation of the time between heart beats. It's used for
+% HR calculation
+heart_beat_delta_sum = 0;
+% Heart beat count is the amount of heart beats detected
+heart_beat_count = 0;
+% Sample time delta is based off an Fs of 300Hz
+time_delta = 1/300;
+
 for i=1:length(R_peak_vals)
     if (R_peak_indices_channel_3(i) == 0)
         R_peak_vals(i) = 0;
@@ -596,13 +609,31 @@ for i=1:length(R_peak_vals)
             %fprintf('Getting rid of a value\n');
             R_peak_vals(i) = 0;
             R_peak_indices_channel_3(i) = 0;
+        % Initializes the first delta which is when the first heart
+        % beat occurs
+        elseif(last_R_index == 0)
+            heart_beat_delta = (current_R_index - 1) * time_delta;
+            heart_beat_delta_sum = heart_beat_delta_sum + heart_beat_delta;
+            
+            % Updates the last index
+            last_R_index = R_peak_indices_channel_3(i);
+            
+            % Updates the heart beat count
+            heart_beat_count = heart_beat_count + 1;
         % Updates the last index if the R_value is valid
         else
+            % Updates the heart beat delta summation
+            heart_beat_delta = (current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta;
+            heart_beat_delta_sum = heart_beat_delta_sum + heart_beat_delta;
+            
+            % Updates the heart beat count
+            heart_beat_count = heart_beat_count + 1;
             % Updates the last index
             last_R_index = R_peak_indices_channel_3(i);
         end
     end
 end
+
 % Removes all zero values from both the indice and value array
 R_peak_indices_channel_3 = R_peak_indices_channel_3(find(R_peak_indices_channel_3 ~= 0));
 R_peak_vals = R_peak_vals(find(R_peak_vals ~= 0));   
@@ -649,6 +680,16 @@ end
 
 heart_rate = (R_peak_count / sample_size) * 60;
 %heart_rate = R_peak_count;
+
+% CALCULATES HEART RATE USING AVERAGE TIME TIME DELTAS BETWEEN BEATS
+%   Provides less quantized HR values
+
+% Produces a result which is avg heart beat delta(s)
+% heart_beat_delta_sum
+% heart_rate  = heart_beat_delta_sum / heart_beat_count
+% Inverses it to produce HBPM
+% heart_rate = 1 / heart_rate
+% heart_rate = heart_rate * 60
 
 end
 

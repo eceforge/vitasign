@@ -24,7 +24,7 @@ low_pass_order = 2;   % FIR filter order
 low_pass_spec = fdesign.lowpass('N,Fc',low_pass_order,Fc,fs);
 low_pass = design(low_pass_spec,'window','window',@hamming);
 data = filter(low_pass, data);
-% Decimates the signal to 200Hz
+% Decimates the signal to 300Hz
 % data = resample(data, 3, 2);
  datar = iddata(data,[],1/fs);
  data = idresamp(datar, fs/300);
@@ -48,17 +48,19 @@ for step=0:(num_windows - 1)
     %begin_index = (index - 1) * window_size + 1;
     %end_index = begin_index + (window_size - 1);
     sample_size_t = length(data(begin_index:end_index)) / fs;
-    if (step == 10)
+    step
+    if (step >= 67 && step <= 70)
         heart_rate = heart_rate_official(data(begin_index:end_index), fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size_t, 1);
         heart_rates = [heart_rates heart_rate];
     else
         heart_rate = heart_rate_official(data(begin_index:end_index), fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size_t, 0);
         heart_rates = [heart_rates heart_rate];
     end
-
+%     break;
 end
 toc
-    
+
+heart_rates
 %clf(figure(2));
 figure(20)
 % Offsets each time value by the sample size
@@ -66,7 +68,7 @@ t = t + sample_size;
 scatter(t, heart_rates);
 
 % Offsets the x-axis and extends the y-axis
-axis([sample_size, t(length(t)), 60, 250])
+axis([sample_size, t(length(t)), 0, 250])
 % grid on
 hold on
 % Plots the average HR on top of the graph

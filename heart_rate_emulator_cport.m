@@ -1,4 +1,5 @@
-function [ heart_rate ] = heart_rate_emulator( data,fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size, averageHR)
+
+function [ heart_rate ] = heart_rate_emulator_cport( data,fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size, averageHR)
 %------ Heart Rate Detection Emulator ----------
 %  Emulates a live EKG data stream by buffering fs * sample_time data samples.
 %  Effectively feeds chunks of EKG data to Heart rate algorithm to reflect what 
@@ -59,7 +60,7 @@ low_pass_order = 2;   % FIR filter order
 low_pass_spec = fdesign.lowpass('N,Fc',low_pass_order,Fc,fs);
 low_pass = design(low_pass_spec,'window','window',@hamming);
 data = filter(low_pass, data);
-% Decimates the signal to 200Hz
+% Decimates the signal to 300Hz
 % data = resample(data, 3, 2);
  datar = iddata(data,[],1/fs);
  data = idresamp(datar, fs/300);
@@ -138,8 +139,8 @@ for step=0:(num_windows - 1)
 %     median(indatadouble(begin_index:end_index))   
 %     mean(indatadouble(begin_index:end_index))
 
-    
-    if (step == 0)
+    step
+    if (step == 67)
 %         heart_rate = heart_rate_official_cport(data(begin_index:end_index), fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size_t, 1);
         heart_rate = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(1));
 
@@ -149,7 +150,6 @@ for step=0:(num_windows - 1)
         heart_rate = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(0));
         heart_rates = [heart_rates heart_rate];
     end
-%     break;
 end
 toc
     
@@ -158,9 +158,10 @@ figure(20)
 % Offsets each time value by the sample size
 t = t + sample_size;
 scatter(t, heart_rates);
+heart_rates
 
 % Offsets the x-axis and extends the y-axis
-axis([sample_size, t(length(t)), 30, 250])
+axis([sample_size, t(length(t)), 0, 250])
 % grid on
 hold on
 % Plots the average HR on top of the graph
