@@ -1,0 +1,1 @@
+"./main.obj" -l"libc.a" -l"C:\ti\controlSUITE\development_kits\C2000_LaunchPad\f2802x_common\cmd\F28027.cmd" "../F2802x_Headers_nonBIOS.cmd" "../driverlib.lib" 
