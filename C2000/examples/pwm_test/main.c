@@ -60,7 +60,7 @@ void InitPwm(){
 	
 	// Setup Time Base Clock (TBCLK)
 	PWM_setCounterMode(myPwm1, PWM_CounterMode_Up);       // Set to count up
-	PWM_setPeriod(myPwm1, 2);                             // Setup period of timer(pwm)
+	PWM_setPeriod(myPwm1, 2000);                             // Setup period of timer(pwm)
 	PWM_disableCounterLoad(myPwm1);                       // Disable phase loading
 	PWM_setPhase(myPwm1, 0x0000);                         // Phase is 0
 	PWM_setCount(myPwm1, 0x0000);                         // Clear counter
