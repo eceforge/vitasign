@@ -139,10 +139,9 @@ for step=0:(num_windows - 1)
 %     median(indatadouble(begin_index:end_index))   
 %     mean(indatadouble(begin_index:end_index))
 
-    step
     if (step == 67)
 %         heart_rate = heart_rate_official_cport(data(begin_index:end_index), fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size_t, 1);
-        heart_rate = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(1));
+        heart_rate = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(0));
 
         heart_rates = [heart_rates heart_rate];
     else
@@ -150,6 +149,7 @@ for step=0:(num_windows - 1)
         heart_rate = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(0));
         heart_rates = [heart_rates heart_rate];
     end
+%     break;
 end
 toc
     
@@ -158,10 +158,11 @@ figure(20)
 % Offsets each time value by the sample size
 t = t + sample_size;
 scatter(t, heart_rates);
-heart_rates
+max_hr = double(max(max(heart_rates), averageHR))
+min_hr = double(min(min(heart_rates), averageHR))
 
 % Offsets the x-axis and extends the y-axis
-axis([sample_size, t(length(t)), 0, 250])
+axis([sample_size, t(length(t)), max(min_hr - 30, 0), max_hr + 30])
 % grid on
 hold on
 % Plots the average HR on top of the graph

@@ -48,7 +48,6 @@ for step=0:(num_windows - 1)
     %begin_index = (index - 1) * window_size + 1;
     %end_index = begin_index + (window_size - 1);
     sample_size_t = length(data(begin_index:end_index)) / fs;
-    step
     if (step >= 67 && step <= 70)
         heart_rate = heart_rate_official(data(begin_index:end_index), fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size_t, 1);
         heart_rates = [heart_rates heart_rate];
@@ -60,15 +59,19 @@ for step=0:(num_windows - 1)
 end
 toc
 
-heart_rates
+% heart_rates
 %clf(figure(2));
 figure(20)
 % Offsets each time value by the sample size
 t = t + sample_size;
 scatter(t, heart_rates);
 
+max_hr = double(max(max(heart_rates), averageHR))
+min_hr = double(min(min(heart_rates), averageHR))
+
 % Offsets the x-axis and extends the y-axis
-axis([sample_size, t(length(t)), 0, 250])
+axis([sample_size, t(length(t)), max(min_hr - 30, 0), max_hr + 30])
+
 % grid on
 hold on
 % Plots the average HR on top of the graph

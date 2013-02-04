@@ -345,8 +345,8 @@ R_peak_indices_combined = R_peak_indices(1:num_cols_indices); % REPLACE THIS WIT
 
 %DUAL THRESHOLD PROCESSSING
     function [indices, noise_lvl, signal_lvl] = dualThreshold(threshold, indices, channel, shouldPlot)
-        noise_sum = 0; signal_sum = 0;
-        noise_count = 0; signal_count = 0;
+        noise_sum = 0; signal_sum = 0; 
+        noise_count = 0; signal_count = 1; % Setting signal count to 1 ensures that the first value doesn't dominate the avg signal level
         noise_lvl = 0; signal_lvl = 0;
         for index=1:length(R_peak_vals)
                % DELETE AFTER DEBUGGING
@@ -678,7 +678,7 @@ for i=1:length(R_peak_indices_channel_3)
     R_peak_count = R_peak_count + 1;
 end
 
-heart_rate = (R_peak_count / sample_size) * 60;
+% heart_rate = (R_peak_count / sample_size) * 60;
 %heart_rate = R_peak_count;
 
 % CALCULATES HEART RATE USING AVERAGE TIME TIME DELTAS BETWEEN BEATS
@@ -686,10 +686,10 @@ heart_rate = (R_peak_count / sample_size) * 60;
 
 % Produces a result which is avg heart beat delta(s)
 % heart_beat_delta_sum
-% heart_rate  = heart_beat_delta_sum / heart_beat_count
+heart_rate  = heart_beat_delta_sum / heart_beat_count;
 % Inverses it to produce HBPM
-% heart_rate = 1 / heart_rate
-% heart_rate = heart_rate * 60
+heart_rate = 1 / heart_rate;
+heart_rate = heart_rate * 60;
 
 end
 

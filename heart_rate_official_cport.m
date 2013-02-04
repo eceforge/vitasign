@@ -541,9 +541,12 @@ for i=1:length(R_peak_indices_combined)
 %           diff2 = ((R_peak_vals(i) - noise_lvl_channel_2) * 100) / (signal_lvl_channel_2 - noise_lvl_channel_2)
 %         minlog(diff1)
 %         minlog(diff2)
-        Ds_1 = min(1, divide(Fixed_Point_Properties, ((R_peak_vals(i) - noise_lvl_channel_1) * 100), (signal_lvl_channel_1 - noise_lvl_channel_1)));
+        % If the delta between the peak value and the noise level is < 0
+        % then due to unsigned fixed point rules this value is 0 which is what we
+        % want anyways so this proves to be a useful overflow case.
+        Ds_1 = min(1, divide(Fixed_Point_Properties, ((R_peak_vals(i) * 100 - noise_lvl_channel_1 * 100)), (signal_lvl_channel_1 * 100 - noise_lvl_channel_1 * 100)));
         Ds_1 = max(0, Ds_1);
-        Ds_2 = min(1, divide(Fixed_Point_Properties, ((R_peak_vals(i) - noise_lvl_channel_2) * 100), (signal_lvl_channel_2 - noise_lvl_channel_2)));
+        Ds_2 = min(1, divide(Fixed_Point_Properties, ((R_peak_vals(i) * 100 - noise_lvl_channel_2 * 100)), (signal_lvl_channel_2 * 100 - noise_lvl_channel_2 * 100)));
         Ds_2 = max(0, Ds_2);
       
         if (Ds_1 > Ds_2)
@@ -681,18 +684,18 @@ for i=1:length(R_peak_indices_channel_3)
     R_peak_count = R_peak_count + 1;
 end
 % R_peak_count
-heart_rate = divide(Fixed_Point_Properties, R_peak_count, sample_time) * 60;
+% heart_rate = divide(Fixed_Point_Properties, R_peak_count, sample_time) * 60;
 
 
 % CALCULATES HEART RATE USING AVERAGE TIME TIME DELTAS BETWEEN BEATS
 %   Provides less quantized HR values
 
 % Produces a result which is avg heart beat delta(s)
-% heart_beat_delta_sum = heart_beat_current_sum - heart_beat_last_sum;
-% heart_rate  = divide(Fixed_Point_Properties, heart_beat_delta_sum, heart_beat_count);
+heart_beat_delta_sum = heart_beat_current_sum - heart_beat_last_sum;
+heart_rate  = divide(Fixed_Point_Properties, heart_beat_delta_sum, heart_beat_count);
 % Inverses it to produce HBPM
-% heart_rate = divide(Fixed_Point_Properties, 1, heart_rate);
-% heart_rate = heart_rate * 60;
+heart_rate = divide(Fixed_Point_Properties, 1, heart_rate);
+heart_rate = heart_rate * 60;
 
 end
 
@@ -759,8 +762,8 @@ end
         assert(isequal(numerictype(max_voltage), Fixed_Point_Properties) && isequal(fimath(max_voltage), F));
         assert(isequal(numerictype(pos_deviance_threshold), Fixed_Point_Properties) && isequal(fimath(pos_deviance_threshold), F));
         assert(isequal(numerictype(neg_deviance_threshold), Fixed_Point_Properties) && isequal(fimath(neg_deviance_threshold), F));
-        noise_sum = fi(0, Fixed_Point_Properties, F); signal_sum = fi(.5, Fixed_Point_Properties, F);
-        noise_count = fi(0, Fixed_Point_Properties, F); signal_count = fi(1, Fixed_Point_Properties, F);
+        noise_sum = fi(0, Fixed_Point_Properties, F); signal_sum = fi(0, Fixed_Point_Properties, F);
+        noise_count = fi(0, Fixed_Point_Properties, F); signal_count = fi(1, Fixed_Point_Properties, F); % Setting signal count to 1 ensures that the first value doesn't dominate the avg signal level
         noise_lvl = fi(0, Fixed_Point_Properties, F); signal_lvl = fi(0,Fixed_Point_Properties, F);
         
         for index=1:length(R_peak_vals)
