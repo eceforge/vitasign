@@ -18,7 +18,8 @@
 
 extern void DSP28x_usDelay(Uint32 Count);
 
-
+// Prototypes
+interrupt void epwm1_isr(void);
 
 
 // you probably need these
@@ -56,61 +57,72 @@ void setup_handles(void){
 void InitPwm(){
 
 	CLK_enablePwmClock(myClk,PWM_Number_1);
-
+	
 	// Setup Time Base Clock (TBCLK)
-	PWM_setCounterMode(myPwm1, PWM_CounterMode_Up);  // Set to count up
-	PWM_setPeriod(myPwm1, 2);					 // Setup period of timer(pwm)
-	PWM_disableCounterLoad(myPwm1);                  // Disable phase loading
-	PWM_setPhase(myPwm1, 0x0000);                    // Phase is 0
-	PWM_setCount(myPwm1, 0x0000);                           // Clear counter
-	PWM_setHighSpeedClkDiv(myPwm1, PWM_HspClkDiv_by_2);     // Clock ratio to SYSCLKOUT
+	PWM_setCounterMode(myPwm1, PWM_CounterMode_Up);       // Set to count up
+	PWM_setPeriod(myPwm1, 2);                             // Setup period of timer(pwm)
+	PWM_disableCounterLoad(myPwm1);                       // Disable phase loading
+	PWM_setPhase(myPwm1, 0x0000);                         // Phase is 0
+	PWM_setCount(myPwm1, 0x0000);                         // Clear counter
+	PWM_setHighSpeedClkDiv(myPwm1, PWM_HspClkDiv_by_2);   // Clock ratio to SYSCLKOUT
 	PWM_setClkDiv(myPwm1, PWM_ClkDiv_by_2);
-	PWM_setCmpA(myPwm1, 5);				// SEt comparator value
-	CLK_enableTbClockSync(myClk);
+	PWM_setCmpA(myPwm1, 5);                               // Set comparator value
+	
+	PWM_setIntMode(myPwm1, PWM_IntMode_CounterEqualZero); // Select INT on Zero event
+	PWM_enableInt(myPwm1);                                // Enable INT
+	PWM_setIntPeriod(myPwm1, PWM_IntPeriod_FirstEvent);   // Generate INT on 1st event
+	CLK_enableTbClockSync(myClk);                         // Release the TBCLK
+	
 
-//	PWM_enableInt(myPwm2);                                  // Enable INT
 }
 
 int main(void) {
 	setup_handles();
-    // Perform basic system initialization
-    WDOG_disable(myWDog);
-    CLK_enableAdcClock(myClk);
-    (*Device_cal)();
-    CLK_disableAdcClock(myClk);
+	// Perform basic system initialization
+	WDOG_disable(myWDog);
+	CLK_enableAdcClock(myClk);
+	(*Device_cal)();
+	CLK_disableAdcClock(myClk);
 
-    //Select the internal oscillator 1 as the clock source
-    CLK_setOscSrc(myClk, CLK_OscSrc_Internal);
+	//Select the internal oscillator 1 as the clock source
+	CLK_setOscSrc(myClk, CLK_OscSrc_Internal);
 
-    // Setup the PLL for x10 /2 which will yield 50Mhz = 10Mhz * 10 / 2
-    PLL_setup(myPll, PLL_Multiplier_10, PLL_DivideSelect_ClkIn_by_2);
+	// Setup the PLL for x10 /2 which will yield 50Mhz = 10Mhz * 10 / 2
+	PLL_setup(myPll, PLL_Multiplier_10, PLL_DivideSelect_ClkIn_by_2);
 
-    // Disable the PIE and all interrupts
-    PIE_disable(myPie);
-    PIE_disableAllInts(myPie);
-    CPU_disableGlobalInts(myCpu);
-    CPU_clearIntFlags(myCpu);
+	// Disable the PIE and all interrupts
+	PIE_disable(myPie);
+	PIE_disableAllInts(myPie);
+	CPU_disableGlobalInts(myCpu);
+	CPU_clearIntFlags(myCpu);
 
-    // If running from flash copy RAM only functions to RAM
+	// If running from flash copy RAM only functions to RAM
 #ifdef _FLASH
-    memcpy(&RamfuncsRunStart, &RamfuncsLoadStart, (size_t)&RamfuncsLoadSize);
+	memcpy(&RamfuncsRunStart, &RamfuncsLoadStart, (size_t)&RamfuncsLoadSize);
 #endif
 
-    // Setup a debug vector table and enable the PIE
-    PIE_setDebugIntVectorTable(myPie);
-    PIE_enable(myPie);
+	// Setup a debug vector table and enable the PIE
+	PIE_setDebugIntVectorTable(myPie);
+	PIE_enable(myPie);
 
-    // Register interrupt handlers in the PIE vector table
+	// Register interrupt handlers in the PIE vector table
+	PIE_registerPieIntHandler(myPie, PIE_GroupNumber_3, PIE_SubGroupNumber_1, (intVec_t)&epwm1_isr);
 
+	InitPwm();
 
-    InitPwm();
+	// Enable CPU INT3 which is connected to EPWM1-6 INT
+    CPU_enableInt(myCpu, CPU_IntNumber_3);
 
-    // Enable global Interrupts and higher priority real-time debug events
-        CPU_enableGlobalInts(myCpu);
-        CPU_enableDebugInt(myCpu);
-    while(1){
-    	bob++;
-    }
+    // Enable EPWM INTn in the PIE: Group 3 interrupt 1-6
+    PIE_enablePwmInt(myPie, PWM_Number_1);
+
+	// Enable global Interrupts and higher priority real-time debug events
+	CPU_enableGlobalInts(myCpu);
+	CPU_enableDebugInt(myCpu);
+
+	while(1){
+		bob++;
+	}
 
 
 
@@ -118,5 +130,12 @@ int main(void) {
 
 
 interrupt void epwm1_isr(void){
+
 	isr_counter++;
+
+	// Clear INT flag for this timer
+	PWM_clearIntFlag(myPwm1);
+
+	// Acknowledge this interrupt to receive more interrupts from group 3
+	PIE_clearInt(myPie, PIE_GroupNumber_3);
 }
