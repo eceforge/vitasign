@@ -567,6 +567,8 @@ end
 %         fprintf('Combined Post: There are %i non-zero values\n',length(find(R_peak_indices_combined ~= 0)));
     end
     
+fprintf('Combined Post: There are %i non-zero values\n',length(find(R_peak_indices_combined ~= 0)));
+
 % Grabs the result of both channels    
 R_peak_indices_channel_3 = R_peak_indices_combined;
 
@@ -591,7 +593,6 @@ time_delta = divide(Fixed_Point_Properties, 1, 300);
 
 % Heart beat delta sum is the summation of the time between heart beats. It's used for
 % HR calculation
-% heart_beat_delta_sum = fi(0, Fixed_Point_Properties, F);
 heart_beat_current_sum = fi(0, Fixed_Point_Properties, F);
 heart_beat_last_sum = fi(0, Fixed_Point_Properties, F);
 
@@ -629,8 +630,10 @@ for i=1:length(R_peak_vals)
             
         % Updates the last index if the R_value is valid
         else   
-            heart_beat_current_sum = heart_beat_current_sum + (current_R_index - 1) * time_delta;
-            heart_beat_last_sum = heart_beat_last_sum + (last_R_index - 1) * time_delta;
+              heart_beat_current_sum = heart_beat_current_sum + (current_R_index - 1) * time_delta;
+              heart_beat_last_sum = heart_beat_last_sum + (last_R_index - 1) * time_delta;
+%             heart_beat_delta = (current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta;
+%             heart_beat_current_sum = heart_beat_current_sum + heart_beat_delta;
             % Updates the heart beat count
             heart_beat_count = heart_beat_count + 1;
             
@@ -642,7 +645,7 @@ for i=1:length(R_peak_vals)
 end
 % Removes all zero values from both the indice and value array
 R_peak_indices_channel_3 = R_peak_indices_channel_3(R_peak_indices_channel_3 ~= 0);
-R_peak_vals = R_peak_vals(R_peak_vals ~= 0);
+% R_peak_vals = R_peak_vals(R_peak_vals ~= 0);
 
 %plots R peaks after all level processing
 if (shouldOutput)
@@ -692,10 +695,11 @@ end
 
 % Produces a result which is avg heart beat delta(s)
 heart_beat_delta_sum = heart_beat_current_sum - heart_beat_last_sum;
+% heart_beat_delta_sum = heart_beat_current_sum;
 heart_rate  = divide(Fixed_Point_Properties, heart_beat_delta_sum, heart_beat_count);
 % Inverses it to produce HBPM
 heart_rate = divide(Fixed_Point_Properties, 1, heart_rate);
-heart_rate = heart_rate * 60;
+heart_rate = heart_rate * 60
 
 end
 
@@ -738,6 +742,7 @@ function [meets_deviance_req] = meets_deviance_threshold(hr_value, signal_level,
         if (deviance < pos_deviance_threshold * 100)
             meets_deviance_req = 1;
         else
+            fprintf('Does not meet pos req\n');
             meets_deviance_req = 0;
         end
     end
@@ -763,7 +768,7 @@ end
         assert(isequal(numerictype(pos_deviance_threshold), Fixed_Point_Properties) && isequal(fimath(pos_deviance_threshold), F));
         assert(isequal(numerictype(neg_deviance_threshold), Fixed_Point_Properties) && isequal(fimath(neg_deviance_threshold), F));
         noise_sum = fi(0, Fixed_Point_Properties, F); signal_sum = fi(0, Fixed_Point_Properties, F);
-        noise_count = fi(0, Fixed_Point_Properties, F); signal_count = fi(1, Fixed_Point_Properties, F); % Setting signal count to 1 ensures that the first value doesn't dominate the avg signal level
+        noise_count = fi(0, Fixed_Point_Properties, F); signal_count = fi(0, Fixed_Point_Properties, F); % Setting signal count to 1 ensures that the first value doesn't dominate the avg signal level
         noise_lvl = fi(0, Fixed_Point_Properties, F); signal_lvl = fi(0,Fixed_Point_Properties, F);
         
         for index=1:length(R_peak_vals)
@@ -777,7 +782,7 @@ end
                
                % Filters out any signal value which exceeds the allowed deviance from
                % the average signal value 
-               if (~meets_deviance_threshold(R_peak_vals(index), signal_lvl, pos_deviance_threshold, neg_deviance_threshold))
+               if (~meets_deviance_threshold(R_peak_vals(index), signal_lvl, pos_deviance_threshold, neg_deviance_threshold) && index > 4)
                     if(shouldOutput)
                           fprintf('Does not meet the deviance threshold\n');
                           R_peak_vals(index)

@@ -22,6 +22,7 @@ for i=1:size(sampling_rates,1)
     % Converts char array to a fully qualified string 'object' to deal
     % with spaces in file names
     filename = strcat('', filename);
+    fprintf('Processing %s\n', filename);
     fs = sampling_rates(i,1);
     average_HR = avg_heart_rates(i,1);
     data = importdata(filename, ' ');
