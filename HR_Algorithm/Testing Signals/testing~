@@ -1,0 +1,17 @@
+baby_ekg.mat, 1000, 142.49
+dual_clean_ekg.mat,1000,60.2240
+dual_small_motion_ekg.mat,1000,79.7363
+movement_ekg.mat,1000,77.6267
+talking_ekg.mat,1000, 67.9172
+wire_movement_ekg.mat,1000,72.5235
+100_bpm.txt,250,100
+120_bpm_noisy.txt,250,120
+120_bpm.txt,250,120
+230bpm_1khz_0.1mv_white_noise.txt,1000,230
+230bpm_1khz.txt,1000,230
+30_bpm.txt,250,30
+40_bpm_noisy.txt,250,40
+40_bpm.txt,250,40
+60_bpm.txt,250,60
+72_bpm_noisy.txt,250,72
+72_bpm.txt,250,72
