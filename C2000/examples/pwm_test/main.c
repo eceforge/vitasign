@@ -19,7 +19,7 @@
 extern void DSP28x_usDelay(Uint32 Count);
 
 // Prototypes
-interrupt void epwm1_isr(void);
+interrupt void adc_isr(void);
 
 
 // you probably need these
@@ -38,6 +38,8 @@ PWM_Handle myPwm1;
 
 uint32_t bob = 0;
 uint32_t isr_counter = 0;
+uint16_t ConversionCount = 0;
+uint16_t Voltage1[10];
 
 void setup_handles(void){
 	myClk = CLK_init((void *)CLK_BASE_ADDR, sizeof(CLK_Obj));
@@ -54,13 +56,52 @@ void setup_handles(void){
 
 }
 
+
+void init_adc(){
+	/*
+		With Bandgap enabled outputs will be:
+		input<=0   => 	Digital Value = 0
+		0<input<3.3v   => Digital Value = 4096[(Input-VREFLO)/3.3v]
+		input>=VREFHI	=> Digital Value = 4095
+	*/
+	ADC_enableBandGap(myAdc);	// Setup internal ref voltage 0v-3v
+	ADC_enableRefBuffers(myAdc);	// I'm not sure what this does. Examples do it.
+	ADC_powerUp(myAdc);
+	ADC_enable(myAdc);
+	ADC_setVoltRefSrc(myAdc, ADC_VoltageRefSrc_Int);
+	// Enable ADCINT1 in PIE, if not enabled int flag will stay high until cleared by SW
+	PIE_enableAdcInt(myPie, ADC_IntNumber_1);
+	// Enable CPU interrupt 1 (must match the PIE group(not subgroup) number)
+	CPU_enableInt(myCpu, CPU_IntNumber_10);
+
+	// These are usually set before this by system init, but just in case we also do it here:
+
+	// Enable Global Interrupts (Allows PIE int to get to the CPU)
+	CPU_enableGlobalInts(myCpu);
+	// Enable Realtime Global INT debug
+	CPU_enableDebugInt(myCpu);
+
+	ADC_setIntPulseGenMode(myAdc, ADC_IntPulseGenMode_Prior);               //ADCINT1 trips after AdcResults latch
+	ADC_enableInt(myAdc, ADC_IntNumber_1);                                  //Enabled ADCINT1
+	ADC_setIntMode(myAdc, ADC_IntNumber_1, ADC_IntMode_ClearFlag);          //Disable ADCINT1 Continuous mode
+//	ADC_setIntSrc(myAdc, ADC_IntNumber_1, ADC_IntSrc_EOC0);                 //setup EOC2 to trigger ADCINT1 to fire
+	ADC_setSocChanNumber (myAdc, ADC_SocNumber_0, ADC_SocChanNumber_A4);    //set SOC0 channel select to ADCINA4
+	// Setup ADC to take input from the ePWM1 
+	ADC_setSocTrigSrc(myAdc, ADC_SocNumber_0, ADC_SocTrigSrc_EPWM1_ADCSOCA);    //set SOC0 start trigger on EPWM1A
+	ADC_setSocSampleWindow(myAdc, ADC_SocNumber_0, ADC_SocSampleWindow_7_cycles);   //set SOC0 S/H Window to 7 ADC Clock Cycles, (6 ACQPS plus 1)
+	
+
+	
+}
+
+
 void InitPwm(){
 
 	CLK_enablePwmClock(myClk,PWM_Number_1);
 	
 	// Setup Time Base Clock (TBCLK)
 	PWM_setCounterMode(myPwm1, PWM_CounterMode_Up);       // Set to count up
-	PWM_setPeriod(myPwm1, 2000);                             // Setup period of timer(pwm)
+	PWM_setPeriod(myPwm1, 2000);                           // Setup period of timer(pwm)
 	PWM_disableCounterLoad(myPwm1);                       // Disable phase loading
 	PWM_setPhase(myPwm1, 0x0000);                         // Phase is 0
 	PWM_setCount(myPwm1, 0x0000);                         // Clear counter
@@ -68,10 +109,13 @@ void InitPwm(){
 	PWM_setClkDiv(myPwm1, PWM_ClkDiv_by_2);
 	PWM_setCmpA(myPwm1, 5);                               // Set comparator value
 	
-	PWM_setIntMode(myPwm1, PWM_IntMode_CounterEqualZero); // Select INT on Zero event
-	PWM_enableInt(myPwm1);                                // Enable INT
-	PWM_setIntPeriod(myPwm1, PWM_IntPeriod_FirstEvent);   // Generate INT on 1st event
-	CLK_enableTbClockSync(myClk);                         // Release the TBCLK
+	// Setup PWM to trigger the ADC through SOC-A
+	PWM_enableSocAPulse(myPwm1);
+	PWM_setSocAPulseSrc(myPwm1, PWM_SocPulseSrc_CounterEqualCmpAIncr);
+	PWM_setSocAPeriod(myPwm1, PWM_SocPeriod_FirstEvent);
+
+	
+	CLK_enableTbClockSync(myClk);                         // Release the TBCLK (and hence start the counter)
 	
 
 }
@@ -82,7 +126,7 @@ int main(void) {
 	WDOG_disable(myWDog);
 	CLK_enableAdcClock(myClk);
 	(*Device_cal)();
-	CLK_disableAdcClock(myClk);
+//	CLK_disableAdcClock(myClk);
 
 	//Select the internal oscillator 1 as the clock source
 	CLK_setOscSrc(myClk, CLK_OscSrc_Internal);
@@ -106,15 +150,11 @@ int main(void) {
 	PIE_enable(myPie);
 
 	// Register interrupt handlers in the PIE vector table
-	PIE_registerPieIntHandler(myPie, PIE_GroupNumber_3, PIE_SubGroupNumber_1, (intVec_t)&epwm1_isr);
+	PIE_registerPieIntHandler(myPie, PIE_GroupNumber_10, PIE_SubGroupNumber_1, (intVec_t)&adc_isr);
 
+	init_adc();
 	InitPwm();
 
-	// Enable CPU INT3 which is connected to EPWM1-6 INT
-    CPU_enableInt(myCpu, CPU_IntNumber_3);
-
-    // Enable EPWM INTn in the PIE: Group 3 interrupt 1-6
-    PIE_enablePwmInt(myPie, PWM_Number_1);
 
 	// Enable global Interrupts and higher priority real-time debug events
 	CPU_enableGlobalInts(myCpu);
@@ -129,13 +169,21 @@ int main(void) {
 }
 
 
-interrupt void epwm1_isr(void){
+interrupt void adc_isr(void){
 
 	isr_counter++;
+	Voltage1[ConversionCount] = ADC_readResult(myAdc, ADC_ResultNumber_0);
+
+	// If 10 conversions have been logged, start over
+    if(ConversionCount == 9)
+    {
+        ConversionCount = 0;
+    }
+    else ConversionCount++;
 
 	// Clear INT flag for this timer
-	PWM_clearIntFlag(myPwm1);
+	ADC_clearIntFlag(myAdc, ADC_IntNumber_1);
 
-	// Acknowledge this interrupt to receive more interrupts from group 3
-	PIE_clearInt(myPie, PIE_GroupNumber_3);
+	// Acknowledge this interrupt to receive more interrupts from group 10
+	PIE_clearInt(myPie, PIE_GroupNumber_10);
 }
