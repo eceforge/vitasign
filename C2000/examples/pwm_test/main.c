@@ -101,7 +101,7 @@ void InitPwm(){
 	
 	// Setup Time Base Clock (TBCLK)
 	PWM_setCounterMode(myPwm1, PWM_CounterMode_Up);       // Set to count up
-	PWM_setPeriod(myPwm1, 6200);                           // Setup period of timer(pwm)
+	PWM_setPeriod(myPwm1, 6250);                           // Setup period of timer(pwm)
 	PWM_disableCounterLoad(myPwm1);                       // Disable phase loading
 	PWM_setPhase(myPwm1, 0x0000);                         // Phase is 0
 	PWM_setCount(myPwm1, 0x0000);                         // Clear counter
@@ -131,8 +131,8 @@ int main(void) {
 	//Select the internal oscillator 1 as the clock source
 	CLK_setOscSrc(myClk, CLK_OscSrc_Internal);
 
-	// Setup the PLL for x10 /2 which will yield 50Mhz = 10Mhz * 10 / 2
-	PLL_setup(myPll, PLL_Multiplier_10, PLL_DivideSelect_ClkIn_by_2);
+	// Setup the PLL for x12 /2 which will yield 60Mhz = 10Mhz * 12 / 2
+	PLL_setup(myPll, PLL_Multiplier_12, PLL_DivideSelect_ClkIn_by_2);
 
 	// Disable the PIE and all interrupts
 	PIE_disable(myPie);
@@ -156,6 +156,7 @@ int main(void) {
     GPIO_setPullUp(myGpio, GPIO_Number_0, GPIO_PullUp_Disable);
     GPIO_setMode(myGpio, GPIO_Number_0, GPIO_0_Mode_GeneralPurpose);
     GPIO_setDirection(myGpio, GPIO_Number_0, GPIO_Direction_Output);
+    GPIO_setLow(myGpio, GPIO_Number_0);
 
 	init_adc();
 	InitPwm();
