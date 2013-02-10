@@ -101,13 +101,13 @@ void InitPwm(){
 	
 	// Setup Time Base Clock (TBCLK)
 	PWM_setCounterMode(myPwm1, PWM_CounterMode_Up);       // Set to count up
-	PWM_setPeriod(myPwm1, 6250);                           // Setup period of timer(pwm)
+	PWM_setPeriod(myPwm1, 37500);                           // Setup period of timer(pwm)
 	PWM_disableCounterLoad(myPwm1);                       // Disable phase loading
 	PWM_setPhase(myPwm1, 0x0000);                         // Phase is 0
 	PWM_setCount(myPwm1, 0x0000);                         // Clear counter
 	PWM_setHighSpeedClkDiv(myPwm1, PWM_HspClkDiv_by_1);   // Clock ratio to SYSCLKOUT
-	PWM_setClkDiv(myPwm1, PWM_ClkDiv_by_32);			  // Another multiplicative clk divider
-	PWM_setCmpA(myPwm1, 5);                               // Set comparator value
+	PWM_setClkDiv(myPwm1, PWM_ClkDiv_by_16);			  // Another multiplicative clk divider
+	PWM_setCmpA(myPwm1, 5);                               // Set comparator value -- No longer used
 	
 	// Setup PWM to trigger the ADC through SOC-A
 	PWM_enableSocAPulse(myPwm1);
