@@ -2,9 +2,7 @@
 # Automatically-generated file. Do not edit!
 ################################################################################
 
-SHELL = cmd.exe
-
-CG_TOOL_ROOT := C:/ti/ccsv5/tools/compiler/c2000_6.1.0
+CG_TOOL_ROOT := /opt/ti/ccsv5/tools/compiler/c2000_6.1.0
 
 ORDERED_OBJS += \
 $(GEN_CMDS__FLAG) \
@@ -16,8 +14,8 @@ $(GEN_CMDS__FLAG) \
 
 -include ../makefile.init
 
-RM := DEL /F
-RMDIR := RMDIR /S/Q
+RM := rm -rf
+RMDIR := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
@@ -117,7 +115,7 @@ all: pwm_test.out
 pwm_test.out: $(OBJS) $(CMD_SRCS) $(LIB_SRCS) $(GEN_CMDS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: C2000 Linker'
-	"C:/ti/ccsv5/tools/compiler/c2000_6.1.0/bin/cl2000" -v28 -ml -mt -g --diag_warning=225 --display_error_number --diag_wrap=off -z --stack_size=0x300 -m"pwm_test.map" --warn_sections -i"C:/ti/ccsv5/tools/compiler/c2000_6.1.0/lib" -i"C:/ti/ccsv5/tools/compiler/c2000_6.1.0/include" --reread_libs --display_error_number --diag_wrap=off --rom_model -o "pwm_test.out" $(ORDERED_OBJS)
+	"/opt/ti/ccsv5/tools/compiler/c2000_6.1.0/bin/cl2000" -v28 -ml -mt -g --diag_warning=225 --display_error_number --diag_wrap=off -z --stack_size=0x300 -m"pwm_test.map" --warn_sections -i"/opt/ti/ccsv5/tools/compiler/c2000_6.1.0/lib" -i"/opt/ti/ccsv5/tools/compiler/c2000_6.1.0/include" --reread_libs --display_error_number --diag_wrap=off --rom_model -o "pwm_test.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

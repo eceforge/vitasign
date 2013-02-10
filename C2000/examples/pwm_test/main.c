@@ -101,17 +101,17 @@ void InitPwm(){
 	
 	// Setup Time Base Clock (TBCLK)
 	PWM_setCounterMode(myPwm1, PWM_CounterMode_Up);       // Set to count up
-	PWM_setPeriod(myPwm1, 2000);                           // Setup period of timer(pwm)
+	PWM_setPeriod(myPwm1, 6200);                           // Setup period of timer(pwm)
 	PWM_disableCounterLoad(myPwm1);                       // Disable phase loading
 	PWM_setPhase(myPwm1, 0x0000);                         // Phase is 0
 	PWM_setCount(myPwm1, 0x0000);                         // Clear counter
-	PWM_setHighSpeedClkDiv(myPwm1, PWM_HspClkDiv_by_2);   // Clock ratio to SYSCLKOUT
-	PWM_setClkDiv(myPwm1, PWM_ClkDiv_by_2);
+	PWM_setHighSpeedClkDiv(myPwm1, PWM_HspClkDiv_by_1);   // Clock ratio to SYSCLKOUT
+	PWM_setClkDiv(myPwm1, PWM_ClkDiv_by_32);			  // Another multiplicative clk divider
 	PWM_setCmpA(myPwm1, 5);                               // Set comparator value
 	
 	// Setup PWM to trigger the ADC through SOC-A
 	PWM_enableSocAPulse(myPwm1);
-	PWM_setSocAPulseSrc(myPwm1, PWM_SocPulseSrc_CounterEqualCmpAIncr);
+	PWM_setSocAPulseSrc(myPwm1, PWM_SocPulseSrc_CounterEqualZero);
 	PWM_setSocAPeriod(myPwm1, PWM_SocPeriod_FirstEvent);
 
 	
@@ -152,6 +152,11 @@ int main(void) {
 	// Register interrupt handlers in the PIE vector table
 	PIE_registerPieIntHandler(myPie, PIE_GroupNumber_10, PIE_SubGroupNumber_1, (intVec_t)&adc_isr);
 
+	// Setup Signaling GPIO
+    GPIO_setPullUp(myGpio, GPIO_Number_0, GPIO_PullUp_Disable);
+    GPIO_setMode(myGpio, GPIO_Number_0, GPIO_0_Mode_GeneralPurpose);
+    GPIO_setDirection(myGpio, GPIO_Number_0, GPIO_Direction_Output);
+
 	init_adc();
 	InitPwm();
 
@@ -173,7 +178,7 @@ interrupt void adc_isr(void){
 
 	isr_counter++;
 	Voltage1[ConversionCount] = ADC_readResult(myAdc, ADC_ResultNumber_0);
-
+    GPIO_toggle(myGpio, GPIO_Number_0);
 	// If 10 conversions have been logged, start over
     if(ConversionCount == 9)
     {
