@@ -39,7 +39,7 @@ PWM_Handle myPwm1;
 uint32_t bob = 0;
 uint32_t isr_counter = 0;
 uint16_t ConversionCount = 0;
-uint16_t Voltage1[10];
+uint16_t Voltage1[1000];
 
 void setup_handles(void){
 	myClk = CLK_init((void *)CLK_BASE_ADDR, sizeof(CLK_Obj));
@@ -178,14 +178,15 @@ int main(void) {
 interrupt void adc_isr(void){
 
 	isr_counter++;
-	Voltage1[ConversionCount] = ADC_readResult(myAdc, ADC_ResultNumber_0);
+
     GPIO_toggle(myGpio, GPIO_Number_0);
 	// If 10 conversions have been logged, start over
-    if(ConversionCount == 9)
+    if(ConversionCount < 999)
     {
-        ConversionCount = 0;
+    	Voltage1[ConversionCount] = ADC_readResult(myAdc, ADC_ResultNumber_0);
+    	ConversionCount++;
     }
-    else ConversionCount++;
+
 
 	// Clear INT flag for this timer
 	ADC_clearIntFlag(myAdc, ADC_IntNumber_1);
