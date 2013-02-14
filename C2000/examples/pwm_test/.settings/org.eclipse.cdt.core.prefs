@@ -1,4 +1,12 @@
 eclipse.preferences.version=1
+environment/project/com.ti.ccstudio.buildDefinitions.C2000.Debug.719122148.2131053580.875539605/_DEBUG/delimiter=;
+environment/project/com.ti.ccstudio.buildDefinitions.C2000.Debug.719122148.2131053580.875539605/_DEBUG/operation=append
+environment/project/com.ti.ccstudio.buildDefinitions.C2000.Debug.719122148.2131053580.875539605/_DEBUG/value=1
+environment/project/com.ti.ccstudio.buildDefinitions.C2000.Debug.719122148.2131053580.875539605/_FLASH/delimiter=;
+environment/project/com.ti.ccstudio.buildDefinitions.C2000.Debug.719122148.2131053580.875539605/_FLASH/operation=append
+environment/project/com.ti.ccstudio.buildDefinitions.C2000.Debug.719122148.2131053580.875539605/_FLASH/value=1
+environment/project/com.ti.ccstudio.buildDefinitions.C2000.Debug.719122148.2131053580.875539605/append=true
+environment/project/com.ti.ccstudio.buildDefinitions.C2000.Debug.719122148.2131053580.875539605/appendContributed=true
 environment/project/com.ti.ccstudio.buildDefinitions.C2000.Debug.719122148.2131053580/_DEBUG/delimiter=;
 environment/project/com.ti.ccstudio.buildDefinitions.C2000.Debug.719122148.2131053580/_DEBUG/operation=append
 environment/project/com.ti.ccstudio.buildDefinitions.C2000.Debug.719122148.2131053580/_DEBUG/value=1

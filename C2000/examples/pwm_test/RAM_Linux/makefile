@@ -8,7 +8,7 @@ ORDERED_OBJS += \
 $(GEN_CMDS__FLAG) \
 "./main.obj" \
 -l"libc.a" \
--l"C:\ti\controlSUITE\development_kits\C2000_LaunchPad\f2802x_common\cmd\F28027.cmd" \
+-l/home/adrian/ti/C2000_LaunchPad/f2802x_common/cmd/28027_RAM_lnk.cmd \
 "../F2802x_Headers_nonBIOS.cmd" \
 "../driverlib.lib" \
 
