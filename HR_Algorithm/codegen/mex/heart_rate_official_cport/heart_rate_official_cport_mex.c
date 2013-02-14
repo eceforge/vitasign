@@ -3,7 +3,7 @@
  *
  * Code generation for function 'heart_rate_official_cport'
  *
- * C source code generated on: Sat Jan 26 20:24:41 2013
+ * C source code generated on: Wed Feb 13 13:34:29 2013
  *
  */
 
@@ -25,13 +25,13 @@ emlrtContext emlrtContextGlobal = { true, false, EMLRT_VERSION_INFO, NULL, "hear
 static void heart_rate_official_cport_mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
   /* Temporary copy for mex outputs. */
-  mxArray *outputs[1];
+  mxArray *outputs[2];
   int n = 0;
   int nOutputs = (nlhs < 1 ? 1 : nlhs);
   /* Check for proper number of arguments. */
-  if(nrhs != 9) {
-    mexErrMsgIdAndTxt("emlcoder:emlmex:WrongNumberOfInputs","9 inputs required for entry-point 'heart_rate_official_cport'.");
-  } else if(nlhs > 1) {
+  if(nrhs != 10) {
+    mexErrMsgIdAndTxt("emlcoder:emlmex:WrongNumberOfInputs","10 inputs required for entry-point 'heart_rate_official_cport'.");
+  } else if(nlhs > 2) {
     mexErrMsgIdAndTxt("emlcoder:emlmex:TooManyOutputArguments","Too many output arguments for entry-point 'heart_rate_official_cport'.");
   }
   /* Module initialization. */
