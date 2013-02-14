@@ -192,7 +192,7 @@ R_peak_indices = R_loc;
 % NEEDS OPTIMIZATION. NEED TO AVOID COPYING LARGE ARRAYS 
 R_peak_indices_channel_1 = R_peak_indices(1:num_cols_indices); 
 R_peak_indices_channel_2 = R_peak_indices(1:num_cols_indices);
-R_peak_indices_combined = R_peak_indices(1:num_cols_indices); % REPLACE THIS WITH A ZEROS ARRAY
+% R_peak_indices_combined = zeros(1, length(R_peak_indices_channel_2)); % REPLACE THIS WITH A ZEROS ARRAY
 
 [R_peak_indices_channel_1, noise_lvl_channel_1, signal_lvl_channel_1] = dualThreshold(R_peak_vals, threshold_1, uint32(R_peak_indices_channel_1), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
 [R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(R_peak_vals, threshold_2, uint32(R_peak_indices_channel_2), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
@@ -210,7 +210,7 @@ assert(isequal(numerictype(signal_lvl_channel_2),Fixed_Point_Properties) && iseq
 % Level 3 DETECTION: REFINES HEART BEAT DETECTION ACCURACY BY CHANNEL
 % COMPARISON
 % Combines both channels to refine beat detection
-for i=1:length(R_peak_indices_combined)
+for i=1:length(R_peak_indices_channel_2)
     % Documents the other cases %
     
     % If the signal's amplitude passes both the channels then there is a
@@ -226,7 +226,7 @@ for i=1:length(R_peak_indices_combined)
     % If the signal's amplitude fails both the channels then there is a
     % high chance that the it's not a beat
     if (R_peak_indices_channel_1(i) == 0 && R_peak_indices_channel_2(i) == 0)
-        R_peak_indices_combined(i) = 0;
+        R_peak_indices_channel_2(i) = 0;
     elseif (R_peak_indices_channel_1(i) ~= 0 && R_peak_indices_channel_2(i) == 0)
   
         % Uses the decision of the channel w/ the highest Detection.
@@ -242,9 +242,9 @@ for i=1:length(R_peak_indices_combined)
         Ds_2 = max(0, Ds_2);
       
         if (Ds_1 > Ds_2)
-            R_peak_indices_combined(i) = R_peak_indices_channel_1(i);
+            R_peak_indices_channel_2(i) = R_peak_indices_channel_1(i);
         else
-            R_peak_indices_combined(i) = R_peak_indices_channel_2(i);
+            R_peak_indices_channel_2(i) = R_peak_indices_channel_2(i);
         end
     end
 end
@@ -262,25 +262,24 @@ time_delta = divide(Fixed_Point_Properties, 1, 300);
 heart_beat_current_sum = fi(0, Fixed_Point_Properties, F);
 heart_beat_last_sum = fi(0, Fixed_Point_Properties, F);
 
-
 % Heart beat count is the amount of heart beats detected
 heart_beat_count = fi(0, Fixed_Point_Properties, F);
 
 for i=1:length(R_peak_vals)
-    if (R_peak_indices_combined(i) == 0)
+    if (R_peak_indices_channel_2(i) == 0)
         R_peak_vals(i) = 0;
      % Filters out any R_values which happen too soon after a previous
      % beat detection. Updates the average HR delta which will be used to
      % calculate HR
     else
         % Updates the index
-        current_R_index = fi(R_peak_indices_combined(i), Fixed_Point_Properties, F);
+        current_R_index = fi(R_peak_indices_channel_2(i), Fixed_Point_Properties, F);
         
         %Filters out any R_values which happen too soon after a previous
         % beat detection.
         if (last_R_index ~= 0 && ((current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta) < .200)
             R_peak_vals(i) = 0;
-            R_peak_indices_combined(i) = 0;
+            R_peak_indices_channel_2(i) = 0;
          
         % Initializes the first delta which is when the first heart
         % beat occurs
@@ -290,7 +289,7 @@ for i=1:length(R_peak_vals)
             heart_beat_current_sum = heart_beat_delta + 0;
             
             % Updates the last index
-            last_R_index = fi(R_peak_indices_combined(i), Fixed_Point_Properties, F);
+            last_R_index = fi(R_peak_indices_channel_2(i), Fixed_Point_Properties, F);
             
             % Updates the heart beat count
             heart_beat_count = heart_beat_count + 1;
@@ -305,7 +304,7 @@ for i=1:length(R_peak_vals)
             heart_beat_count = heart_beat_count + 1;
             
             % Updates the last index
-            last_R_index = fi(R_peak_indices_combined(i), Fixed_Point_Properties, F);
+            last_R_index = fi(R_peak_indices_channel_2(i), Fixed_Point_Properties, F);
             
         end
     end
