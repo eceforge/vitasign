@@ -85,30 +85,15 @@ assert(threshold_1 < threshold_2);
 % threshold
 assert(threshold_3 < threshold_2 && threshold_3 > threshold_1);
 %x1 = load('ecg3.dat'); % load the ECG signal from the file
-assert (all ( size (data) == [1000 1] ));
-% assert (~isscalar(data));
+assert (all ( size (data) == [3000 1] ));
 
 x1 = data;
-% figure(30)
-% plot(data);
 N = length (x1);       % Signal length
-% t = (0:N-1)/fs;        % time index
-% NFFT = 2 ^(ceil(log2(N))); % Next power of 2 from length of the signal
+
 
 % Assures that the number of samples sent in aren't greater than the
 % specified sample size
 assert(divide(Fixed_Point_Properties, fi(N, Fixed_Point_Properties, F), fi(fs, Fixed_Point_Properties, F)) >= sample_time);
-
-% UNCOMMENT TO SEE PLOT OF ORIGINAL EKG
-
-    %figure(1)
-    %sub%plot(2,1,1)
-    %plot(t,x1)
-    %xlabel('second');ylabel('Volts');title('Input ECG Signal')
-    %sub%plot(2,1,2)
-    %plot(t(200:600),x1(200:600))
-    %xlabel('second');ylabel('Volts');title('Input ECG Signal 1-3 second')
-    %xlim([1 3]);
 
 %CANCELLATION DC DRIFT AND NORMALIZATION
 %x1 = x1 - mean (x1 );    % cancel DC conponents
@@ -121,167 +106,14 @@ x1 = divide(Fixed_Point_Properties_signed, x1, max_x); % normalize to one
 assert(isequal(numerictype(x1),Fixed_Point_Properties_signed) && isequal(fimath(x1), F_signed));
 
 
-% UNCOMMENT TO SEE PLOT OF EKG AFTER NORMALIZATION AND REMOVAL OF DC DRIFT
-    if(shouldOutput)
-        %figure(3)
-        %subplot(2,1,1)
-        %plot(t,x1)
-        %xlabel('second');ylabel('Volts');title(' ECG Signal after cancellation DC drift and normalization')
-        %subplot(2,1,2)
-        %plot(t(200:600),x1(200:600))
-        %xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
-        %xlim([1 3]);
-    end
- % UNCOMMENT TO SEE FFT OF ORIGINAL EKG
-%     if (shouldOutput)
-        %Plots the fft of the original signal
-        %transform=fft(x1,NFFT)/N;% Transform from discrete values to the frequency domain
-        %transform=transform;
-        %windows=[windows,abs(transform)];
-        %freq = fs/2*linspace(0,1,NFFT/2+1);%Frequency index
-     %   fprintf('Plotting\n');
-        %figure(2) 
-        %plot(freq,2*abs(transform(1:NFFT/2+1)));
-        %title('FFT EKG Signal');
-        %xlabel('Frequency (Hz)');
-        %ylabel('|X(f)|');
-%     end
-    
 %------ MOST FILTERING NOW OCCURS IN ANALOG SEE 'front_end_filters.m' FOR EMULATED FRONT END FILTERS
-
-
-%LOW PASS FILTERING
-
-% LPF (1-z^-6)^2/(1-z^-1)^2
-%b=[1 0 0 0 0 0 -2 0 0 0 0 0 1];
-%a=[1 -2 1];
-
-
-%h_LP=filter(b,a,[1 zeros(1,12)]); % transfer function of LPF
-%if(shouldOutput)
-    %figure(21)
-    %freqz(b,a,1000,fs)
-%end
-
-% x2 = conv (x1 ,h_LP);
-% Fc  = 16;
-% low_pass_order = 2;   % FIR filter order
-% low_pass_spec = fdesign.lowpass('N,Fc',low_pass_order,Fc,fs);
-% low_pass = design(low_pass_spec,'window','window',@hamming);
-% x2 = filter(low_pass, x1);
-%x2 = x2 (6+[1: N]); %cancle delay
-% x2 = x2/ max( abs(x2 )); % normalize , for convenience .
-
-% UNCOMMENT TO SEE PLOT OF EKG AFTER BEING LOW PASSED
-
-    %figure(3)
-    %sub%plot(2,1,1)
-    %plot([0:length(x2)-1]/fs,x2)
-    %xlabel('second');ylabel('Volts');title(' ECG Signal after LPF')
-    %xlim([0 max(t)]);
-    %sub%plot(2,1,2)
-    %plot(t(200:600),x2(200:600))
-    %xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
-    %xlim([1 3]);
- 
-% UNCOMMENT TO SEE FFT PLOT OF EKG AFTER BEING LOW PASSED
-    %if(shouldOutput)
-        % Takes the fft of the signal %
-        %transform=fft(x2,NFFT)/N;% Transform from discrete values to the frequency domain
-
-        % Plots the fft of the filtered signal
-    %   transform=transform;
-        %windows=[windows,abs(transform)];
-        %freq = fs/2*linspace(0,1,NFFT/2+1);%Frequency index
-    %    fprintf('Plotting\n');
-        %figure(4)
-        %plot(freq,2*abs(transform(1:NFFT/2+1)));
-        %title('FFT LP Filtered EKG Signal');
-        %xlabel('Frequency (Hz)');
-        %ylabel('|X(f)|');
-    %end
-
-%HIGH PASS FILTERING
-
-% HPF = Allpass-(Lowpass) = z^-16-[(1-z^-32)/(1-z^-1)]
-%b = [-1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 32 -32 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1];
-%a = [1 -1];
-
-%h_HP=filter(b,a,[1 zeros(1,32)]); % impulse response iof HPF
-%if(shouldOutput)
-%     freqz(h_HP);
-%end
-% Fc  = 5;
-% high_pass_order = 2;   % FIR filter order
-% high_pass_spec = fdesign.highpass('N,Fc',high_pass_order,Fc,fs);
-% high_pass = design(high_pass_spec,'window','window',@hamming);
-%x3 = conv (x2 ,h_HP);
-%x3 = x3 (16+[1: N]); %cancle delay
-% x3 = filter(high_pass, x2);
-% x3 = x3/ max( abs(x3 ));
-    
-
-% UNCOMMENT TO SEE PLOT OF EKG AFTER BEING HIGH PASSED
-
-    %figure(5)
-    %sub%plot(2,1,1)
-    %plot([0:length(x3)-1]/fs,x3)
-    %xlabel('second');ylabel('Volts');title(' ECG Signal after HPF')
-    %xlim([0 max(t)]);
-    %sub%plot(2,1,2)
-    %plot(t(200:600),x3(200:600))
-    %xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
-    %xlim([1 3]);
-% UNCOMMENT TO SEE FFT PLOT OF EKG AFTER BEING HIGH PASSED
-%if(shouldOutput)
-    % Takes the fft of the signal %
-    %transform=fft(x3,NFFT)/N;% Transform from discrete values to the frequency domain
-
-    % Plots the fft of the filtered signal
-  %  transform=transform;
-    %windows=[windows,abs(transform)];
-    %freq = fs/2*linspace(0,1,NFFT/2+1);%Frequency index
-    %fprintf('Plotting\n');
-    %figure(6)
-    %plot(freq,2*abs(transform(1:NFFT/2+1)));
-    %title('FFT HP Filtered EKG Signal');
-    %xlabel('Frequency (Hz)');
-    %ylabel('|X(f)|');
-%end
-
-%DERIVATIVE FILTER
-
-% Make impulse response
-%h = [-1 -2 0 2 1]/8;
-% Apply filter
-%x4 = conv (x1 ,h);
-%x4 = x4 (2+ (1: N));
-%x4 = x4/ max( abs(x4 ));
-
-% UNCOMMENT TO SEE PLOT OF EKG AFTER BEING A DERIVATIVE FILTER IS APPLIED
-
-    %figure(7)
-    %subplot(2,1,1)
-    %plot([0:length(x4)-1]/fs,x4)
-    %xlabel('second');ylabel('Volts');title(' ECG Signal after Derivative')
-    %subplot(2,1,2)
-    %plot(t(200:600),x4(200:600))
-    %xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
-    %xlim([1 3]);
  
 %SQUARING
 
 x5 = fi(x1.^2, F);
 
-% assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F));
-%x5 = mpower(x1, 2);
-%x5 = x5/ max( abs(x5 ));
-
-% figure(24)
-% plot(x5);
 
 % UPDATES FIXED POINT DEFINITION TO BE UNSIGNED
-% assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F));
 Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
 F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
 
@@ -294,17 +126,7 @@ x5 = fi(x5, Fixed_Point_Properties, F);
 x5 = divide(Fixed_Point_Properties, x5, max( abs(x5 ))); % normalize to one
 assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F));
 
-% UNCOMMENT TO SEE PLOT OF EKG AFTER SQUARING
-%     if(shouldOutput)
-        %figure(8)
-        %subplot(2,1,1)
-        %plot([0:length(x5)-1]/fs,x5)
-        %xlabel('second');ylabel('Volts');title(' ECG Signal Squaring')
-        %subplot(2,1,2)
-        %plot(t(200:600),x5(200:600))
-        %xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
-        %xlim([1 3]);
-%     end
+
 %MOVING WINDOW INTEGRATION
 
 % Make impulse response
@@ -317,23 +139,9 @@ x6 = fi(conv (x5 ,h), Fixed_Point_Properties, F);
 x6 = x6 (15+(1: N));
 
 % Normalizes the signal 
-% x6 = x6 / max( abs(x6 ));
 x6 = divide(Fixed_Point_Properties, x6, max( abs(x6 ))); % normalize to one
-% figure(25)
-% plot(x6);
 assert(isequal(numerictype(x6),Fixed_Point_Properties) && isequal(fimath(x6), F));
 
-% UNCOMMENT TO SEE PLOT OF EKG AFTER A MWI IS APPLIED
-%     if(shouldOutput)
-        %figure(9)
-        %subplot(2,1,1)
-        %plot([0:length(x6)-1]/fs,x6)
-        %xlabel('second');ylabel('Volts');title(' ECG Signal after Averaging')
-        %subplot(2,1,2)
-        %plot(t(200:600),x6(200:600))
-        %xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
-        %xlim([1 3]);
-%     end
     
 %FIND QRS POINTS. NOTE: THE PEAK FINDING IS DIFFERENT THAN PAN-TOMPKINS ALGORITHM
 
@@ -347,21 +155,6 @@ thresh = mean (x6 );
 % Outputs an array with each value indicating whether the value at that
 % index is greater than thresh * max_h
 poss_reg =(x6>thresh*max_h)';
-
-% UNCOMMENT TO SEE PLOT OF EKG AFTER BEING INTEGRATED?
-
-    %figure (10)
-    %subplot(2,1,1)
-    %hold on
-    %plot (t(200:600),x1(200:600)/max(x1))
-    %box on
-    %xlabel('second');ylabel('Integrated')
-    %xlim([1 3]);
-
-    %subplot(2,1,2)
-    %plot (t(200:600),x6(200:600)/max(x6))
-    %xlabel('second');ylabel('Integrated')
-    %xlim([1 3]);
 
 %  Finds(the indices) all the heart beats which are preceded by a non-beat
 left = find(diff([0 poss_reg])==1); % Gets all the indices in the resultant diff vector for which X[n] - X[n-1] = 1
@@ -379,28 +172,9 @@ for i=1:length(left)
     [R_value(i) R_loc(i)] = max( x1(left(i):right(i)) );
     R_loc(i) = R_loc(i)-1+left(i); % add offset
 
-%     [Q_value(i) Q_loc(i)] = min( x1(left(i):R_loc(i)) );
-%     Q_loc(i) = Q_loc(i)-1+left(i); % add offset
-
-%     [S_value(i) S_loc(i)] = min( x1(left(i):right(i)) );
-%     S_loc(i) = S_loc(i)-1+left(i); % add offset
-
 end
 % there is no selective wave
 R_loc=R_loc(R_loc~=0);
-% Q_loc=Q_loc(find(Q_loc~=0));
-% S_loc=S_loc(find(S_loc~=0));
-
-% UNCOMMENT TO SEE RESULTS OF THE QRS DETECTION
-
-    %figure(11)
-    %subplot(2,1,1)
-    %title('ECG Signal with R points');
-    %plot (t,x1/max(x1) , t(R_loc) ,R_value , 'r^', t(S_loc) ,S_value, '*',t(Q_loc) , Q_value, 'o');
-    %legend('ECG','R','S','Q');
-    %subplot(2,1,2)
-    %plot (t,x1/max(x1) , t(R_loc) ,R_value , 'r^', t(S_loc) ,S_value, '*',t(Q_loc) , Q_value, 'o');
-    %xlim([1 3]);
 
 % VITASIGN'S CODE BELOW
 
@@ -418,13 +192,7 @@ R_peak_indices = R_loc;
 % NEEDS OPTIMIZATION. NEED TO AVOID COPYING LARGE ARRAYS 
 R_peak_indices_channel_1 = R_peak_indices(1:num_cols_indices); 
 R_peak_indices_channel_2 = R_peak_indices(1:num_cols_indices);
-% R_peak_indices_channel_3 = R_peak_indices(1:num_cols_indices);
 R_peak_indices_combined = R_peak_indices(1:num_cols_indices); % REPLACE THIS WITH A ZEROS ARRAY
-
-% UNCOMMENT TO SEE THE NUMBER OF PEAKS BEFORE CHANNEL 1 PROCESSING
-%     if (shouldOutput)
-%         fprintf('Channel 1 Original: There are %i non-zero values\n',length(find(R_peak_indices_channel_1 ~= 0)));
-%     end
 
 [R_peak_indices_channel_1, noise_lvl_channel_1, signal_lvl_channel_1] = dualThreshold(R_peak_vals, threshold_1, uint32(R_peak_indices_channel_1), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
 [R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(R_peak_vals, threshold_2, uint32(R_peak_indices_channel_2), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
@@ -439,84 +207,8 @@ assert(isequal(numerictype(noise_lvl_channel_2),Fixed_Point_Properties) && isequ
 assert(isequal(numerictype(signal_lvl_channel_1),Fixed_Point_Properties) && isequal(fimath(signal_lvl_channel_1), F));
 assert(isequal(numerictype(signal_lvl_channel_2),Fixed_Point_Properties) && isequal(fimath(signal_lvl_channel_2), F));
 
-
-% UNCOMMENT TO SEE THE NUMBER OF PEAKS AFTER CHANNEL 1 PROCESSING
-%     if (shouldOutput)
-%         fprintf('Channel 1 Post: There are %i non-zero values\n',length(find(R_peak_indices_channel_1 ~= 0)));
-%     end
-
-
-% UNCOMMENT TO SEE PLOT OF EKG AFTER BEING PASSED THROUGH THE FIRST CHANNEL
-
-% if (shouldOutput)
-    % Sets R values to zero which failed any of the previous phases 
-    %R_valuea = R_value;
-    %for i=1:length(R_valuea)
-    %    if (R_peak_indices_channel_1(i) == 0)
-    %        R_valuea(i) = 0;
-    %    end
-    %end
-    %R_valuea = R_valuea(R_valuea ~= 0);   
-    %R_peak_indices_channel_1a = R_peak_indices_channel_1((R_peak_indices_channel_1 ~= 0));
-    %fprintf('The length of R after is: %i\n',length(R_valuea));
-    %fprintf('The length of R_indices after is: %i\n',length(R_peak_indices_channel_1a));   
-%     t(R_peak_indices_channel_1a);
-    %clf(figure(13));
-    %figure(13)
-    %subplot(2,1,1)
-    %plot (t, x1/max(x1), t(R_peak_indices_channel_1a), R_valuea, 'r^');
-    %title('ECG Signal Post Channel 1 Processing');
-    %xlabel('Time(s)');
-    %ylabel('mV');
-    %legend('ECG','R');
-    
-    %subplot(2,1,2)
-    %plot (t, x1/max(x1), t(R_peak_indices), R_value, 'r^');
-    %title('ECG All Detected Peaks');
-    %xlabel('Time(s)');
-    %ylabel('mV')
-    %plot (t, x1/max(x1) , t(R_peak_indices_channel_3) ,R_peak_vals , 'r^', t(S_loc) ,S_value, '*',t(Q_loc) , Q_value, 'o');
-% end
-% UNCOMMENT TO SEE PLOT OF EKG AFTER BEING PASSED THROUGH THE SECOND CHANNEL
-
-% if (shouldOutput)
-    % Sets R values to zero which failed any of the previous phases 
-    %R_valuea = R_value;
-    %for i=1:length(R_valuea)
-    %    if (R_peak_indices_channel_2(i) == 0)
-    %        R_valuea(i) = 0;
-    %    end
-    %end
-    %R_valuea = R_valuea(R_valuea ~= 0);   
-    %R_peak_indices_channel_2a = R_peak_indices_channel_2((R_peak_indices_channel_2 ~= 0));
-    %fprintf('The length of R after is: %i\n',length(R_valuea));
-    %fprintf('The length of R_indices after is: %i\n',length(R_peak_indices_channel_2a));   
-%     t(R_peak_indices_channel_2a);
-    %clf(figure(13));
-    %figure(14)
-    %subplot(2,1,1)
-    %plot (t, x1/max(x1), t(R_peak_indices_channel_2a), R_valuea, 'r^');
-    %title('ECG Signal Post Channel 2 Processing');
-    %xlabel('Time(s)');
-    %ylabel('mV');
-    %legend('ECG','R');
-    %subplot(2,1,2)
-    %plot (t, x1/max(x1), t(R_peak_indices), R_value, 'r^');
-    
-    %title('ECG All Detected Peaks');
-    %xlabel('Time(s)');
-    %ylabel('mV');
-    %legend('ECG','R');
-    %plot (t, x1/max(x1) , t(R_peak_indices_channel_3) ,R_peak_vals , 'r^', t(S_loc) ,S_value, '*',t(Q_loc) , Q_value, 'o');
-% end
-
 % Level 3 DETECTION: REFINES HEART BEAT DETECTION ACCURACY BY CHANNEL
 % COMPARISON
-
-% UNCOMMENT TO SEE THE NUMBER OF PEAKS BEFORE LEVEL 3 PROCESSING
-    %if (shouldOutput)
-    %    fprintf('\nCombined Original: There are %i non-zero values\n',length(find(R_peak_indices_combined ~= 0)));
-    %end
 % Combines both channels to refine beat detection
 for i=1:length(R_peak_indices_combined)
     % Documents the other cases %
@@ -536,20 +228,11 @@ for i=1:length(R_peak_indices_combined)
     if (R_peak_indices_channel_1(i) == 0 && R_peak_indices_channel_2(i) == 0)
         R_peak_indices_combined(i) = 0;
     elseif (R_peak_indices_channel_1(i) ~= 0 && R_peak_indices_channel_2(i) == 0)
-        % DELETE DEBUGGING
-        %if (shouldOutput)
-        %   fprintf('The peak val is: %f\n',R_peak_vals(i));
-        %end
+  
         % Uses the decision of the channel w/ the highest Detection.
         % Ensures that Ds is between 0 and 1
         % strength(Ds)
-%         signal_lvl_channel_1
-%         noise_lvl_channel_1
-%           fprintf('In here');
-%           diff1 = ((R_peak_vals(i) - noise_lvl_channel_1) * 100) / (signal_lvl_channel_1 - noise_lvl_channel_1)
-%           diff2 = ((R_peak_vals(i) - noise_lvl_channel_2) * 100) / (signal_lvl_channel_2 - noise_lvl_channel_2)
-%         minlog(diff1)
-%         minlog(diff2)
+        
         % If the delta between the peak value and the noise level is < 0
         % then due to unsigned fixed point rules this value is 0 which is what we
         % want anyways so this proves to be a useful overflow case.
@@ -559,44 +242,20 @@ for i=1:length(R_peak_indices_combined)
         Ds_2 = max(0, Ds_2);
       
         if (Ds_1 > Ds_2)
-            %if(shouldOutput)
-               %fprintf('Ds1: %f Ds2: %f Ds1 wins\n', Ds_1, Ds_2);
-            %end
             R_peak_indices_combined(i) = R_peak_indices_channel_1(i);
         else
-            %if(shouldOutput)
-                %fprintf('Ds1: %f Ds2: %f Ds2 wins\n', Ds_1, Ds_2);
-            %end
             R_peak_indices_combined(i) = R_peak_indices_channel_2(i);
         end
     end
 end
-% UNCOMMENT TO SEE THE NUMBER OF PEAKS AFTER LEVEL 3 PROCESSING
-%     if (shouldOutput)
-%         fprintf('Combined Post: There are %i non-zero values\n',length(find(R_peak_indices_combined ~= 0)));
-%     end
-    
-% Grabs the result of both channels    
-R_peak_indices_channel_3 = R_peak_indices_combined;
-
-% UNCOMMENT TO SEE THE NUMBER OF PEAKS AFTER LEVEL 4 PROCESSING
-    %if (shouldOutput)
-    %    fprintf('\n4th level Original: There are %i non-zero values\n',length(find(R_peak_indices_channel_3 ~= 0)));
-    %end
-% UNCOMMENT TO USE LEVEL 4 PROCESSING 
-    %[R_peak_indices_channel_3, noise_lvl_channel_3, signal_lvl_channel_3] = fourth_level_process(threshold_3, R_peak_indices_channel_3);
-
-    %if (shouldOutput)
-    %    fprintf('4th level Post: There are %i non-zero values\n',length(find(R_peak_indices_channel_3 ~= 0)));
-    %end
-    
+   
 % LEVEL 5 DETECTION: 
 %Refines heart beat detection by considering a heart beat's refactory period    
 
 % Sets R values to zero which failed any of the previous phases
 last_R_index = fi(0, Fixed_Point_Properties, F);
 % Sample time delta is based off the Fs passed in
-time_delta = divide(Fixed_Point_Properties, 1, 100);
+time_delta = divide(Fixed_Point_Properties, 1, 300);
 
 % Heart beat delta sum is the summation of the time between heart beats. It's used for
 % HR calculation
@@ -608,20 +267,20 @@ heart_beat_last_sum = fi(0, Fixed_Point_Properties, F);
 heart_beat_count = fi(0, Fixed_Point_Properties, F);
 
 for i=1:length(R_peak_vals)
-    if (R_peak_indices_channel_3(i) == 0)
+    if (R_peak_indices_combined(i) == 0)
         R_peak_vals(i) = 0;
      % Filters out any R_values which happen too soon after a previous
      % beat detection. Updates the average HR delta which will be used to
      % calculate HR
     else
         % Updates the index
-        current_R_index = fi(R_peak_indices_channel_3(i), Fixed_Point_Properties, F);
+        current_R_index = fi(R_peak_indices_combined(i), Fixed_Point_Properties, F);
         
         %Filters out any R_values which happen too soon after a previous
         % beat detection.
         if (last_R_index ~= 0 && ((current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta) < .200)
             R_peak_vals(i) = 0;
-            R_peak_indices_channel_3(i) = 0;
+            R_peak_indices_combined(i) = 0;
          
         % Initializes the first delta which is when the first heart
         % beat occurs
@@ -631,7 +290,7 @@ for i=1:length(R_peak_vals)
             heart_beat_current_sum = heart_beat_delta + 0;
             
             % Updates the last index
-            last_R_index = fi(R_peak_indices_channel_3(i), Fixed_Point_Properties, F);
+            last_R_index = fi(R_peak_indices_combined(i), Fixed_Point_Properties, F);
             
             % Updates the heart beat count
             heart_beat_count = heart_beat_count + 1;
@@ -646,59 +305,13 @@ for i=1:length(R_peak_vals)
             heart_beat_count = heart_beat_count + 1;
             
             % Updates the last index
-            last_R_index = fi(R_peak_indices_channel_3(i), Fixed_Point_Properties, F);
+            last_R_index = fi(R_peak_indices_combined(i), Fixed_Point_Properties, F);
             
         end
     end
 end
 
 last_hr_delta = fi(sample_time, Fixed_Point_Properties, F) - last_R_index * time_delta;
-% Removes all zero values from both the indice and value array
-R_peak_indices_channel_3 = R_peak_indices_channel_3(R_peak_indices_channel_3 ~= 0);
-% R_peak_vals = R_peak_vals(R_peak_vals ~= 0);
-
-%plots R peaks after all level processing
-% if (shouldOutput)
-    %clf(figure(14));
-    %figure(15)
-    %subplot(2,1,1)
-    %plot (t, x1/max(x1), t(R_peak_indices_channel_3), R_peak_vals, 'r^');
-    %title('Final ECG Signal with R points');
-    %xlabel('Time(s)');
-    %ylabel('mV');
-    %legend('ECG','R');
-    
-    %subplot(2,1,2)
-    %plot (t, x1/max(x1), t(R_peak_indices), R_value, 'r^');
-    %title('ECG All Detected Peaks');
-    %xlabel('Time(s)');
-    %ylabel('mV');
-    %legend('ECG','R');
-    %plot (t, x1/max(x1) , t(R_peak_indices_channel_3) ,R_peak_vals , 'r^', t(S_loc) ,S_value, '*',t(Q_loc) , Q_value, 'o');
-% end
-
-
-%xlim([1 3]);
-
-%plot (t(R_peak_indices_channel_3) ,R_peak_vals, 'r^');
-%plot (t,x1/max(x1) , t(R_loc) ,R_value , 'r^', t(S_loc) ,S_value, '*',t(Q_loc) , Q_value, 'o');
-%xlabel('Seconds'); ylabel('Normalized Magnitude');title('R peaks');
-
-%%plot(R_peak_vals, 'r+');
-
-% CALCULATES HEART RATE
-% NOTE: This will assume that only 1-min windows of the EKG are sent in as
-% the data type
-R_peak_count = fi(0, Fixed_Point_Properties, F);
-
-% Counts how many R peak counts are found in N seconds
-for i=1:length(R_peak_indices_channel_3)
-    % Counts how many R wave peaks are found in a 
-    R_peak_count = R_peak_count + 1;
-end
-% R_peak_count
-% heart_rate = divide(Fixed_Point_Properties, R_peak_count, sample_time) * 60;
-
 
 % CALCULATES HEART RATE USING AVERAGE TIME TIME DELTAS BETWEEN BEATS
 %   Provides less quantized HR values
@@ -759,7 +372,7 @@ end
 
 %DUAL THRESHOLD PROCESSSING
 % Filters out R_peaks which don't meet the threshold reqs
-    function [indices, noise_lvl, signal_lvl] = dualThreshold(R_peak_vals, threshold, indices, max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput)
+    function [indices, noise_lvl, signal_lvl] = dualThreshold(R_peak_vals, threshold, indices, max_voltage, pos_deviance_threshold, neg_deviance_threshold, ~)
         Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
         F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
         
@@ -781,40 +394,21 @@ end
         noise_lvl = fi(0, Fixed_Point_Properties, F); signal_lvl = fi(0,Fixed_Point_Properties, F);
         
         for index=1:length(R_peak_vals)
-               % DELETE AFTER DEBUGGING
-               %if (shouldOutput && channel == 2)
-               %    fprintf('The peak val is: %f\n',R_peak_vals(index));
-               %end
            if (R_peak_vals(index) * max_voltage > threshold) 
-               %fprintf('mv: %f. Threshold is: %f\n', R_peak_vals(index) * max_voltage, threshold);
-               %R_peak_vals(index)
                
                % Filters out any signal value which exceeds the allowed deviance from
                % the average signal value 
                if (~meets_deviance_threshold(R_peak_vals(index), signal_lvl, pos_deviance_threshold, neg_deviance_threshold) && index > 4)
-%                     if(shouldOutput)
-%                           fprintf('Does not meet the deviance threshold\n');
-%                           R_peak_vals(index)
-%                           signal_lvl
-%                     end
-
                    % Sets all the indices which R_vals don't meet the threshold to 0
-                   indices(index) = 0; 
-                   
+                   indices(index) = 0;               
                    % Updates the average noise signal lvl
                    noise_sum = noise_sum  + R_peak_vals(index);
                    noise_count = noise_count + 1;
                    
                    % Calculates the noise level
-%                    noise_lvl = noise_sum / noise_count;
                    noise_lvl = divide(Fixed_Point_Properties, noise_sum, noise_count);
                    continue;
-               end
-               % DELETE AFTER DEBUGGING
-               %if (shouldOutput && channel == 2)
-               %   fprintf('The peak val is: %f\n',R_peak_vals(index));
-               %end
-               
+               end               
                 % Updates the average signal lvl
                signal_sum = signal_sum + R_peak_vals(index);
                signal_count = signal_count + 1;
@@ -828,7 +422,6 @@ end
                noise_sum = noise_sum  + R_peak_vals(index);
                noise_count = noise_count + 1;
                % Calculates the noise level
-%                noise_lvl = noise_sum / noise_count;
                noise_lvl = divide(Fixed_Point_Properties, noise_sum, noise_count);
 
            end          
