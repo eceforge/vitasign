@@ -1,4 +1,4 @@
-%#codegen
+ %#codegen
 function [heart_rate, last_hr_delta] = heart_rate_official_cport(data, fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_time, shouldOutput, prev_hr_delta)  
 %------ Heart Rate Detection Algorithm ----------
 %  Detects and calculates Heart rate from an EKG Signal. 
@@ -85,7 +85,7 @@ assert(threshold_1 < threshold_2);
 % threshold
 assert(threshold_3 < threshold_2 && threshold_3 > threshold_1);
 %x1 = load('ecg3.dat'); % load the ECG signal from the file
-assert (all ( size (data) == [3000 1] ));
+assert (all ( size (data) == [1000 1] ));
 
 x1 = data;
 N = length (x1);       % Signal length
@@ -255,7 +255,7 @@ end
 % Sets R values to zero which failed any of the previous phases
 last_R_index = fi(0, Fixed_Point_Properties, F);
 % Sample time delta is based off the Fs passed in
-time_delta = divide(Fixed_Point_Properties, 1, 300);
+time_delta = divide(Fixed_Point_Properties, 1, 100);
 
 % Heart beat delta sum is the summation of the time between heart beats. It's used for
 % HR calculation
@@ -422,7 +422,6 @@ end
                noise_count = noise_count + 1;
                % Calculates the noise level
                noise_lvl = divide(Fixed_Point_Properties, noise_sum, noise_count);
-
            end          
         end
     end  
