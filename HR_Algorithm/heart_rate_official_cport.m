@@ -1,5 +1,5 @@
  %#codegen
-function [heart_rate, last_hr_delta] = heart_rate_official_cport(data, fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_time, shouldOutput, prev_hr_delta)  
+function [heart_rate, last_hr_delta, data] = heart_rate_official_cport(data, fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_time, shouldOutput, prev_hr_delta)  
 %------ Heart Rate Detection Algorithm ----------
 %  Detects and calculates Heart rate from an EKG Signal. 
 %  The QRS Detection algorithm is based on Pan-Tompkin's famous paper
@@ -84,11 +84,12 @@ assert(threshold_1 < threshold_2);
 %  Assures that the third threshold is in between the first and the second
 % threshold
 assert(threshold_3 < threshold_2 && threshold_3 > threshold_1);
-%x1 = load('ecg3.dat'); % load the ECG signal from the file
-assert (all ( size (data) == [1000 1] ));
 
-x1 = data;
-N = length (x1);       % Signal length
+%x1 = load('ecg3.dat'); % load the ECG signal from the file
+assert (all ( size (data) == [3000 1] ));
+
+% x1 = data;
+N = uint32(length(data));       % Signal length
 
 
 % Assures that the number of samples sent in aren't greater than the
@@ -98,19 +99,19 @@ assert(divide(Fixed_Point_Properties, fi(N, Fixed_Point_Properties, F), fi(fs, F
 %CANCELLATION DC DRIFT AND NORMALIZATION
 %x1 = x1 - mean (x1 );    % cancel DC conponents
 % x1 = x1/ max( abs(x1 )); % normalize to one
-max_x = fi(max(abs(x1)), Fixed_Point_Properties_signed, F_signed);
+max_x = fi(max(abs(data)), Fixed_Point_Properties_signed, F_signed);
 % for i=1:length(x1)
 %     divide(Fixed_Point_Properties_signed, x1(i), max_x) % normalize to one
 % end
-x1 = divide(Fixed_Point_Properties_signed, x1, max_x); % normalize to one
-assert(isequal(numerictype(x1),Fixed_Point_Properties_signed) && isequal(fimath(x1), F_signed));
+data = divide(Fixed_Point_Properties_signed, data, max_x); % normalize to one
+% assert(isequal(numerictype(data),Fixed_Point_Properties_signed) && isequal(fimath(data), F_signed));
 
 
 %------ MOST FILTERING NOW OCCURS IN ANALOG SEE 'front_end_filters.m' FOR EMULATED FRONT END FILTERS
  
 %SQUARING
 
-x5 = fi(x1.^2, F);
+data_unsigned = fi(data.^2, Fixed_Point_Properties, F);
 
 
 % UPDATES FIXED POINT DEFINITION TO BE UNSIGNED
@@ -121,10 +122,10 @@ F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLe
 
 % Changes the fixed point properties of the data to be unsigned after
 % squaring
-x5 = fi(x5, Fixed_Point_Properties, F);
+data_unsigned = fi(data_unsigned, Fixed_Point_Properties, F);
 % Normalizes the result of the squaring
-x5 = divide(Fixed_Point_Properties, x5, max( abs(x5 ))); % normalize to one
-assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F));
+data_unsigned = divide(Fixed_Point_Properties, data_unsigned, max( abs(data_unsigned ))); % normalize to one
+% assert(isequal(numerictype(data),Fixed_Point_Properties) && isequal(fimath(data), F));
 
 
 %MOVING WINDOW INTEGRATION
@@ -135,61 +136,62 @@ h = divide(Fixed_Point_Properties, fi(ones (1, 31), Fixed_Point_Properties, F), 
 % Delay = 15; % Delay in samples
 
 % Apply filter
-x6 = fi(conv (x5 ,h), Fixed_Point_Properties, F);
-x6 = x6 (15+(1: N));
+data_unsigned = fi(conv (data_unsigned ,h), Fixed_Point_Properties, F);
+data_unsigned = data_unsigned (15+(1: N));
 
 % Normalizes the signal 
-x6 = divide(Fixed_Point_Properties, x6, max( abs(x6 ))); % normalize to one
-assert(isequal(numerictype(x6),Fixed_Point_Properties) && isequal(fimath(x6), F));
+data_unsigned = divide(Fixed_Point_Properties, data_unsigned, max( abs(data_unsigned ))); % normalize to one
+% assert(isequal(numerictype(data),Fixed_Point_Properties) && isequal(fimath(data), F));
 
-    
 %FIND QRS POINTS. NOTE: THE PEAK FINDING IS DIFFERENT THAN PAN-TOMPKINS ALGORITHM
 
 %figure(7)
 %subplot(2,1,1)
-max_h = max(x6);
-max_voltage = max_h;
+max_voltage = max(data_unsigned);
 assert(isequal(numerictype(max_voltage),Fixed_Point_Properties) && isequal(fimath(max_voltage), F));
 
-thresh = mean (x6 );
+thresh = mean (data_unsigned);
 % Outputs an array with each value indicating whether the value at that
 % index is greater than thresh * max_h
-poss_reg =(x6>thresh*max_h)';
+% poss_reg =uint32((data_unsigned > thresh*max_voltage)')
+poss_reg =int32((data_unsigned > thresh*max_voltage)');
 
 %  Finds(the indices) all the heart beats which are preceded by a non-beat
-left = find(diff([0 poss_reg])==1); % Gets all the indices in the resultant diff vector for which X[n] - X[n-1] = 1
-
+left = uint32(find(diff([int32(0) poss_reg]) == int32(1))); % Gets all the indices in the resultant diff vector for which X[n] - X[n-1] = 1
 % Finds all the heart beats where  the heart beats are proceeded by a
 % non-beat
-right = find(diff([poss_reg 0])==-1);
+right = uint32(find(diff([poss_reg 0]) == int32(-1)));
+% right = uint32(zeros(1, N));
 
 %left=left-(6+16);  % cancel delay because of LP and HP
 %right=right-(6+16);% cancel delay because of LP and HP
-[~, left_num_cols] = size(left);
-R_value = fi(zeros(1, left_num_cols), Fixed_Point_Properties, F);
-R_loc = zeros(1, left_num_cols);
-for i=1:length(left)  
-    [R_value(i) R_loc(i)] = max( x1(left(i):right(i)) );
-    R_loc(i) = R_loc(i)-1+left(i); % add offset
+% [~, left_num_cols] = size(left);
+left_num_cols = uint32(length(left));
+R_peak_vals = fi(zeros(1, left_num_cols), Fixed_Point_Properties, F);
+R_peak_indices = uint32(zeros(1, left_num_cols));
+for i=1:left_num_cols
+    [R_peak_vals(i) R_peak_indices(i)] = max(data_unsigned(left(i):right(i)) );
+    R_peak_indices(i) = R_peak_indices(i)-1+left(i); % add offset
 
 end
-% there is no selective wave
-R_loc=R_loc(R_loc~=0);
 
+% CAN RELEASE DATA HERE 
+
+% there is no selective wave
+R_peak_indices=R_peak_indices(R_peak_indices~=0);
 % VITASIGN'S CODE BELOW
 
 % Level 1 Detection: Detects all peaks 
-R_peak_vals = R_value;
-R_peak_indices = R_loc;
+% R_peak_vals = R_peak_vals;
+% R_peak_indices = R_peak_indices;
 
 % Level 2 Detection: Uses two channels to detect heart beats based on two threshold
 % [num_rows_vals, num_cols_vals] = size(R_peak_vals);
-[~, num_cols_indices] = size(R_peak_indices);
-
+% [~, num_cols_indices] = size(R_peak_indices);
+num_cols_indices = uint32(length(R_peak_indices));
 % Creates a copy of the indices which store the indices where the 'R' peaks
 % lie
 
-% NEEDS OPTIMIZATION. NEED TO AVOID COPYING LARGE ARRAYS 
 R_peak_indices_channel_1 = R_peak_indices(1:num_cols_indices); 
 R_peak_indices_channel_2 = R_peak_indices(1:num_cols_indices);
 % R_peak_indices_combined = zeros(1, length(R_peak_indices_channel_2)); % REPLACE THIS WITH A ZEROS ARRAY
@@ -236,10 +238,21 @@ for i=1:length(R_peak_indices_channel_2)
         % If the delta between the peak value and the noise level is < 0
         % then due to unsigned fixed point rules this value is 0 which is what we
         % want anyways so this proves to be a useful overflow case.
-        Ds_1 = min(1, divide(Fixed_Point_Properties, ((R_peak_vals(i) * 100 - noise_lvl_channel_1 * 100)), (signal_lvl_channel_1 * 100 - noise_lvl_channel_1 * 100)));
-        Ds_1 = max(0, Ds_1);
-        Ds_2 = min(1, divide(Fixed_Point_Properties, ((R_peak_vals(i) * 100 - noise_lvl_channel_2 * 100)), (signal_lvl_channel_2 * 100 - noise_lvl_channel_2 * 100)));
-        Ds_2 = max(0, Ds_2);
+        if (signal_lvl_channel_1 < noise_lvl_channel_1)
+            Ds_1 = fi(0, Fixed_Point_Properties, F);
+        else
+            Ds_1 = min(1, divide(Fixed_Point_Properties, ((R_peak_vals(i) * 100 - noise_lvl_channel_1 * 100)), (signal_lvl_channel_1 * 100 - noise_lvl_channel_1 * 100)));
+        end
+%         Ds_1 = max(0, Ds_1);
+
+        if (signal_lvl_channel_2 < noise_lvl_channel_2)
+            Ds_2  = fi(0, Fixed_Point_Properties, F);
+        else
+           sig_lvl_noise_dif = signal_lvl_channel_2 * 100 - noise_lvl_channel_2 * 100
+           sig_nois_dif = R_peak_vals(i) * 100 - noise_lvl_channel_2 * 100
+           Ds_2 = min(1, divide(Fixed_Point_Properties, ((R_peak_vals(i) * 100 - noise_lvl_channel_2 * 100)), (signal_lvl_channel_2 * 100 - noise_lvl_channel_2 * 100)));
+        end
+%         Ds_2 = max(0, Ds_2);
       
         if (Ds_1 > Ds_2)
             R_peak_indices_channel_2(i) = R_peak_indices_channel_1(i);
@@ -255,7 +268,7 @@ end
 % Sets R values to zero which failed any of the previous phases
 last_R_index = fi(0, Fixed_Point_Properties, F);
 % Sample time delta is based off the Fs passed in
-time_delta = divide(Fixed_Point_Properties, 1, 100);
+time_delta = divide(Fixed_Point_Properties, 1, 300);
 
 % Heart beat delta sum is the summation of the time between heart beats. It's used for
 % HR calculation
