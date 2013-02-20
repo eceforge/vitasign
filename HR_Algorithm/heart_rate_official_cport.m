@@ -86,7 +86,7 @@ assert(threshold_1 < threshold_2);
 assert(threshold_3 < threshold_2 && threshold_3 > threshold_1);
 
 %x1 = load('ecg3.dat'); % load the ECG signal from the file
-assert (all ( size (data) == [3000 1] ));
+assert (all ( size (data) == [1000 1] ));
 
 % x1 = data;
 N = uint32(length(data));       % Signal length
@@ -117,7 +117,7 @@ F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLe
  
 %SQUARING
 
-data_unsigned = fi(data.^2, Fixed_Point_Properties);
+data_unsigned = fi(data.^2, Fixed_Point_Properties, F);
 
 % Changes the fixed point properties of the data to be unsigned after
 % squaring
@@ -130,13 +130,13 @@ data_unsigned = divide(Fixed_Point_Properties, data_unsigned, max( abs(data_unsi
 %MOVING WINDOW INTEGRATION
 
 % Make impulse response
-h = divide(Fixed_Point_Properties, fi(ones (1, 31), Fixed_Point_Properties, F), 31);
+h = divide(Fixed_Point_Properties, fi(ones (1, 7), Fixed_Point_Properties, F), 7);
 
 % Delay = 15; % Delay in samples
 
 % Apply filter
 data_unsigned = fi(conv (data_unsigned ,h), Fixed_Point_Properties, F);
-data_unsigned = data_unsigned (15+(1: N));
+data_unsigned = data_unsigned (3+(1: N));
 
 % Normalizes the signal 
 data_unsigned = divide(Fixed_Point_Properties, data_unsigned, max( abs(data_unsigned ))); % normalize to one
@@ -196,6 +196,9 @@ num_cols_indices = uint32(length(R_peak_indices));
 
 % Creates a copy of the indices which store the indices where the 'R' peaks
 % lie
+% if(shouldOutput)
+%     num_cols_indices;
+% end
 
 R_peak_indices_channel_1 = R_peak_indices(1:num_cols_indices); 
 R_peak_indices_channel_2 = R_peak_indices(1:num_cols_indices);
@@ -203,7 +206,10 @@ R_peak_indices_channel_2 = R_peak_indices(1:num_cols_indices);
 
 [R_peak_indices_channel_1, noise_lvl_channel_1, signal_lvl_channel_1] = dualThreshold(R_peak_vals, threshold_1, uint32(R_peak_indices_channel_1), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
 [R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(R_peak_vals, threshold_2, uint32(R_peak_indices_channel_2), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
-
+% if(shouldOutput)
+%     chan1 = length(find(R_peak_indices_channel_1))
+%     chan2 = length(find(R_peak_indices_channel_2))
+% end
 % Ensures that noise and signal levels are fixed point
 assert(isfi(noise_lvl_channel_1));assert(isfi(signal_lvl_channel_1));
 assert(isfi(noise_lvl_channel_2));assert(isfi(signal_lvl_channel_2));
@@ -265,14 +271,16 @@ for i=1:length(R_peak_indices_channel_2)
     end
 end
 
-
+% if(shouldOutput)
+%     final = length(find(R_peak_indices_channel_2))
+% end
 % LEVEL 5 DETECTION: 
 %Refines heart beat detection by considering a heart beat's refactory period    
 
 % Sets R values to zero which failed any of the previous phases
 last_R_index = fi(0, Fixed_Point_Properties, F);
 % Sample time delta is based off the Fs passed in
-time_delta = divide(Fixed_Point_Properties, 1, 300);
+time_delta = divide(Fixed_Point_Properties, 1, 100);
 
 % Heart beat delta sum is the summation of the time between heart beats. It's used for
 % HR calculation

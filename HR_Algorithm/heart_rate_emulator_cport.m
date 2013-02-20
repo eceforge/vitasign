@@ -63,9 +63,9 @@ data = filter(low_pass, data);
 % Decimates the signal to 300Hz
 % data = resample(data, 3, 2);
  datar = iddata(data,[],1/fs);
- data = idresamp(datar, fs/300);
+ data = idresamp(datar, fs/100);
  data = data.y;
- fs = 300; % Updates fs to the new value
+ fs = 100; % Updates fs to the new value
 %[GB] Ensures the the input args are of the correct data type
 Fixed_Point_Properties_signed = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed', true);
 F_signed = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);

@@ -85,7 +85,7 @@ assert(threshold_1 < threshold_2);
 % threshold
 assert(threshold_3 < threshold_2 && threshold_3 > threshold_1);
 %x1 = load('ecg3.dat'); % load the ECG signal from the file
-assert (all ( size (data) == [3000 1] ));
+assert (all ( size (data) == [1000 1] ));
 % assert (~isscalar(data));
 
 x1 = data;
@@ -310,13 +310,13 @@ assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F)
 %MOVING WINDOW INTEGRATION
 
 % Make impulse response
-h = divide(Fixed_Point_Properties, fi(ones (1, 31), Fixed_Point_Properties, F), 31);
+h = divide(Fixed_Point_Properties, fi(ones (1, 7), Fixed_Point_Properties, F), 7);
 
 % Delay = 15; % Delay in samples
 
 % Apply filter
 x6 = fi(conv (x5 ,h), Fixed_Point_Properties, F);
-x6 = x6 (15+(1: N));
+x6 = x6 (3+(1: N));
 % plot(x6);
 % return;
 
@@ -614,7 +614,7 @@ R_peak_indices_channel_3 = R_peak_indices_combined;
 % Sets R values to zero which failed any of the previous phases
 last_R_index = fi(0, Fixed_Point_Properties, F);
 % Sample time delta is based off the Fs passed in
-time_delta = divide(Fixed_Point_Properties, 1, 300);
+time_delta = divide(Fixed_Point_Properties, 1, 100);
 
 % Heart beat delta sum is the summation of the time between heart beats. It's used for
 % HR calculation
