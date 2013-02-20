@@ -198,6 +198,8 @@ R_peak_indices_channel_2 = R_peak_indices(1:num_cols_indices);
 
 [R_peak_indices_channel_1, noise_lvl_channel_1, signal_lvl_channel_1] = dualThreshold(R_peak_vals, threshold_1, uint32(R_peak_indices_channel_1), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
 [R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(R_peak_vals, threshold_2, uint32(R_peak_indices_channel_2), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
+chan1 = length(find(R_peak_indices_channel_1))
+chan2 = length(find(R_peak_indices_channel_2))
 
 % Ensures that noise and signal levels are fixed point
 assert(isfi(noise_lvl_channel_1));assert(isfi(signal_lvl_channel_1));
@@ -248,8 +250,8 @@ for i=1:length(R_peak_indices_channel_2)
         if (signal_lvl_channel_2 < noise_lvl_channel_2)
             Ds_2  = fi(0, Fixed_Point_Properties, F);
         else
-           sig_lvl_noise_dif = signal_lvl_channel_2 * 100 - noise_lvl_channel_2 * 100
-           sig_nois_dif = R_peak_vals(i) * 100 - noise_lvl_channel_2 * 100
+%            sig_lvl_noise_dif = signal_lvl_channel_2 * 100 - noise_lvl_channel_2 * 100
+%            sig_nois_dif = R_peak_vals(i) * 100 - noise_lvl_channel_2 * 100
            Ds_2 = min(1, divide(Fixed_Point_Properties, ((R_peak_vals(i) * 100 - noise_lvl_channel_2 * 100)), (signal_lvl_channel_2 * 100 - noise_lvl_channel_2 * 100)));
         end
 %         Ds_2 = max(0, Ds_2);
@@ -261,7 +263,8 @@ for i=1:length(R_peak_indices_channel_2)
         end
     end
 end
-   
+chan2 = length(find(R_peak_indices_channel_2))
+
 % LEVEL 5 DETECTION: 
 %Refines heart beat detection by considering a heart beat's refactory period    
 
@@ -329,9 +332,10 @@ last_hr_delta = fi(sample_time, Fixed_Point_Properties, F) - last_R_index * time
 %   Provides less quantized HR values
 
 % Produces a result which is avg heart beat delta(s)
-heart_beat_delta_sum = heart_beat_current_sum - heart_beat_last_sum;
+heart_beat_delta_sum = heart_beat_current_sum - heart_beat_last_sum
+heart_beat_count
 % heart_beat_delta_sum = heart_beat_current_sum;
-heart_rate  = divide(Fixed_Point_Properties, heart_beat_delta_sum, heart_beat_count);
+heart_rate  = divide(Fixed_Point_Properties, heart_beat_delta_sum, heart_beat_count)
 % Inverses it to produce HBPM
 heart_rate = divide(Fixed_Point_Properties, 1, heart_rate);
 heart_rate = heart_rate * 60;
