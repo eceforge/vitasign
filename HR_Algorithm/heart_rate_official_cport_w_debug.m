@@ -85,7 +85,7 @@ assert(threshold_1 < threshold_2);
 % threshold
 assert(threshold_3 < threshold_2 && threshold_3 > threshold_1);
 %x1 = load('ecg3.dat'); % load the ECG signal from the file
-assert (all ( size (data) == [1500 1] ));
+assert (all ( size (data) == [3000 1] ));
 % assert (~isscalar(data));
 
 x1 = data;
@@ -270,7 +270,9 @@ assert(isequal(numerictype(x1),Fixed_Point_Properties_signed) && isequal(fimath(
     %xlim([1 3]);
  
 %SQUARING
-
+if(shouldOutput)
+    length(x1);
+end
 x5 = fi(x1.^2, F);
 
 % assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F));
@@ -308,15 +310,16 @@ assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F)
 %MOVING WINDOW INTEGRATION
 
 % Make impulse response
-h = divide(Fixed_Point_Properties, fi(ones (1, 7), Fixed_Point_Properties, F), 7);
+h = divide(Fixed_Point_Properties, fi(ones (1, 31), Fixed_Point_Properties, F), 31);
 
 % Delay = 15; % Delay in samples
 
 % Apply filter
 x6 = fi(conv (x5 ,h), Fixed_Point_Properties, F);
-x6 = x6 (3+(1: N));
+x6 = x6 (15+(1: N));
 % plot(x6);
 % return;
+
 % Normalizes the signal 
 % x6 = x6 / max( abs(x6 ));
 x6 = divide(Fixed_Point_Properties, x6, max( abs(x6 ))); % normalize to one
@@ -343,7 +346,9 @@ assert(isequal(numerictype(x6),Fixed_Point_Properties) && isequal(fimath(x6), F)
 max_h = max(x6);
 max_voltage = max_h;
 assert(isequal(numerictype(max_voltage),Fixed_Point_Properties) && isequal(fimath(max_voltage), F));
-
+if(shouldOutput)
+    length(x6);
+end
 thresh = mean (x6 );
 % Outputs an array with each value indicating whether the value at that
 % index is greater than thresh * max_h
@@ -370,7 +375,10 @@ left = find(diff([0 poss_reg])==1); % Gets all the indices in the resultant diff
 % Finds all the heart beats where  the heart beats are proceeded by a
 % non-beat
 right = find(diff([poss_reg 0])==-1);
-
+if(shouldOutput)
+    length(left)
+    length(right)
+end
 %left=left-(6+16);  % cancel delay because of LP and HP
 %right=right-(6+16);% cancel delay because of LP and HP
 [~, left_num_cols] = size(left);
@@ -408,7 +416,9 @@ R_loc=R_loc(R_loc~=0);
 % Level 1 Detection: Detects all peaks 
 R_peak_vals = R_value;
 R_peak_indices = R_loc;
-
+if(shouldOutput)
+    length(R_peak_indices)
+end
 % Level 2 Detection: Uses two channels to detect heart beats based on two threshold
 % [num_rows_vals, num_cols_vals] = size(R_peak_vals);
 [~, num_cols_indices] = size(R_peak_indices);
@@ -416,7 +426,7 @@ R_peak_indices = R_loc;
 % Creates a copy of the indices which store the indices where the 'R' peaks
 % lie
 
-% NEEDS OPTIMIZATION. NEED TO AVOID COPYING LARGE ARRAYS 
+% NEEDS OPTIMIZATION. NEED TO AVOID COPYING LARGE   ARRAYS 
 R_peak_indices_channel_1 = R_peak_indices(1:num_cols_indices); 
 R_peak_indices_channel_2 = R_peak_indices(1:num_cols_indices);
 % R_peak_indices_channel_3 = R_peak_indices(1:num_cols_indices);
@@ -429,7 +439,10 @@ R_peak_indices_combined = R_peak_indices(1:num_cols_indices); % REPLACE THIS WIT
 
 [R_peak_indices_channel_1, noise_lvl_channel_1, signal_lvl_channel_1] = dualThreshold(R_peak_vals, threshold_1, uint32(R_peak_indices_channel_1), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
 [R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(R_peak_vals, threshold_2, uint32(R_peak_indices_channel_2), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
-
+if(shouldOutput)
+    chan1 = length(find(R_peak_indices_channel_1))
+    chan2 = length(find(R_peak_indices_channel_2))
+end
 % Ensures that noise and signal levels are fixed point
 assert(isfi(noise_lvl_channel_1));assert(isfi(signal_lvl_channel_1));
 assert(isfi(noise_lvl_channel_2));assert(isfi(signal_lvl_channel_2));
@@ -572,6 +585,10 @@ for i=1:length(R_peak_indices_combined)
         end
     end
 end
+if(shouldOutput)
+    final = length(find(R_peak_indices_combined))
+end
+
 % UNCOMMENT TO SEE THE NUMBER OF PEAKS AFTER LEVEL 3 PROCESSING
 %     if (shouldOutput)
 %         fprintf('Combined Post: There are %i non-zero values\n',length(find(R_peak_indices_combined ~= 0)));
@@ -703,7 +720,10 @@ end
 
 % CALCULATES HEART RATE USING AVERAGE TIME TIME DELTAS BETWEEN BEATS
 %   Provides less quantized HR values
-
+if (shouldOutput)
+    heart_beat_delta_sum = heart_beat_current_sum - heart_beat_last_sum
+    heart_beat_count
+end
 % Produces a result which is avg heart beat delta(s)
 heart_beat_delta_sum = heart_beat_current_sum - heart_beat_last_sum;
 % heart_beat_delta_sum = heart_beat_current_sum;
