@@ -79,6 +79,9 @@ F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLe
 filtered_full_signal = double(filtered_full_signal) - dc_offset;
 indata = fi(filtered_full_signal, Fixed_Point_Properties_signed, F_signed);
 
+% Passes it through the DIGITAL FILTERS - REMOVE 
+indata = digital_filters(indata);
+fake_filtered_data(indata, 4096, 3.3, 100, sample_size);
 % Normalizes the signal 
 % indata = divide(Fixed_Point_Properties_signed, indata, max(abs(indata)));
 

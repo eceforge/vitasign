@@ -1,5 +1,5 @@
  %#codegen
-function [heart_rate, last_hr_delta, data] = heart_rate_official_cport(data, fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_time, shouldOutput, prev_hr_delta)  
+function [heart_rate, last_hr_delta, data_unsigned] = heart_rate_official_cport(data_unsigned, fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_time, shouldOutput, prev_hr_delta)  
 %------ Heart Rate Detection Algorithm ----------
 %  Detects and calculates Heart rate from an EKG Signal. 
 %  The QRS Detection algorithm is based on Pan-Tompkin's famous paper
@@ -55,7 +55,7 @@ F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLe
 % F.sub(fi(3), fi(2))
 % asserts that the input parameters are of fixed point
 assert(isa(shouldOutput,'uint32'));
-assert(isfi(data));
+assert(isfi(data_unsigned));
 assert(isa(fs, 'uint32'));
 assert(isfi(threshold_1));
 assert(isfi(threshold_2));
@@ -66,7 +66,7 @@ assert(isa(sample_time, 'uint32'));
 assert(isfi(prev_hr_delta));
 
 % asserts that input parameters are of specific fixed point parameters
-assert(isequal(numerictype(data), Fixed_Point_Properties_signed) && isequal(fimath(data), F_signed));
+% assert(isequal(numerictype(data), Fixed_Point_Properties_signed) && isequal(fimath(data), F_signed));
 % assert(isequal(numerictype(fs),Fixed_Point_Properties) && isequal(fimath(fs), F));
 assert(isequal(numerictype(threshold_1),Fixed_Point_Properties) && isequal(fimath(threshold_1), F));
 assert(isequal(numerictype(threshold_2),Fixed_Point_Properties) && isequal(fimath(threshold_2), F));
@@ -86,10 +86,10 @@ assert(threshold_1 < threshold_2);
 assert(threshold_3 < threshold_2 && threshold_3 > threshold_1);
 
 %x1 = load('ecg3.dat'); % load the ECG signal from the file
-assert (all ( size (data) == [500 1] ));
+assert (all ( size (data_unsigned) == [500 1] ));
 
 % x1 = data;
-N = uint32(length(data));       % Signal length
+N = uint32(length(data_unsigned));       % Signal length
 
 
 % Assures that the number of samples sent in aren't greater than the
@@ -111,41 +111,41 @@ assert(divide(Fixed_Point_Properties, fi(N, Fixed_Point_Properties, F), fi(fs, F
 
 %DERIVATIVE FILTER
 
-% Make impulse response
-h = divide(Fixed_Point_Properties_signed, fi([-1 -2 0 2 1], Fixed_Point_Properties_signed, F_signed), fi(8, Fixed_Point_Properties_signed, F_signed));
-% Apply filter
-data = conv (data ,h);
-data = data (2+ (1: N));
-data = divide(Fixed_Point_Properties_signed,  data, max( abs(data)));
-% UPDATES FIXED POINT DEFINITION TO BE UNSIGNED
-Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
-F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
-
-
-  
- 
-%SQUARING
-
-data_unsigned = fi(data.^2, Fixed_Point_Properties, F);
-
-% Changes the fixed point properties of the data to be unsigned after
-% squaring
-% data_unsigned = fi(data, Fixed_Point_Properties, F);
-
-% Normalizes the result of the squaring
-% data_unsigned = divide(Fixed_Point_Properties, data_unsigned, max( data_unsigned )); % normalize to one
-% assert(isequal(numerictype(data_unsigned),Fixed_Point_Properties) && isequal(fimath(data_unsigned), F));
-
-%MOVING WINDOW INTEGRATION
-
-% Make impulse response
-h = divide(Fixed_Point_Properties, fi(ones (1, 7), Fixed_Point_Properties, F), 7);
-
-% Delay = 15; % Delay in samples
-
-% Apply filter
-data_unsigned = fi(conv (data_unsigned ,h), Fixed_Point_Properties, F);
-data_unsigned = data_unsigned (3+(1: N));
+% % Make impulse response
+% h = divide(Fixed_Point_Properties_signed, fi([-1 -2 0 2 1], Fixed_Point_Properties_signed, F_signed), fi(8, Fixed_Point_Properties_signed, F_signed));
+% % Apply filter
+% data = conv (data ,h);
+% data = data (2+ (1: N));
+% data = divide(Fixed_Point_Properties_signed,  data, max( abs(data)));
+% % UPDATES FIXED POINT DEFINITION TO BE UNSIGNED
+% Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
+% F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
+% 
+% 
+%   
+%  
+% %SQUARING
+% 
+% data_unsigned = fi(data.^2, Fixed_Point_Properties, F);
+% 
+% % Changes the fixed point properties of the data to be unsigned after
+% % squaring
+% % data_unsigned = fi(data, Fixed_Point_Properties, F);
+% 
+% % Normalizes the result of the squaring
+% % data_unsigned = divide(Fixed_Point_Properties, data_unsigned, max( data_unsigned )); % normalize to one
+% % assert(isequal(numerictype(data_unsigned),Fixed_Point_Properties) && isequal(fimath(data_unsigned), F));
+% 
+% %MOVING WINDOW INTEGRATION
+% 
+% % Make impulse response
+% h = divide(Fixed_Point_Properties, fi(ones (1, 7), Fixed_Point_Properties, F), 7);
+% 
+% % Delay = 15; % Delay in samples
+% 
+% % Apply filter
+% data_unsigned = fi(conv (data_unsigned ,h), Fixed_Point_Properties, F);
+% data_unsigned = data_unsigned (3+(1: N));
 
 % Normalizes the signal 
 data_unsigned = divide(Fixed_Point_Properties, data_unsigned, max(data_unsigned)); % normalize to one
@@ -182,7 +182,8 @@ left_num_cols = uint32(length(left));
 R_peak_vals = fi(zeros(uint32(1), left_num_cols), Fixed_Point_Properties, F);
 R_peak_indices = uint32(zeros(uint32(1), left_num_cols));
 for i=1:left_num_cols
-     [R_peak_vals(i) R_peak_indices(i)] = max(data(left(i):right(i)) );
+%      [R_peak_vals(i) R_peak_indices(i)] = max(data(left(i):right(i)) );
+     [R_peak_vals(i) R_peak_indices(i)] = max(data_unsigned(left(i):right(i)) );
      R_peak_indices(i) = R_peak_indices(i)-1+left(i); % add offset
 end
 
