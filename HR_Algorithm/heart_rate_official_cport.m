@@ -86,7 +86,7 @@ assert(threshold_1 < threshold_2);
 assert(threshold_3 < threshold_2 && threshold_3 > threshold_1);
 
 %x1 = load('ecg3.dat'); % load the ECG signal from the file
-assert (all ( size (data_unsigned) == [500 1] ));
+assert (all ( size (data_unsigned) == [300 1] ));
 
 % x1 = data;
 N = uint32(length(data_unsigned));       % Signal length

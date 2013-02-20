@@ -153,8 +153,8 @@ for step=0:(num_windows - 1)
         heart_rates_avg = heart_rates_avg + heart_rate;
         heart_rates = [heart_rates heart_rate];
     end
-    if (mod(uint32(step + 1), uint32(3)) == 0)
-        heart_rates_w_avg = [heart_rates_w_avg (heart_rates_avg / 3)];
+    if (mod(uint32(step + 1), uint32(5)) == 0)
+        heart_rates_w_avg = [heart_rates_w_avg (heart_rates_avg / 5)];
         t_avg = [t_avg (step_size +  step * step_size)/fs];
         heart_rates_avg = 0;
     end
