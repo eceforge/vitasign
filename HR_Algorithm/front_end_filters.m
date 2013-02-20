@@ -54,15 +54,15 @@ x3 = x3/ max( abs(x3 ));
 
 
 %DERIVATIVE FILTER
-
-% Make impulse response
-h = [-1 -2 0 2 1]/8;
-% Apply filter
-x4 = conv (x3 ,h);
-x4 = x4 (2+ (1: N));
-x4 = x4/ max( abs(x4));
-  
-filtered_output = x4;
+% 
+% % Make impulse response
+% h = [-1 -2 0 2 1]/8;
+% % Apply filter
+% x4 = conv (x3 ,h);
+% x4 = x4 (2+ (1: N));
+% x4 = x4/ max( abs(x4));
+%   
+filtered_output = x3;
 %SQUARING
 
 %x5 = x4 .^2;

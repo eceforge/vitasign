@@ -86,7 +86,7 @@ assert(threshold_1 < threshold_2);
 assert(threshold_3 < threshold_2 && threshold_3 > threshold_1);
 
 %x1 = load('ecg3.dat'); % load the ECG signal from the file
-assert (all ( size (data) == [1000 1] ));
+assert (all ( size (data) == [500 1] ));
 
 % x1 = data;
 N = uint32(length(data));       % Signal length
@@ -99,21 +99,30 @@ assert(divide(Fixed_Point_Properties, fi(N, Fixed_Point_Properties, F), fi(fs, F
 %CANCELLATION DC DRIFT AND NORMALIZATION
 %x1 = x1 - mean (x1 );    % cancel DC conponents
 % x1 = x1/ max( abs(x1 )); % normalize to one
-max_x = fi(max(abs(data)), Fixed_Point_Properties_signed, F_signed);
+% max_x = fi(max(abs(data)), Fixed_Point_Properties_signed, F_signed);
 % for i=1:length(x1)
 %     divide(Fixed_Point_Properties_signed, x1(i), max_x) % normalize to one
 % end
-data = divide(Fixed_Point_Properties_signed, data, max_x); % normalize to one
+% data = divide(Fixed_Point_Properties_signed, data, max_x); % normalize to one
 % assert(isequal(numerictype(data),Fixed_Point_Properties_signed) && isequal(fimath(data), F_signed));
 
 
 %------ MOST FILTERING NOW OCCURS IN ANALOG SEE 'front_end_filters.m' FOR EMULATED FRONT END FILTERS
 
+%DERIVATIVE FILTER
 
+% Make impulse response
+h = divide(Fixed_Point_Properties_signed, fi([-1 -2 0 2 1], Fixed_Point_Properties_signed, F_signed), fi(8, Fixed_Point_Properties_signed, F_signed));
+% Apply filter
+data = conv (data ,h);
+data = data (2+ (1: N));
+data = divide(Fixed_Point_Properties_signed,  data, max( abs(data)));
 % UPDATES FIXED POINT DEFINITION TO BE UNSIGNED
 Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
 F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
 
+
+  
  
 %SQUARING
 
@@ -124,7 +133,7 @@ data_unsigned = fi(data.^2, Fixed_Point_Properties, F);
 % data_unsigned = fi(data, Fixed_Point_Properties, F);
 
 % Normalizes the result of the squaring
-data_unsigned = divide(Fixed_Point_Properties, data_unsigned, max( abs(data_unsigned ))); % normalize to one
+% data_unsigned = divide(Fixed_Point_Properties, data_unsigned, max( data_unsigned )); % normalize to one
 % assert(isequal(numerictype(data_unsigned),Fixed_Point_Properties) && isequal(fimath(data_unsigned), F));
 
 %MOVING WINDOW INTEGRATION
@@ -139,7 +148,7 @@ data_unsigned = fi(conv (data_unsigned ,h), Fixed_Point_Properties, F);
 data_unsigned = data_unsigned (3+(1: N));
 
 % Normalizes the signal 
-data_unsigned = divide(Fixed_Point_Properties, data_unsigned, max( abs(data_unsigned ))); % normalize to one
+data_unsigned = divide(Fixed_Point_Properties, data_unsigned, max(data_unsigned)); % normalize to one
 
 %FIND QRS POINTS. NOTE: THE PEAK FINDING IS DIFFERENT THAN PAN-TOMPKINS ALGORITHM
 
@@ -170,17 +179,15 @@ left_num_cols = uint32(length(left));
 %right=right-(6+16);% cancel delay because of LP and HP
 % [~, left_num_cols] = size(left);
 
-R_peak_vals = fi(zeros(1, left_num_cols), Fixed_Point_Properties, F);
-R_peak_indices = uint32(zeros(1, left_num_cols));
+R_peak_vals = fi(zeros(uint32(1), left_num_cols), Fixed_Point_Properties, F);
+R_peak_indices = uint32(zeros(uint32(1), left_num_cols));
 for i=1:left_num_cols
      [R_peak_vals(i) R_peak_indices(i)] = max(data(left(i):right(i)) );
      R_peak_indices(i) = R_peak_indices(i)-1+left(i); % add offset
 end
 
-% CAN RELEASE DATA HERE 
-
 % there is no selective wave
-R_peak_indices=R_peak_indices(R_peak_indices~=0);
+R_peak_indices=R_peak_indices(R_peak_indices~=uint32(0));
 
 
 % VITASIGN'S CODE BELOW
@@ -206,6 +213,8 @@ R_peak_indices_channel_2 = R_peak_indices(1:num_cols_indices);
 
 [R_peak_indices_channel_1, noise_lvl_channel_1, signal_lvl_channel_1] = dualThreshold(R_peak_vals, threshold_1, uint32(R_peak_indices_channel_1), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
 [R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(R_peak_vals, threshold_2, uint32(R_peak_indices_channel_2), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
+% CAN RELEASE DATA HERE 
+
 % if(shouldOutput)
 %     chan1 = length(find(R_peak_indices_channel_1))
 %     chan2 = length(find(R_peak_indices_channel_2))
@@ -223,7 +232,7 @@ assert(isequal(numerictype(signal_lvl_channel_2),Fixed_Point_Properties) && iseq
 % Level 3 DETECTION: REFINES HEART BEAT DETECTION ACCURACY BY CHANNEL
 % COMPARISON
 % Combines both channels to refine beat detection
-for i=1:length(R_peak_indices_channel_2)
+for i=1:num_cols_indices
     % Documents the other cases %
     
     % If the signal's amplitude passes both the channels then there is a
@@ -238,9 +247,9 @@ for i=1:length(R_peak_indices_channel_2)
     
     % If the signal's amplitude fails both the channels then there is a
     % high chance that the it's not a beat
-    if (R_peak_indices_channel_1(i) == 0 && R_peak_indices_channel_2(i) == 0)
-        R_peak_indices_channel_2(i) = 0;
-    elseif (R_peak_indices_channel_1(i) ~= 0 && R_peak_indices_channel_2(i) == 0)
+    if (R_peak_indices_channel_1(i) == uint32(0) && R_peak_indices_channel_2(i) == uint32(0))
+        R_peak_indices_channel_2(i) = uint32(0);
+    elseif (R_peak_indices_channel_1(i) ~= uint32(0) && R_peak_indices_channel_2(i) == uint32(0))
   
         % Uses the decision of the channel w/ the highest Detection.
         % Ensures that Ds is between 0 and 1
@@ -280,7 +289,7 @@ end
 % Sets R values to zero which failed any of the previous phases
 last_R_index = fi(0, Fixed_Point_Properties, F);
 % Sample time delta is based off the Fs passed in
-time_delta = divide(Fixed_Point_Properties, 1, 100);
+time_delta = divide(Fixed_Point_Properties, fi(1, Fixed_Point_Properties, F), fi(100, Fixed_Point_Properties, F));
 
 % Heart beat delta sum is the summation of the time between heart beats. It's used for
 % HR calculation
@@ -290,9 +299,9 @@ heart_beat_last_sum = fi(0, Fixed_Point_Properties, F);
 % Heart beat count is the amount of heart beats detected
 heart_beat_count = fi(0, Fixed_Point_Properties, F);
 
-for i=1:length(R_peak_vals)
-    if (R_peak_indices_channel_2(i) == 0)
-        R_peak_vals(i) = 0;
+for i=1:num_cols_indices
+    if (R_peak_indices_channel_2(i) == uint32(0))
+        R_peak_vals(i) = uint32(0);
      % Filters out any R_values which happen too soon after a previous
      % beat detection. Updates the average HR delta which will be used to
      % calculate HR
@@ -345,7 +354,7 @@ heart_beat_delta_sum = heart_beat_current_sum - heart_beat_last_sum;
 heart_rate  = divide(Fixed_Point_Properties, heart_beat_delta_sum, heart_beat_count);
 % Inverses it to produce HBPM
 heart_rate = divide(Fixed_Point_Properties, 1, heart_rate);
-heart_rate = heart_rate * 60;
+heart_rate = heart_rate * fi(60, Fixed_Point_Properties, F);
 
 end
 
@@ -397,7 +406,7 @@ end
 
 %DUAL THRESHOLD PROCESSSING
 % Filters out R_peaks which don't meet the threshold reqs
-    function [indices, noise_lvl, signal_lvl] = dualThreshold(R_peak_vals, threshold, indices, max_voltage, pos_deviance_threshold, neg_deviance_threshold, ~)
+    function [indices, noise_lvl, signal_lvl, R_peak_vals] = dualThreshold(R_peak_vals, threshold, indices, max_voltage, pos_deviance_threshold, neg_deviance_threshold, ~)
         Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
         F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
         
@@ -417,8 +426,8 @@ end
         noise_sum = fi(0, Fixed_Point_Properties, F); signal_sum = fi(0, Fixed_Point_Properties, F);
         noise_count = fi(0, Fixed_Point_Properties, F); signal_count = fi(0, Fixed_Point_Properties, F); % Setting signal count to 1 ensures that the first value doesn't dominate the avg signal level
         noise_lvl = fi(0, Fixed_Point_Properties, F); signal_lvl = fi(0,Fixed_Point_Properties, F);
-        
-        for index=1:length(R_peak_vals)
+        num_cols_indices = uint32(length(R_peak_vals));
+        for index=1:num_cols_indices
            if (R_peak_vals(index) * max_voltage > threshold) 
                
                % Filters out any signal value which exceeds the allowed deviance from
