@@ -118,20 +118,15 @@ F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLe
 %SQUARING
 
 data_unsigned = fi(data.^2, Fixed_Point_Properties);
-if(shouldOutput)
-    length(data);
-end
 
 % Changes the fixed point properties of the data to be unsigned after
 % squaring
 % data_unsigned = fi(data, Fixed_Point_Properties, F);
+
 % Normalizes the result of the squaring
 data_unsigned = divide(Fixed_Point_Properties, data_unsigned, max( abs(data_unsigned ))); % normalize to one
 % assert(isequal(numerictype(data_unsigned),Fixed_Point_Properties) && isequal(fimath(data_unsigned), F));
 
-if(shouldOutput)
-    length(data_unsigned);
-end
 %MOVING WINDOW INTEGRATION
 
 % Make impulse response
@@ -146,70 +141,48 @@ data_unsigned = data_unsigned (15+(1: N));
 % Normalizes the signal 
 data_unsigned = divide(Fixed_Point_Properties, data_unsigned, max( abs(data_unsigned ))); % normalize to one
 
-if(shouldOutput)
-    length(data_unsigned);
-end
-% assert(isequal(numerictype(data),Fixed_Point_Properties) && isequal(fimath(data), F));
-
 %FIND QRS POINTS. NOTE: THE PEAK FINDING IS DIFFERENT THAN PAN-TOMPKINS ALGORITHM
 
-%figure(7)
-%subplot(2,1,1)
 max_voltage = max(data_unsigned);
 assert(isequal(numerictype(max_voltage),Fixed_Point_Properties) && isequal(fimath(max_voltage), F));
 
 thresh = mean (data_unsigned);
+
 % Outputs an array with each value indicating whether the value at that
 % index is greater than thresh * max_h
-% poss_reg =uint32((data_unsigned > thresh*max_voltage)')
-poss_reg =(data_unsigned > thresh*max_voltage)';
+poss_reg = int32((data_unsigned > thresh*max_voltage)');
+% poss_reg =(data_unsigned > thresh*max_voltage)';
 
 %  Finds(the indices) all the heart beats which are preceded by a non-beat
-% left = uint32(find(diff([int32(0) poss_reg]) == int32(1))); % Gets all the indices in the resultant diff vector for which X[n] - X[n-1] = 1
+left = uint32(find(diff([int32(0) poss_reg]) == int32(1))); % Gets all the indices in the resultant diff vector for which X[n] - X[n-1] = 1
 % Finds all the heart beats where  the heart beats are proceeded by a
 % non-beat
-% right = uint32(find(diff([poss_reg 0]) == int32(-1)));
-% right = uint32(zeros(1, N));
+right = uint32(find(diff([poss_reg 0]) == int32(-1)));
+left_num_cols = uint32(length(left));
 
 %  Finds(the indices) all the heart beats which are preceded by a non-beat
-left = find(diff([0 poss_reg])==1); % Gets all the indices in the resultant diff vector for which X[n] - X[n-1] = 1
+% left = find(diff([0 poss_reg])==1); % Gets all the indices in the resultant diff vector for which X[n] - X[n-1] = 1
 % Finds all the heart beats where  the heart beats are proceeded by a
 % non-beat
-right = find(diff([poss_reg 0])==-1);
-if(shouldOutput)
-    length(left)
-    length(right)
-end
+% right = find(diff([poss_reg 0])==-1);
+
 %left=left-(6+16);  % cancel delay because of LP and HP
 %right=right-(6+16);% cancel delay because of LP and HP
-[~, left_num_cols] = size(left);
+% [~, left_num_cols] = size(left);
 
-% left_num_cols = uint32(length(left));
 R_peak_vals = fi(zeros(1, left_num_cols), Fixed_Point_Properties, F);
-R_peak_indices = zeros(1, left_num_cols);
-% for i=1:left_num_cols
-%     [R_peak_vals(i) R_peak_indices(i)] = max(data_unsigned(left(i):right(i)) );
-%     R_peak_indices(i) = R_peak_indices(i)-1+left(i); % add offset
-% 
-% end
-for i=1:length(left)  
-    [R_peak_vals(i) R_peak_indices(i)] = max( data(left(i):right(i)) );
-    R_peak_indices(i) = R_peak_indices(i)-1+left(i); % add offset
-
-%     [Q_value(i) Q_loc(i)] = min( x1(left(i):R_loc(i)) );
-%     Q_loc(i) = Q_loc(i)-1+left(i); % add offset
-
-%     [S_value(i) S_loc(i)] = min( x1(left(i):right(i)) );
-%     S_loc(i) = S_loc(i)-1+left(i); % add offset
-
+R_peak_indices = uint32(zeros(1, left_num_cols));
+for i=1:left_num_cols
+     [R_peak_vals(i) R_peak_indices(i)] = max(data(left(i):right(i)) );
+     R_peak_indices(i) = R_peak_indices(i)-1+left(i); % add offset
 end
-if(shouldOutput)
-    length(R_peak_indices)
-end
+
 % CAN RELEASE DATA HERE 
 
 % there is no selective wave
 R_peak_indices=R_peak_indices(R_peak_indices~=0);
+
+
 % VITASIGN'S CODE BELOW
 
 % Level 1 Detection: Detects all peaks 
@@ -220,6 +193,7 @@ R_peak_indices=R_peak_indices(R_peak_indices~=0);
 % [num_rows_vals, num_cols_vals] = size(R_peak_vals);
 % [~, num_cols_indices] = size(R_peak_indices);
 num_cols_indices = uint32(length(R_peak_indices));
+
 % Creates a copy of the indices which store the indices where the 'R' peaks
 % lie
 
@@ -229,10 +203,7 @@ R_peak_indices_channel_2 = R_peak_indices(1:num_cols_indices);
 
 [R_peak_indices_channel_1, noise_lvl_channel_1, signal_lvl_channel_1] = dualThreshold(R_peak_vals, threshold_1, uint32(R_peak_indices_channel_1), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
 [R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(R_peak_vals, threshold_2, uint32(R_peak_indices_channel_2), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
-if(shouldOutput)
-    chan1 = length(find(R_peak_indices_channel_1))
-    chan2 = length(find(R_peak_indices_channel_2))
-end
+
 % Ensures that noise and signal levels are fixed point
 assert(isfi(noise_lvl_channel_1));assert(isfi(signal_lvl_channel_1));
 assert(isfi(noise_lvl_channel_2));assert(isfi(signal_lvl_channel_2));
@@ -282,8 +253,6 @@ for i=1:length(R_peak_indices_channel_2)
         if (signal_lvl_channel_2 < noise_lvl_channel_2)
             Ds_2  = fi(0, Fixed_Point_Properties, F);
         else
-%            sig_lvl_noise_dif = signal_lvl_channel_2 * 100 - noise_lvl_channel_2 * 100
-%            sig_nois_dif = R_peak_vals(i) * 100 - noise_lvl_channel_2 * 100
            Ds_2 = min(1, divide(Fixed_Point_Properties, ((R_peak_vals(i) * 100 - noise_lvl_channel_2 * 100)), (signal_lvl_channel_2 * 100 - noise_lvl_channel_2 * 100)));
         end
 %         Ds_2 = max(0, Ds_2);
@@ -295,9 +264,7 @@ for i=1:length(R_peak_indices_channel_2)
         end
     end
 end
-if(shouldOutput)
-    final = length(find(R_peak_indices_channel_2))
-end
+
 
 % LEVEL 5 DETECTION: 
 %Refines heart beat detection by considering a heart beat's refactory period    
@@ -366,11 +333,6 @@ last_hr_delta = fi(sample_time, Fixed_Point_Properties, F) - last_R_index * time
 %   Provides less quantized HR values
 
 % Produces a result which is avg heart beat delta(s)
-if(shouldOutput)
-    heart_beat_delta_sum = heart_beat_current_sum - heart_beat_last_sum
-    heart_beat_count
-end
-% heart_beat_delta_sum = heart_beat_current_sum;
 heart_beat_delta_sum = heart_beat_current_sum - heart_beat_last_sum;
 heart_rate  = divide(Fixed_Point_Properties, heart_beat_delta_sum, heart_beat_count);
 % Inverses it to produce HBPM
