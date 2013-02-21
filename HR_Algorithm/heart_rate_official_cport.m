@@ -219,12 +219,29 @@ left_num_cols = uint32(length(left));
 
 % R_peak_vals = fi(zeros(uint32(1), left_num_cols), Fixed_Point_Properties, F);
 R_peak_indices_channel_1 = uint32(zeros(uint32(1), left_num_cols));
+max_val = fi(0, Fixed_Point_Properties, F);
+max_index = fi(0, Fixed_Point_Properties, F);
 for i=1:left_num_cols
      if(left(i) == 0)
          break;
      end
 %      [R_peak_vals(i) R_peak_indices(i)] = max(data(left(i):right(i)) );
-     [data_unsigned(i) R_peak_indices_channel_1(i)] = max(data_unsigned(left(i):right(i)) );
+%      [data_unsigned(i) R_peak_indices_channel_1(i)] = max(data_unsigned(left(i):right(i)) );
+%      Finds the max value from left(i) to right(i)
+     for j=left(i):right(i)
+         % Compares to find the maximum
+         if(data_unsigned(j) > max_val)
+             max_val = data_unsigned(j);
+             max_index = i;
+         end
+     end
+     
+     % Saves the peak's index and value
+     data_unsigned(i) = max_val;
+     R_peak_indices_channel_1(i) = max_index;
+      
+     % Resets max for next iteration
+     max_val = fi(0, Fixed_Point_Properties, F);
      R_peak_indices_channel_1(i) = R_peak_indices_channel_1(i)-1+left(i); % add offset
 end
 
@@ -253,8 +270,8 @@ num_cols_indices = uint32(length(R_peak_indices_channel_1));
 R_peak_indices_channel_2 = R_peak_indices_channel_1(1:num_cols_indices);
 % R_peak_indices_combined = zeros(1, length(R_peak_indices_channel_2)); % REPLACE THIS WITH A ZEROS ARRAY
 
-[R_peak_indices_channel_1, noise_lvl_channel_1, signal_lvl_channel_1] = dualThreshold(R_peak_vals, threshold_1, uint32(R_peak_indices_channel_1), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
-[R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(R_peak_vals, threshold_2, uint32(R_peak_indices_channel_2), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
+[R_peak_indices_channel_1, noise_lvl_channel_1, signal_lvl_channel_1] = dualThreshold(data_unsigned, threshold_1, uint32(R_peak_indices_channel_1), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
+[R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(data_unsigned, threshold_2, uint32(R_peak_indices_channel_2), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
 % CAN RELEASE DATA HERE 
 
 % if(shouldOutput)
@@ -303,14 +320,14 @@ for i=1:num_cols_indices
         if (signal_lvl_channel_1 < noise_lvl_channel_1)
             Ds_1 = fi(0, Fixed_Point_Properties, F);
         else
-            Ds_1 = min(1, divide(Fixed_Point_Properties, ((R_peak_vals(i) * 100 - noise_lvl_channel_1 * 100)), (signal_lvl_channel_1 * 100 - noise_lvl_channel_1 * 100)));
+            Ds_1 = min(1, divide(Fixed_Point_Properties, ((data_unsigned(i) * 100 - noise_lvl_channel_1 * 100)), (signal_lvl_channel_1 * 100 - noise_lvl_channel_1 * 100)));
         end
 %         Ds_1 = max(0, Ds_1);
 
         if (signal_lvl_channel_2 < noise_lvl_channel_2)
             Ds_2  = fi(0, Fixed_Point_Properties, F);
         else
-           Ds_2 = min(1, divide(Fixed_Point_Properties, ((R_peak_vals(i) * 100 - noise_lvl_channel_2 * 100)), (signal_lvl_channel_2 * 100 - noise_lvl_channel_2 * 100)));
+           Ds_2 = min(1, divide(Fixed_Point_Properties, ((data_unsigned(i) * 100 - noise_lvl_channel_2 * 100)), (signal_lvl_channel_2 * 100 - noise_lvl_channel_2 * 100)));
         end
 %         Ds_2 = max(0, Ds_2);
       
@@ -343,7 +360,7 @@ heart_beat_count = fi(0, Fixed_Point_Properties, F);
 
 for i=1:num_cols_indices
     if (R_peak_indices_channel_2(i) == uint32(0))
-        R_peak_vals(i) = uint32(0);
+        data_unsigned(i) = uint32(0);
      % Filters out any R_values which happen too soon after a previous
      % beat detection. Updates the average HR delta which will be used to
      % calculate HR
@@ -354,7 +371,7 @@ for i=1:num_cols_indices
         %Filters out any R_values which happen too soon after a previous
         % beat detection.
         if (last_R_index ~= 0 && ((current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta) < .200)
-            R_peak_vals(i) = 0;
+            data_unsigned(i) = 0;
             R_peak_indices_channel_2(i) = 0;
          
         % Initializes the first delta which is when the first heart
