@@ -68,6 +68,7 @@ assert(isfi(prev_hr_delta));
 % asserts that input parameters are of specific fixed point parameters
 % assert(isequal(numerictype(data), Fixed_Point_Properties_signed) && isequal(fimath(data), F_signed));
 % assert(isequal(numerictype(fs),Fixed_Point_Properties) && isequal(fimath(fs), F));
+assert(isequal(numerictype(data_unsigned), Fixed_Point_Properties) && isequal(fimath(data_unsigned), F));
 assert(isequal(numerictype(threshold_1),Fixed_Point_Properties) && isequal(fimath(threshold_1), F));
 assert(isequal(numerictype(threshold_2),Fixed_Point_Properties) && isequal(fimath(threshold_2), F));
 assert(isequal(numerictype(threshold_3),Fixed_Point_Properties) && isequal(fimath(threshold_3), F));
@@ -118,8 +119,8 @@ assert(divide(Fixed_Point_Properties, fi(N, Fixed_Point_Properties, F), fi(fs, F
 % data = data (2+ (1: N));
 % data = divide(Fixed_Point_Properties_signed,  data, max( abs(data)));
 % % UPDATES FIXED POINT DEFINITION TO BE UNSIGNED
-% Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
-% F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
+Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
+F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
 % 
 % 
 %   
@@ -220,7 +221,7 @@ left_num_cols = uint32(length(left));
 % R_peak_vals = fi(zeros(uint32(1), left_num_cols), Fixed_Point_Properties, F);
 R_peak_indices_channel_1 = uint32(zeros(uint32(1), left_num_cols));
 max_val = fi(0, Fixed_Point_Properties, F);
-max_index = fi(0, Fixed_Point_Properties, F);
+max_index = uint32(0);
 for i=1:left_num_cols
      if(left(i) == 0)
          break;
