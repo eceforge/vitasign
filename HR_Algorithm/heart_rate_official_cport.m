@@ -358,7 +358,9 @@ heart_beat_last_sum = fi(0, Fixed_Point_Properties, F);
 
 % Heart beat count is the amount of heart beats detected
 heart_beat_count = fi(0, Fixed_Point_Properties, F);
-
+if (shouldOutput)
+    heart_beat_count
+end
 for i=1:num_cols_indices
     if (R_peak_indices_channel_2(i) == uint32(0))
         data_unsigned(i) = uint32(0);
@@ -380,7 +382,7 @@ for i=1:num_cols_indices
         elseif(last_R_index == 0)
             assert(isequal(numerictype(prev_hr_delta),Fixed_Point_Properties) && isequal(fimath(prev_hr_delta), F));
             heart_beat_delta = (current_R_index - 1) * time_delta + prev_hr_delta;
-            heart_beat_current_sum = heart_beat_delta + 0;
+            heart_beat_current_sum = heart_beat_delta + 0; % For future iterations: Add the previous delta from the previous data window. i.e. the amount of secs between the last peak in the sample and the next one in the next sample
             
             % Updates the last index
             last_R_index = fi(R_peak_indices_channel_2(i), Fixed_Point_Properties, F);
@@ -404,13 +406,18 @@ for i=1:num_cols_indices
     end
 end
 
-last_hr_delta = fi(sample_time, Fixed_Point_Properties, F) - last_R_index * time_delta;
+last_hr_delta = fi(0, Fixed_Point_Properties, F);
 
 % CALCULATES HEART RATE USING AVERAGE TIME TIME DELTAS BETWEEN BEATS
 %   Provides less quantized HR values
 
 % Produces a result which is avg heart beat delta(s)
+
 heart_beat_delta_sum = heart_beat_current_sum - heart_beat_last_sum;
+if (heart_beat_delta_sum == 0)
+    heart_beat_current_sum
+    heart_beat_last_sum
+end
 heart_rate  = divide(Fixed_Point_Properties, heart_beat_delta_sum, heart_beat_count);
 % Inverses it to produce HBPM
 heart_rate = divide(Fixed_Point_Properties, 1, heart_rate);

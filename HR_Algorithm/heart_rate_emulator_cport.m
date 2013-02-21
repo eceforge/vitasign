@@ -144,7 +144,8 @@ for step=0:(num_windows - 1)
 %     min(indatadouble(begin_index:end_index))
 %     median(indatadouble(begin_index:end_index))   
 %     mean(indatadouble(begin_index:end_index))
-    if (step >= 58 && step <= 68)
+%     if (step >= 58 && step <= 68)
+    if (step == 69)
         heart_rate = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(1),  fi(0, Fixed_Point_Properties, F));
         heart_rates_avg = heart_rates_avg + heart_rate;
         heart_rates = [heart_rates heart_rate];
