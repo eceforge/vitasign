@@ -1,5 +1,5 @@
  %#codegen
-function [heart_rate, last_hr_delta, data_unsigned] = heart_rate_official_cport(data_unsigned, fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_time, shouldOutput, prev_hr_delta)  
+function [heart_rate, last_hr_delta, data_unsigned] = heart_rate_official_cport_single_channel(data_unsigned, fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_time, shouldOutput, prev_hr_delta)  
 %------ Heart Rate Detection Algorithm ----------
 %  Detects and calculates Heart rate from an EKG Signal. 
 %  The QRS Detection algorithm is based on Pan-Tompkin's famous paper
@@ -79,11 +79,11 @@ assert(isequal(numerictype(prev_hr_delta),Fixed_Point_Properties) && isequal(fim
 % assert(isequal(numerictype(sample_time),Fixed_Point_Properties) && isequal(fimath(sample_time), F));
        
 %  Assures that the first threshold is less than the second threshold
-assert(threshold_1 < threshold_2);
+% assert(threshold_1 < threshold_2);
 
 %  Assures that the third threshold is in between the first and the second
 % threshold
-assert(threshold_3 < threshold_2 && threshold_3 > threshold_1);
+% assert(threshold_3 < threshold_2 && threshold_3 > threshold_1);
 
 %x1 = load('ecg3.dat'); % load the ECG signal from the file
 assert (all ( size (data_unsigned) == [1000 1] ));
@@ -156,55 +156,17 @@ max_voltage = max(data_unsigned);
 assert(isequal(numerictype(max_voltage),Fixed_Point_Properties) && isequal(fimath(max_voltage), F));
 
 thresh = mean (data_unsigned);
-scaled_thresh = thresh * max_voltage;
+
 % Outputs an array with each value indicating whether the value at that
 % index is greater than thresh * max_h
-% poss_reg = int32((data_unsigned > thresh*max_voltage)');
+poss_reg = int32((data_unsigned > thresh*max_voltage)');
 % poss_reg =(data_unsigned > thresh*max_voltage)';
 
-
-left = uint32(zeros(1, N));
-right = uint32(zeros(1, N));
-%  Finds(the indices) all the heart beats which are preceded by a
-%  non-beat(left)
-% Finds all the heart beats where  the heart beats are proceeded by a
-% non-beat(right)
-left_index = uint32(1);
-right_index = uint32(1);
-for i=1:uint32(N)
-    if (data_unsigned(i) > scaled_thresh)
-        % Checks for the edge cases
-        if(i == 1)
-            left(left_index) = i;
-            left_index = left_index + 1;
-            continue;
-        elseif(i == N)
-                right(right_index) = i;
-                right_index = right_index + 1;
-                continue;
-        else
-            % Checks if a beat is proceeded or preceeded by a beat
-            if(data_unsigned(i - 1) <= scaled_thresh)
-                left(left_index) = i;
-                left_index = left_index + 1;
-            elseif(data_unsigned(i + 1) <= scaled_thresh)
-                right(right_index) = i;
-                right_index = right_index + 1;
-            end
-        end
-    else
-%         left(i) = uint32(0);
-%         right(i) = uint32(0);
-    end
-end
-
 %  Finds(the indices) all the heart beats which are preceded by a non-beat
-% left = uint32(find(diff([int32(0) poss_reg]) == int32(1))) % Gets all the indices in the resultant diff vector for which X[n] - X[n-1] = 1
+left = uint32(find(diff([int32(0) poss_reg]) == int32(1))); % Gets all the indices in the resultant diff vector for which X[n] - X[n-1] = 1
 % Finds all the heart beats where  the heart beats are proceeded by a
 % non-beat
-% right = uint32(find(diff([poss_reg 0]) == int32(-1)))
-
-% Don't need poss_reg after this call
+right = uint32(find(diff([poss_reg 0]) == int32(-1)));
 left_num_cols = uint32(length(left));
 
 %  Finds(the indices) all the heart beats which are preceded by a non-beat
@@ -217,19 +179,16 @@ left_num_cols = uint32(length(left));
 %right=right-(6+16);% cancel delay because of LP and HP
 % [~, left_num_cols] = size(left);
 
-% R_peak_vals = fi(zeros(uint32(1), left_num_cols), Fixed_Point_Properties, F);
-R_peak_indices_channel_1 = uint32(zeros(uint32(1), left_num_cols));
+R_peak_vals = fi(zeros(uint32(1), left_num_cols), Fixed_Point_Properties, F);
+R_peak_indices = uint32(zeros(uint32(1), left_num_cols));
 for i=1:left_num_cols
-     if(left(i) == 0)
-         break;
-     end
 %      [R_peak_vals(i) R_peak_indices(i)] = max(data(left(i):right(i)) );
-     [data_unsigned(i) R_peak_indices_channel_1(i)] = max(data_unsigned(left(i):right(i)) );
-     R_peak_indices_channel_1(i) = R_peak_indices_channel_1(i)-1+left(i); % add offset
+     [R_peak_vals(i) R_peak_indices(i)] = max(data_unsigned(left(i):right(i)) );
+     R_peak_indices(i) = R_peak_indices(i)-1+left(i); % add offset
 end
 
 % there is no selective wave
-% R_peak_indices=R_peak_indices(R_peak_indices~=uint32(0));
+R_peak_indices_channel_1=R_peak_indices(R_peak_indices~=uint32(0));
 
 
 % VITASIGN'S CODE BELOW
@@ -241,7 +200,7 @@ end
 % Level 2 Detection: Uses two channels to detect heart beats based on two threshold
 % [num_rows_vals, num_cols_vals] = size(R_peak_vals);
 % [~, num_cols_indices] = size(R_peak_indices);
-num_cols_indices = uint32(length(R_peak_indices_channel_1));
+num_cols_indices = uint32(length(R_peak_indices));
 
 % Creates a copy of the indices which store the indices where the 'R' peaks
 % lie
@@ -250,11 +209,11 @@ num_cols_indices = uint32(length(R_peak_indices_channel_1));
 % end
 
 % R_peak_indices_channel_1 = R_peak_indices(1:num_cols_indices); 
-R_peak_indices_channel_2 = R_peak_indices_channel_1(1:num_cols_indices);
+% R_peak_indices_channel_2 = R_peak_indices(1:num_cols_indices);
 % R_peak_indices_combined = zeros(1, length(R_peak_indices_channel_2)); % REPLACE THIS WITH A ZEROS ARRAY
 
 [R_peak_indices_channel_1, noise_lvl_channel_1, signal_lvl_channel_1] = dualThreshold(R_peak_vals, threshold_1, uint32(R_peak_indices_channel_1), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
-[R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(R_peak_vals, threshold_2, uint32(R_peak_indices_channel_2), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
+% [R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(R_peak_vals, threshold_2, uint32(R_peak_indices_channel_2), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
 % CAN RELEASE DATA HERE 
 
 % if(shouldOutput)
@@ -263,64 +222,64 @@ R_peak_indices_channel_2 = R_peak_indices_channel_1(1:num_cols_indices);
 % end
 % Ensures that noise and signal levels are fixed point
 assert(isfi(noise_lvl_channel_1));assert(isfi(signal_lvl_channel_1));
-assert(isfi(noise_lvl_channel_2));assert(isfi(signal_lvl_channel_2));
+% assert(isfi(noise_lvl_channel_2));assert(isfi(signal_lvl_channel_2));
 
 assert(isequal(numerictype(noise_lvl_channel_1),Fixed_Point_Properties) && isequal(fimath(noise_lvl_channel_1), F));
-assert(isequal(numerictype(noise_lvl_channel_2),Fixed_Point_Properties) && isequal(fimath(noise_lvl_channel_2), F));
+% assert(isequal(numerictype(noise_lvl_channel_2),Fixed_Point_Properties) && isequal(fimath(noise_lvl_channel_2), F));
 
 assert(isequal(numerictype(signal_lvl_channel_1),Fixed_Point_Properties) && isequal(fimath(signal_lvl_channel_1), F));
-assert(isequal(numerictype(signal_lvl_channel_2),Fixed_Point_Properties) && isequal(fimath(signal_lvl_channel_2), F));
+% assert(isequal(numerictype(signal_lvl_channel_2),Fixed_Point_Properties) && isequal(fimath(signal_lvl_channel_2), F));
 
 % Level 3 DETECTION: REFINES HEART BEAT DETECTION ACCURACY BY CHANNEL
 % COMPARISON
 % Combines both channels to refine beat detection
-for i=1:num_cols_indices
-    % Documents the other cases %
-    
-    % If the signal's amplitude passes both the channels then there is a
-    % high chance of a beat
-    %if (R_peak_indices_channel_1(i) ~= 0 && R_peak_indices_channel_2(i) ~=0)
-    
-    % If the signal's amplitude is less than channel 1's threshold(the
-    % lower threshold) and higher than channel 2's threshold(the higher
-    % threshold) then there's a chance that there is a beat
-    %This case will not happen b/c channel 1's threshold is < channel's 2 threshold
-    %if (R_peak_indices_channel_1(i) == 0 && R_peak_indices_channel_2(i) ~=0)   
-    
-    % If the signal's amplitude fails both the channels then there is a
-    % high chance that the it's not a beat
-    if (R_peak_indices_channel_1(i) == uint32(0) && R_peak_indices_channel_2(i) == uint32(0))
-        R_peak_indices_channel_2(i) = uint32(0);
-    elseif (R_peak_indices_channel_1(i) ~= uint32(0) && R_peak_indices_channel_2(i) == uint32(0))
-  
-        % Uses the decision of the channel w/ the highest Detection.
-        % Ensures that Ds is between 0 and 1
-        % strength(Ds)
-        
-        % If the delta between the peak value and the noise level is < 0
-        % then due to unsigned fixed point rules this value is 0 which is what we
-        % want anyways so this proves to be a useful overflow case.
-        if (signal_lvl_channel_1 < noise_lvl_channel_1)
-            Ds_1 = fi(0, Fixed_Point_Properties, F);
-        else
-            Ds_1 = min(1, divide(Fixed_Point_Properties, ((R_peak_vals(i) * 100 - noise_lvl_channel_1 * 100)), (signal_lvl_channel_1 * 100 - noise_lvl_channel_1 * 100)));
-        end
-%         Ds_1 = max(0, Ds_1);
-
-        if (signal_lvl_channel_2 < noise_lvl_channel_2)
-            Ds_2  = fi(0, Fixed_Point_Properties, F);
-        else
-           Ds_2 = min(1, divide(Fixed_Point_Properties, ((R_peak_vals(i) * 100 - noise_lvl_channel_2 * 100)), (signal_lvl_channel_2 * 100 - noise_lvl_channel_2 * 100)));
-        end
-%         Ds_2 = max(0, Ds_2);
-      
-        if (Ds_1 > Ds_2)
-            R_peak_indices_channel_2(i) = R_peak_indices_channel_1(i);
-        else
-            R_peak_indices_channel_2(i) = R_peak_indices_channel_2(i);
-        end
-    end
-end
+% for i=1:num_cols_indices
+%     % Documents the other cases %
+%     
+%     % If the signal's amplitude passes both the channels then there is a
+%     % high chance of a beat
+%     %if (R_peak_indices_channel_1(i) ~= 0 && R_peak_indices_channel_2(i) ~=0)
+%     
+%     % If the signal's amplitude is less than channel 1's threshold(the
+%     % lower threshold) and higher than channel 2's threshold(the higher
+%     % threshold) then there's a chance that there is a beat
+%     %This case will not happen b/c channel 1's threshold is < channel's 2 threshold
+%     %if (R_peak_indices_channel_1(i) == 0 && R_peak_indices_channel_2(i) ~=0)   
+%     
+%     % If the signal's amplitude fails both the channels then there is a
+%     % high chance that the it's not a beat
+%     if (R_peak_indices_channel_1(i) == uint32(0) && R_peak_indices_channel_2(i) == uint32(0))
+%         R_peak_indices_channel_2(i) = uint32(0);
+%     elseif (R_peak_indices_channel_1(i) ~= uint32(0) && R_peak_indices_channel_2(i) == uint32(0))
+%   
+%         % Uses the decision of the channel w/ the highest Detection.
+%         % Ensures that Ds is between 0 and 1
+%         % strength(Ds)
+%         
+%         % If the delta between the peak value and the noise level is < 0
+%         % then due to unsigned fixed point rules this value is 0 which is what we
+%         % want anyways so this proves to be a useful overflow case.
+%         if (signal_lvl_channel_1 < noise_lvl_channel_1)
+%             Ds_1 = fi(0, Fixed_Point_Properties, F);
+%         else
+%             Ds_1 = min(1, divide(Fixed_Point_Properties, ((R_peak_vals(i) * 100 - noise_lvl_channel_1 * 100)), (signal_lvl_channel_1 * 100 - noise_lvl_channel_1 * 100)));
+%         end
+% %         Ds_1 = max(0, Ds_1);
+% 
+%         if (signal_lvl_channel_2 < noise_lvl_channel_2)
+%             Ds_2  = fi(0, Fixed_Point_Properties, F);
+%         else
+%            Ds_2 = min(1, divide(Fixed_Point_Properties, ((R_peak_vals(i) * 100 - noise_lvl_channel_2 * 100)), (signal_lvl_channel_2 * 100 - noise_lvl_channel_2 * 100)));
+%         end
+% %         Ds_2 = max(0, Ds_2);
+%       
+%         if (Ds_1 > Ds_2)
+%             R_peak_indices_channel_2(i) = R_peak_indices_channel_1(i);
+%         else
+%             R_peak_indices_channel_2(i) = R_peak_indices_channel_2(i);
+%         end
+%     end
+% end
 
 % if(shouldOutput)
 %     final = length(find(R_peak_indices_channel_2))
@@ -342,20 +301,20 @@ heart_beat_last_sum = fi(0, Fixed_Point_Properties, F);
 heart_beat_count = fi(0, Fixed_Point_Properties, F);
 
 for i=1:num_cols_indices
-    if (R_peak_indices_channel_2(i) == uint32(0))
+    if (R_peak_indices_channel_1(i) == uint32(0))
         R_peak_vals(i) = uint32(0);
      % Filters out any R_values which happen too soon after a previous
      % beat detection. Updates the average HR delta which will be used to
      % calculate HR
     else
         % Updates the index
-        current_R_index = fi(R_peak_indices_channel_2(i), Fixed_Point_Properties, F);
+        current_R_index = fi(R_peak_indices_channel_1(i), Fixed_Point_Properties, F);
         
         %Filters out any R_values which happen too soon after a previous
         % beat detection.
         if (last_R_index ~= 0 && ((current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta) < .200)
             R_peak_vals(i) = 0;
-            R_peak_indices_channel_2(i) = 0;
+            R_peak_indices_channel_1(i) = 0;
          
         % Initializes the first delta which is when the first heart
         % beat occurs
@@ -365,7 +324,7 @@ for i=1:num_cols_indices
             heart_beat_current_sum = heart_beat_delta + 0;
             
             % Updates the last index
-            last_R_index = fi(R_peak_indices_channel_2(i), Fixed_Point_Properties, F);
+            last_R_index = fi(R_peak_indices_channel_1(i), Fixed_Point_Properties, F);
             
             % Updates the heart beat count
             heart_beat_count = heart_beat_count + 1;
@@ -380,7 +339,7 @@ for i=1:num_cols_indices
             heart_beat_count = heart_beat_count + 1;
             
             % Updates the last index
-            last_R_index = fi(R_peak_indices_channel_2(i), Fixed_Point_Properties, F);
+            last_R_index = fi(R_peak_indices_channel_1(i), Fixed_Point_Properties, F);
             
         end
     end
