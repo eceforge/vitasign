@@ -49,23 +49,23 @@ tic
 %sample_size - length in time(s) over which HR is estimated
 
 % Applies bandstop to remove 50-60Hz hum
-preprocessingFilterSpec = fdesign.bandstop('Fp1,Fst1,Fst2,Fp2,Ap1,Ast,Ap2',43,50,60,68,.5,60,1,fs); 
-preprocessingFilter = design(preprocessingFilterSpec,'equiripple');
+% preprocessingFilterSpec = fdesign.bandstop('Fp1,Fst1,Fst2,Fp2,Ap1,Ast,Ap2',43,50,60,68,.5,60,1,fs); 
+% preprocessingFilter = design(preprocessingFilterSpec,'equiripple');
 % Plots the frequency of 
 % freqz(preprocessingFilter);
-data = filter(preprocessingFilter, data);
+% data = filter(preprocessingFilter, data);
 
-Fc  = 16;
-low_pass_order = 2;   % FIR filter order
-low_pass_spec = fdesign.lowpass('N,Fc',low_pass_order,Fc,fs);
-low_pass = design(low_pass_spec,'window','window',@hamming);
-data = filter(low_pass, data);
+% Fc  = 16;
+% low_pass_order = 2;   % FIR filter order
+% low_pass_spec = fdesign.lowpass('N,Fc',low_pass_order,Fc,fs);
+% low_pass = design(low_pass_spec,'window','window',@hamming);
+% data = filter(low_pass, data);
 % Decimates the signal to 300Hz
 % data = resample(data, 3, 2);
- datar = iddata(data,[],1/fs);
- data = idresamp(datar, fs/100);
- data = data.y;
- fs = 100; % Updates fs to the new value
+%  datar = iddata(data,[],1/fs);
+%  data = idresamp(datar, fs/100);
+%  data = data.y;
+%  fs = 100; % Updates fs to the new value
 %[GB] Ensures the the input args are of the correct data type
 Fixed_Point_Properties_signed = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed', true);
 F_signed = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
@@ -81,7 +81,8 @@ indata = fi(filtered_full_signal, Fixed_Point_Properties_signed, F_signed);
 
 % Passes it through the DIGITAL FILTERS - REMOVE 
 indata = digital_filters(indata);
-fake_filtered_data(indata, 4096, 3.3, 100, sample_size);
+fake_filtered_data(indata, fi(4096, Fixed_Point_Properties, F), fi(3.3, Fixed_Point_Properties, F), 100, sample_size);
+return
 % Normalizes the signal 
 % indata = divide(Fixed_Point_Properties_signed, indata, max(abs(indata)));
 
@@ -170,6 +171,7 @@ t = t + sample_size;
 scatter(t, heart_rates);
 max_hr = double(max(max(heart_rates), averageHR))
 min_hr = double(min(min(heart_rates), averageHR))
+mean_hr = mean(heart_rates)
 
 % Offsets the x-axis and extends the y-axis
 axis([sample_size, t(length(t)), max(min_hr - 30, 0), max_hr + 30])
@@ -211,8 +213,9 @@ figure(21)
 % Offsets each time value by the sample size
 t_avg = t_avg + sample_size;
 scatter(t_avg, heart_rates_w_avg);
-max_hr = double(max(max(heart_rates_w_avg), averageHR))
-min_hr = double(min(min(heart_rates_w_avg), averageHR))
+max_hr_w_avg = double(max(max(heart_rates_w_avg), averageHR))
+min_hr_w_avg = double(min(min(heart_rates_w_avg), averageHR))
+mean_hr_w_avg = mean(heart_rates)
 
 % Offsets the x-axis and extends the y-axis
 axis([sample_size, t_avg(length(t_avg)), max(min_hr - 30, 0), max_hr + 30])

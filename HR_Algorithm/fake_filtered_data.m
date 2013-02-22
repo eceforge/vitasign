@@ -6,8 +6,11 @@ N = length(data);
 adc_data = zeros(N, 1);
 % Converts data to what an ADC would produce
 for i=1:N
-    adc_data(i) = int32(max_sample_int * data(i) / max_voltage);
+    adc_data(i) = int32(double(max_sample_int * data(i) / max_voltage));
 end
+figure(23)
+plot(data(1:sample_time * fs));
+
 adc_data = adc_data(1:sample_time * fs);
 path = 'test_filtered_data.csv';
 % delete(path);
