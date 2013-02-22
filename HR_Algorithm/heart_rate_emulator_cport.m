@@ -73,16 +73,19 @@ F_signed = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFra
 Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
 F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
 % Applies front end filters
-[filtered_full_signal, dc_offset] = front_end_filters(data, fs);
-
+[~, dc_offset] = front_end_filters(data, fs);
+filtered_full_signal = data;
 % Offsets DC offset
 filtered_full_signal = double(filtered_full_signal) - dc_offset;
 indata = fi(filtered_full_signal, Fixed_Point_Properties_signed, F_signed);
 
 % Passes it through the DIGITAL FILTERS - REMOVE 
-indata = digital_filters(indata);
-fake_filtered_data(indata, fi(4096, Fixed_Point_Properties, F), fi(3.3, Fixed_Point_Properties, F), 100, sample_size);
-return
+% indata = digital_filters(indata);
+
+% Generates a CSV file that simulates the data that would be outputted by
+% an ADC
+% fake_filtered_data(indata, fi(4096, Fixed_Point_Properties, F), fi(3.3, Fixed_Point_Properties, F), 100, sample_size);
+
 % Normalizes the signal 
 % indata = divide(Fixed_Point_Properties_signed, indata, max(abs(indata)));
 

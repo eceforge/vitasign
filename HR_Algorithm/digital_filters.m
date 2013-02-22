@@ -17,6 +17,8 @@ N = uint32(length(data));       % Signal length
 
 %------ MOST FILTERING NOW OCCURS IN ANALOG SEE 'front_end_filters.m' FOR EMULATED FRONT END FILTERS
 
+
+
 %DERIVATIVE FILTER
 
 % Make impulse response
