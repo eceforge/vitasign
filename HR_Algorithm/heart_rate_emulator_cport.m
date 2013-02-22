@@ -55,26 +55,39 @@ tic
 % freqz(preprocessingFilter);
 % data = filter(preprocessingFilter, data);
 
-% Fc  = 16;
-% low_pass_order = 2;   % FIR filter order
-% low_pass_spec = fdesign.lowpass('N,Fc',low_pass_order,Fc,fs);
-% low_pass = design(low_pass_spec,'window','window',@hamming);
-% data = filter(low_pass, data);
-% Decimates the signal to 300Hz
-% data = resample(data, 3, 2);
-%  datar = iddata(data,[],1/fs);
-%  data = idresamp(datar, fs/100);
-%  data = data.y;
-%  fs = 100; % Updates fs to the new value
+fprintf('Emulating... \n');
+fs_orig = fs;
+% Decimates the signal to a new fs - 100Hz
+if (fs > 100)
+    fprintf('Resampling \n');
+    Fc  = 16;
+    low_pass_order = 2;   % FIR filter order
+    low_pass_spec = fdesign.lowpass('N,Fc',low_pass_order,Fc,fs);
+    low_pass = design(low_pass_spec,'window','window',@hamming);
+    data = filter(low_pass, data);
+    data = resample(data, 3, 2);
+    datar = iddata(data,[],1/fs);
+    data = idresamp(datar, fs/100);
+    data = data.y;
+    fs = 100; % Updates fs to the new value
+    
+end
 %[GB] Ensures the the input args are of the correct data type
 Fixed_Point_Properties_signed = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed', true);
 F_signed = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
 
-Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
+Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',true);
 F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
+
+% Applies filters to signals which haven't been filtered by our front end
+if (fs_orig > 100)
+    [filtered_full_signal, dc_offset] = front_end_filters(data, fs);
+    fprintf('Using front end filters\n');
+else
 % Applies front end filters
 [~, dc_offset] = front_end_filters(data, fs);
 filtered_full_signal = data;
+end
 % Offsets DC offset
 filtered_full_signal = double(filtered_full_signal) - dc_offset;
 indata = fi(filtered_full_signal, Fixed_Point_Properties_signed, F_signed);

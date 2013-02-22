@@ -45,7 +45,7 @@ function [heart_rate, last_hr_delta, data] = heart_rate_official_cport(data, fs,
 Fixed_Point_Properties_signed = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',true);
 F_signed = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
 
-Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
+Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',true);
 F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
 
 % DEBUG CODE
@@ -118,15 +118,16 @@ h = divide(Fixed_Point_Properties_signed, fi([-1 -2 0 2 1], Fixed_Point_Properti
 data = conv (data ,h);
 data = data (2+ (1: N));
 data = divide(Fixed_Point_Properties_signed,  data, max( abs(data)));
-% UPDATES FIXED POINT DEFINITION TO BE UNSIGNED
-Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
+% UPDATES FIXED POINT DEFINITION TO BE UNSIGNED(CURRENTLY REVERESED TO BE
+% SIGNED B/C OF SPACE CONSTRAINTS
+Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',true);
 F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
 
   
  
 %SQUARING
 
-data_unsigned = fi(data.^2, Fixed_Point_Properties, F);
+data = fi(data.^2, Fixed_Point_Properties, F);
 
 % Changes the fixed point properties of the data to be unsigned after
 % squaring
@@ -144,18 +145,18 @@ h = divide(Fixed_Point_Properties, fi(ones (1, 7), Fixed_Point_Properties, F), 7
 % Delay = 15; % Delay in samples
 
 % Apply filter
-data_unsigned = fi(conv (data_unsigned ,h), Fixed_Point_Properties, F);
-data_unsigned = data_unsigned (3+(1: N));
+data = fi(conv (data ,h), Fixed_Point_Properties, F);
+data = data (3+(1: N));
 
 % Normalizes the signal 
-data_unsigned = divide(Fixed_Point_Properties, data_unsigned, max(data_unsigned)); % normalize to one
+data = divide(Fixed_Point_Properties, data, max(data)); % normalize to one
 
 %FIND QRS POINTS. NOTE: THE PEAK FINDING IS DIFFERENT THAN PAN-TOMPKINS ALGORITHM
 
-max_voltage = max(data_unsigned);
+max_voltage = max(data);
 assert(isequal(numerictype(max_voltage),Fixed_Point_Properties) && isequal(fimath(max_voltage), F));
 
-thresh = mean (data_unsigned);
+thresh = mean (data);
 scaled_thresh = thresh * max_voltage;
 % Outputs an array with each value indicating whether the value at that
 % index is greater than thresh * max_h
@@ -172,7 +173,7 @@ right = uint32(zeros(1, N));
 left_index = uint32(1);
 right_index = uint32(1);
 for i=1:uint32(N)
-    if (data_unsigned(i) > scaled_thresh)
+    if (data(i) > scaled_thresh)
         % Checks for the edge cases
         if(i == 1)
             left(left_index) = i;
@@ -184,10 +185,10 @@ for i=1:uint32(N)
                 continue;
         else
             % Checks if a beat is proceeded or preceeded by a beat
-            if(data_unsigned(i - 1) <= scaled_thresh)
+            if(data(i - 1) <= scaled_thresh)
                 left(left_index) = i;
                 left_index = left_index + 1;
-            elseif(data_unsigned(i + 1) <= scaled_thresh)
+            elseif(data(i + 1) <= scaled_thresh)
                 right(right_index) = i;
                 right_index = right_index + 1;
             end
@@ -230,14 +231,14 @@ for i=1:left_num_cols
 %      Finds the max value from left(i) to right(i)
      for j=left(i):right(i)
          % Compares to find the maximum
-         if(data_unsigned(j) > max_val)
-             max_val = data_unsigned(j);
+         if(data(j) > max_val)
+             max_val = data(j);
              max_index = i;
          end
      end
      
      % Saves the peak's index and value
-     data_unsigned(i) = max_val;
+     data(i) = max_val;
      R_peak_indices_channel_1(i) = max_index;
       
      % Resets max for next iteration
@@ -270,8 +271,8 @@ num_cols_indices = uint32(length(R_peak_indices_channel_1));
 R_peak_indices_channel_2 = R_peak_indices_channel_1(1:num_cols_indices);
 % R_peak_indices_combined = zeros(1, length(R_peak_indices_channel_2)); % REPLACE THIS WITH A ZEROS ARRAY
 
-[R_peak_indices_channel_1, noise_lvl_channel_1, signal_lvl_channel_1] = dualThreshold(data_unsigned, threshold_1, uint32(R_peak_indices_channel_1), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
-[R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(data_unsigned, threshold_2, uint32(R_peak_indices_channel_2), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
+[R_peak_indices_channel_1, noise_lvl_channel_1, signal_lvl_channel_1] = dualThreshold(data, threshold_1, uint32(R_peak_indices_channel_1), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
+[R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(data, threshold_2, uint32(R_peak_indices_channel_2), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
 % CAN RELEASE DATA HERE 
 
 % if(shouldOutput)
@@ -320,14 +321,14 @@ for i=1:num_cols_indices
         if (signal_lvl_channel_1 < noise_lvl_channel_1)
             Ds_1 = fi(0, Fixed_Point_Properties, F);
         else
-            Ds_1 = min(1, divide(Fixed_Point_Properties, ((data_unsigned(i) * 100 - noise_lvl_channel_1 * 100)), (signal_lvl_channel_1 * 100 - noise_lvl_channel_1 * 100)));
+            Ds_1 = min(1, divide(Fixed_Point_Properties, ((data(i) * 100 - noise_lvl_channel_1 * 100)), (signal_lvl_channel_1 * 100 - noise_lvl_channel_1 * 100)));
         end
 %         Ds_1 = max(0, Ds_1);
 
         if (signal_lvl_channel_2 < noise_lvl_channel_2)
             Ds_2  = fi(0, Fixed_Point_Properties, F);
         else
-           Ds_2 = min(1, divide(Fixed_Point_Properties, ((data_unsigned(i) * 100 - noise_lvl_channel_2 * 100)), (signal_lvl_channel_2 * 100 - noise_lvl_channel_2 * 100)));
+           Ds_2 = min(1, divide(Fixed_Point_Properties, ((data(i) * 100 - noise_lvl_channel_2 * 100)), (signal_lvl_channel_2 * 100 - noise_lvl_channel_2 * 100)));
         end
 %         Ds_2 = max(0, Ds_2);
       
@@ -363,7 +364,7 @@ if (shouldOutput)
 end
 for i=1:num_cols_indices
     if (R_peak_indices_channel_2(i) == uint32(0))
-        data_unsigned(i) = uint32(0);
+        data(i) = uint32(0);
      % Filters out any R_values which happen too soon after a previous
      % beat detection. Updates the average HR delta which will be used to
      % calculate HR
@@ -374,7 +375,7 @@ for i=1:num_cols_indices
         %Filters out any R_values which happen too soon after a previous
         % beat detection.
         if (last_R_index ~= 0 && ((current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta) < .200)
-            data_unsigned(i) = 0;
+            data(i) = 0;
             R_peak_indices_channel_2(i) = 0;
          
         % Initializes the first delta which is when the first heart
@@ -428,7 +429,7 @@ end
 % RETURNS TRUE IF THE INPUT SIGNAL VALUE MEETS THE DEVIANCE REQS. NOTE
 % THE THRESHOLD VALUE CHANGES BASED ON WHETHER DEVIANCE IS NEG OR POS
 function [meets_deviance_req] = meets_deviance_threshold(hr_value, signal_level, pos_deviance_threshold, neg_deviance_threshold)
-        Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
+        Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',true);
         F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
         % asserts that the input parameters are of fixed point
         assert(isfi(hr_value));
@@ -474,7 +475,7 @@ end
 %DUAL THRESHOLD PROCESSSING
 % Filters out R_peaks which don't meet the threshold reqs
     function [indices, noise_lvl, signal_lvl, R_peak_vals] = dualThreshold(R_peak_vals, threshold, indices, max_voltage, pos_deviance_threshold, neg_deviance_threshold, ~)
-        Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
+        Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',true);
         F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
         
         % asserts that the input parameters are of fixed point
