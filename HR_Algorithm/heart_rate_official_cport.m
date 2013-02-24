@@ -87,7 +87,7 @@ assert(threshold_1 < threshold_2);
 assert(threshold_3 < threshold_2 && threshold_3 > threshold_1);
 
 %x1 = load('ecg3.dat'); % load the ECG signal from the file
-assert (all ( size (data) == [1000 1] ));
+assert (all ( size (data) == [500 1] ));
 
 % x1 = data;
 N = uint32(length(data));       % Signal length
@@ -117,7 +117,11 @@ h = divide(Fixed_Point_Properties_signed, fi([-1 -2 0 2 1], Fixed_Point_Properti
 % Apply filter
 data = conv (data ,h);
 data = data (2+ (1: N));
-data = divide(Fixed_Point_Properties_signed,  data, max( abs(data)));
+% Finds the absolute value of the array
+for i=1:uint32(length(data))
+    data(i) = abs(data(i));
+end 
+data = divide(Fixed_Point_Properties_signed,  data, max(data));
 % UPDATES FIXED POINT DEFINITION TO BE UNSIGNED(CURRENTLY REVERESED TO BE
 % SIGNED B/C OF SPACE CONSTRAINTS
 Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',true);
@@ -126,8 +130,11 @@ F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLe
   
  
 %SQUARING
+for i=1:uint32(length(data))
+    data(i) = data(i) * data(i);
+end 
+% data = fi(data.^2, Fixed_Point_Properties, F);
 
-data = fi(data.^2, Fixed_Point_Properties, F);
 
 % Changes the fixed point properties of the data to be unsigned after
 % squaring
@@ -382,14 +389,14 @@ for i=1:num_cols_indices
         % beat occurs
         elseif(last_R_index == 0)
             assert(isequal(numerictype(prev_hr_delta),Fixed_Point_Properties) && isequal(fimath(prev_hr_delta), F));
-            heart_beat_delta = (current_R_index - 1) * time_delta + prev_hr_delta;
-            heart_beat_current_sum = heart_beat_delta + 0; % For future iterations: Add the previous delta from the previous data window. i.e. the amount of secs between the last peak in the sample and the next one in the next sample
+%             heart_beat_delta = (current_R_index - 1) * time_delta + prev_hr_delta;
+%             heart_beat_current_sum = heart_beat_delta + 0; % For future iterations: Add the previous delta from the previous data window. i.e. the amount of secs between the last peak in the sample and the next one in the next sample
             
             % Updates the last index
             last_R_index = fi(R_peak_indices_channel_2(i), Fixed_Point_Properties, F);
             
             % Updates the heart beat count
-            heart_beat_count = heart_beat_count + 1;
+%             heart_beat_count = heart_beat_count + 1;
             
         % Updates the last index if the R_value is valid
         else   

@@ -48,57 +48,51 @@ tic
 %direction
 %sample_size - length in time(s) over which HR is estimated
 
+fs_prev = fs;
+if (fs > 100)
 % Applies bandstop to remove 50-60Hz hum
-% preprocessingFilterSpec = fdesign.bandstop('Fp1,Fst1,Fst2,Fp2,Ap1,Ast,Ap2',43,50,60,68,.5,60,1,fs); 
-% preprocessingFilter = design(preprocessingFilterSpec,'equiripple');
+preprocessingFilterSpec = fdesign.bandstop('Fp1,Fst1,Fst2,Fp2,Ap1,Ast,Ap2',43,50,60,68,.5,60,1,fs); 
+preprocessingFilter = design(preprocessingFilterSpec,'equiripple');
 % Plots the frequency of 
 % freqz(preprocessingFilter);
-% data = filter(preprocessingFilter, data);
+data = filter(preprocessingFilter, data);
 
-fprintf('Emulating... \n');
-fs_orig = fs;
-% Decimates the signal to a new fs - 100Hz
-if (fs > 100)
-    fprintf('Resampling \n');
-    Fc  = 16;
-    low_pass_order = 2;   % FIR filter order
-    low_pass_spec = fdesign.lowpass('N,Fc',low_pass_order,Fc,fs);
-    low_pass = design(low_pass_spec,'window','window',@hamming);
-    data = filter(low_pass, data);
-    data = resample(data, 3, 2);
-    datar = iddata(data,[],1/fs);
-    data = idresamp(datar, fs/100);
-    data = data.y;
-    fs = 100; % Updates fs to the new value
-    
+Fc  = 16;
+low_pass_order = 2;   % FIR filter order
+low_pass_spec = fdesign.lowpass('N,Fc',low_pass_order,Fc,fs);
+low_pass = design(low_pass_spec,'window','window',@hamming);
+data = filter(low_pass, data);
+% Decimates the signal to 300Hz
+% data = resample(data, 3, 2);
+ datar = iddata(data,[],1/fs);
+ data = idresamp(datar, fs/100);
+ data = data.y;
+ fs = 100; % Updates fs to the new value
 end
+ 
 %[GB] Ensures the the input args are of the correct data type
 Fixed_Point_Properties_signed = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed', true);
 F_signed = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
 
 Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',true);
 F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
-
-% Applies filters to signals which haven't been filtered by our front end
-if (fs_orig > 100)
-    [filtered_full_signal, dc_offset] = front_end_filters(data, fs);
-    fprintf('Using front end filters\n');
-else
+if (fs_prev > 100)
 % Applies front end filters
-[~, dc_offset] = front_end_filters(data, fs);
-filtered_full_signal = data;
+[filtered_full_signal, dc_offset] = front_end_filters(data, fs);
+
+else
+    [~, dc_offset] = front_end_filters(data, fs);
+    filtered_full_signal = data;
 end
 % Offsets DC offset
 filtered_full_signal = double(filtered_full_signal) - dc_offset;
 indata = fi(filtered_full_signal, Fixed_Point_Properties_signed, F_signed);
-
-% Passes it through the DIGITAL FILTERS - REMOVE 
-% indata = digital_filters(indata);
-
 % Generates a CSV file that simulates the data that would be outputted by
 % an ADC
-% fake_filtered_data(indata, fi(4096, Fixed_Point_Properties, F), fi(3.3, Fixed_Point_Properties, F), 100, sample_size);
-
+% fake_nonfiltered_data(data, fi(4096, Fixed_Point_Properties, F), fi(3.3, Fixed_Point_Properties, F), 100, sample_size);
+% fake_nonfiltered_data(filtered_full_signal + 1.65, fi(4096, Fixed_Point_Properties, F), fi(3.3, Fixed_Point_Properties, F), 100, sample_size);
+    
+% return;
 % Normalizes the signal 
 % indata = divide(Fixed_Point_Properties_signed, indata, max(abs(indata)));
 
@@ -161,8 +155,7 @@ for step=0:(num_windows - 1)
 %     min(indatadouble(begin_index:end_index))
 %     median(indatadouble(begin_index:end_index))   
 %     mean(indatadouble(begin_index:end_index))
-%     if (step >= 58 && step <= 68)
-    if (step == 69)
+    if (step >= 58 && step <= 68)
         heart_rate = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(1),  fi(0, Fixed_Point_Properties, F));
         heart_rates_avg = heart_rates_avg + heart_rate;
         heart_rates = [heart_rates heart_rate];
@@ -171,8 +164,8 @@ for step=0:(num_windows - 1)
         heart_rates_avg = heart_rates_avg + heart_rate;
         heart_rates = [heart_rates heart_rate];
     end
-    if (mod(uint32(step + 1), uint32(5)) == 0)
-        heart_rates_w_avg = [heart_rates_w_avg (heart_rates_avg / 5)];
+    if (mod(uint32(step + 1), uint32(3)) == 0)
+        heart_rates_w_avg = [heart_rates_w_avg (heart_rates_avg / 3)];
         t_avg = [t_avg (step_size +  step * step_size)/fs];
         heart_rates_avg = 0;
     end
@@ -232,7 +225,6 @@ scatter(t_avg, heart_rates_w_avg);
 max_hr_w_avg = double(max(max(heart_rates_w_avg), averageHR))
 min_hr_w_avg = double(min(min(heart_rates_w_avg), averageHR))
 mean_hr_w_avg = mean(heart_rates)
-
 % Offsets the x-axis and extends the y-axis
 axis([sample_size, t_avg(length(t_avg)), max(min_hr - 30, 0), max_hr + 30])
 % grid on
