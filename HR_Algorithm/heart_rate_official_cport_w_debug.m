@@ -45,7 +45,7 @@ function [heart_rate, last_hr_delta] = heart_rate_official_cport(data, fs, thres
 Fixed_Point_Properties_signed = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',true);
 F_signed = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
 
-Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
+Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',true);
 F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
 
 % DEBUG CODE
@@ -89,10 +89,8 @@ assert (all ( size (data) == [1000 1] ));
 % assert (~isscalar(data));
 
 x1 = data;
-% figure(30)
-% plot(data);
 N = length (x1);       % Signal length
-% t = (0:N-1)/fs;        % time index
+t = (0:N-1)/double(fs);        % time index
 % NFFT = 2 ^(ceil(log2(N))); % Next power of 2 from length of the signal
 
 % Assures that the number of samples sent in aren't greater than the
@@ -122,16 +120,16 @@ assert(isequal(numerictype(x1),Fixed_Point_Properties_signed) && isequal(fimath(
 
 
 % UNCOMMENT TO SEE PLOT OF EKG AFTER NORMALIZATION AND REMOVAL OF DC DRIFT
-    if(shouldOutput)
-        %figure(3)
-        %subplot(2,1,1)
-        %plot(t,x1)
-        %xlabel('second');ylabel('Volts');title(' ECG Signal after cancellation DC drift and normalization')
-        %subplot(2,1,2)
-        %plot(t(200:600),x1(200:600))
-        %xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
-        %xlim([1 3]);
-    end
+%     if(shouldOutput)
+%         figure(3)
+%         subplot(2,1,1)
+%         plot(t,x1)
+%         xlabel('second');ylabel('Volts');title(' ECG Signal after cancellation DC drift and normalization')
+%         subplot(2,1,2)
+%         plot(t(100:300),x1(100:300))
+%         xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
+%         xlim([1 3]);
+%     end
  % UNCOMMENT TO SEE FFT OF ORIGINAL EKG
 %     if (shouldOutput)
         %Plots the fft of the original signal
@@ -252,12 +250,14 @@ assert(isequal(numerictype(x1),Fixed_Point_Properties_signed) && isequal(fimath(
 %DERIVATIVE FILTER
 
 % Make impulse response
-%h = [-1 -2 0 2 1]/8;
+h = divide(Fixed_Point_Properties_signed, fi([-1 -2 0 2 1], Fixed_Point_Properties_signed, F_signed), fi(8, Fixed_Point_Properties_signed, F_signed));
 % Apply filter
-%x4 = conv (x1 ,h);
-%x4 = x4 (2+ (1: N));
-%x4 = x4/ max( abs(x4 ));
-
+x4 = conv (x1 ,h);
+x4 = x4 (2+ (1: N));
+% Make impulse response
+x4 = divide(Fixed_Point_Properties, x4, max( abs(x4 ))); % normalize to one
+figure(23)
+plot(x4);
 % UNCOMMENT TO SEE PLOT OF EKG AFTER BEING A DERIVATIVE FILTER IS APPLIED
 
     %figure(7)
@@ -270,21 +270,19 @@ assert(isequal(numerictype(x1),Fixed_Point_Properties_signed) && isequal(fimath(
     %xlim([1 3]);
  
 %SQUARING
-if(shouldOutput)
-    length(x1);
-end
-x5 = fi(x1.^2, F);
+x5 = fi(x4.^2, F);
+% x5 = x4.^2;
 
 % assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F));
 %x5 = mpower(x1, 2);
 %x5 = x5/ max( abs(x5 ));
 
-% figure(24)
-% plot(x5);
+figure(24)
+plot(x5);
 
 % UPDATES FIXED POINT DEFINITION TO BE UNSIGNED
 % assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F));
-Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
+Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',true);
 F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
 
 
@@ -410,6 +408,19 @@ R_loc=R_loc(R_loc~=0);
     %subplot(2,1,2)
     %plot (t,x1/max(x1) , t(R_loc) ,R_value , 'r^', t(S_loc) ,S_value, '*',t(Q_loc) , Q_value, 'o');
     %xlim([1 3]);
+figure(31)
+plot(x1)
+% UNCOMMENT TO SEE RESULTS OF THE QRS DETECTION w/ ONLY R-PEAK RESULTS
+if(shouldOutput)
+    figure(11)
+    subplot(2,1,1)
+    title('ECG Signal with R points');
+    plot (t,x1/max(x1), t(R_loc), R_value, 'r^');
+    legend('ECG','R');
+    subplot(2,1,2)
+    plot (t(100:300),x1(100:300)/max(x1) , t(R_loc) ,R_value , 'r^');
+    xlim([1 3]);
+end
 
 % VITASIGN'S CODE BELOW
 
@@ -645,14 +656,14 @@ for i=1:length(R_peak_vals)
         % beat occurs
         elseif(last_R_index == 0)
             assert(isequal(numerictype(prev_hr_delta),Fixed_Point_Properties) && isequal(fimath(prev_hr_delta), F));
-            heart_beat_delta = (current_R_index - 1) * time_delta + prev_hr_delta;
-            heart_beat_current_sum = heart_beat_delta + 0;
+%             heart_beat_delta = (current_R_index - 1) * time_delta + prev_hr_delta;
+%             heart_beat_current_sum = heart_beat_delta + 0;
             
             % Updates the last index
             last_R_index = fi(R_peak_indices_channel_3(i), Fixed_Point_Properties, F);
             
             % Updates the heart beat count
-            heart_beat_count = heart_beat_count + 1;
+%             heart_beat_count = heart_beat_count + 1;
             
         % Updates the last index if the R_value is valid
         else   
@@ -720,24 +731,28 @@ end
 
 % CALCULATES HEART RATE USING AVERAGE TIME TIME DELTAS BETWEEN BEATS
 %   Provides less quantized HR values
-if (shouldOutput)
-    heart_beat_delta_sum = heart_beat_current_sum - heart_beat_last_sum
-    heart_beat_count
-end
+
 % Produces a result which is avg heart beat delta(s)
 heart_beat_delta_sum = heart_beat_current_sum - heart_beat_last_sum;
+if (heart_beat_delta_sum == 0)
+    heart_beat_count
+    heart_beat_current_sum
+    heart_beat_last_sum
+%     heart_rate = 230;
+    return;
+end
 % heart_beat_delta_sum = heart_beat_current_sum;
 heart_rate  = divide(Fixed_Point_Properties, heart_beat_delta_sum, heart_beat_count);
 % Inverses it to produce HBPM
 heart_rate = divide(Fixed_Point_Properties, 1, heart_rate);
-heart_rate = heart_rate * 60;
+heart_rate = heart_rate * 60
 
 end
 
 % RETURNS TRUE IF THE INPUT SIGNAL VALUE MEETS THE DEVIANCE REQS. NOTE
 % THE THRESHOLD VALUE CHANGES BASED ON WHETHER DEVIANCE IS NEG OR POS
 function [meets_deviance_req] = meets_deviance_threshold(hr_value, signal_level, pos_deviance_threshold, neg_deviance_threshold)
-        Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
+        Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',true);
         F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
         % asserts that the input parameters are of fixed point
         assert(isfi(hr_value));
@@ -781,7 +796,7 @@ end
 %DUAL THRESHOLD PROCESSSING
 % Filters out R_peaks which don't meet the threshold reqs
     function [indices, noise_lvl, signal_lvl] = dualThreshold(R_peak_vals, threshold, indices, max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput)
-        Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',false);
+        Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',true);
         F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
         
         % asserts that the input parameters are of fixed point
@@ -813,11 +828,11 @@ end
                % Filters out any signal value which exceeds the allowed deviance from
                % the average signal value 
                if (~meets_deviance_threshold(R_peak_vals(index), signal_lvl, pos_deviance_threshold, neg_deviance_threshold) && index > 4)
-%                     if(shouldOutput)
-%                           fprintf('Does not meet the deviance threshold\n');
-%                           R_peak_vals(index)
-%                           signal_lvl
-%                     end
+%                      if(shouldOutput)
+%                            fprintf('Does not meet the deviance threshold\n');
+%                            R_peak_vals(index)
+%                            signal_lvl
+%                      end
 
                    % Sets all the indices which R_vals don't meet the threshold to 0
                    indices(index) = 0; 

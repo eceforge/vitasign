@@ -48,6 +48,10 @@ tic
 %direction
 %sample_size - length in time(s) over which HR is estimated
 
+%CANCELLATION DC DRIFT AND NORMALIZATION
+data = data - mean (data );    % cancel DC conponents
+data = data/ max( abs(data )); % normalize to one
+
 fs_prev = fs;
 if (fs > 100)
 % Applies bandstop to remove 50-60Hz hum
@@ -55,7 +59,11 @@ preprocessingFilterSpec = fdesign.bandstop('Fp1,Fst1,Fst2,Fp2,Ap1,Ast,Ap2',43,50
 preprocessingFilter = design(preprocessingFilterSpec,'equiripple');
 % Plots the frequency of 
 % freqz(preprocessingFilter);
+figure(30)
+plot(data);
 data = filter(preprocessingFilter, data);
+figure(32)
+plot(data);
 
 Fc  = 16;
 low_pass_order = 2;   % FIR filter order
@@ -76,8 +84,10 @@ F_signed = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFra
 
 Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',true);
 F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
+plot(data(1:1000));
 if (fs_prev > 100)
 % Applies front end filters
+fprintf('Applying front end filters\n');
 [filtered_full_signal, dc_offset] = front_end_filters(data, fs);
 
 else
@@ -155,14 +165,18 @@ for step=0:(num_windows - 1)
 %     min(indatadouble(begin_index:end_index))
 %     median(indatadouble(begin_index:end_index))   
 %     mean(indatadouble(begin_index:end_index))
-    if (step >= 58 && step <= 68)
-        heart_rate = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(1),  fi(0, Fixed_Point_Properties, F));
+%     if (step >= 58 && step <= 68)
+      if (step == 0)
+        heart_rate = heart_rate_official_cport_w_debug(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(1),  fi(0, Fixed_Point_Properties, F));
         heart_rates_avg = heart_rates_avg + heart_rate;
         heart_rates = [heart_rates heart_rate];
+        figure(step + 1)
+        plot(indata(begin_index:end_index));
+        return;
     else
-        heart_rate = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(0),  fi(0, Fixed_Point_Properties, F));
+        heart_rate = heart_rate_official_cport_w_debug(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(0),  fi(0, Fixed_Point_Properties, F));
         heart_rates_avg = heart_rates_avg + heart_rate;
-        heart_rates = [heart_rates heart_rate];
+        heart_rates = [heart_rates heart_rate]
     end
     if (mod(uint32(step + 1), uint32(3)) == 0)
         heart_rates_w_avg = [heart_rates_w_avg (heart_rates_avg / 3)];

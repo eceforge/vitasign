@@ -106,7 +106,7 @@ max_x = fi(max(abs(data)), Fixed_Point_Properties_signed, F_signed);
 % end
 data = divide(Fixed_Point_Properties_signed, data, max_x); % normalize to one
 % assert(isequal(numerictype(data),Fixed_Point_Properties_signed) && isequal(fimath(data), F_signed));
-
+data2 = data;
 
 %------ MOST FILTERING NOW OCCURS IN ANALOG SEE 'front_end_filters.m' FOR EMULATED FRONT END FILTERS
 
@@ -238,8 +238,8 @@ for i=1:left_num_cols
 %      Finds the max value from left(i) to right(i)
      for j=left(i):right(i)
          % Compares to find the maximum
-         if(data(j) > max_val)
-             max_val = data(j);
+         if(data2(j) > max_val)
+             max_val = data2(j);
              max_index = i;
          end
      end
