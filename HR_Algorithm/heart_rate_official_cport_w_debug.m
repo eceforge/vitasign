@@ -85,7 +85,7 @@ assert(threshold_1 < threshold_2);
 % threshold
 assert(threshold_3 < threshold_2 && threshold_3 > threshold_1);
 %x1 = load('ecg3.dat'); % load the ECG signal from the file
-assert (all ( size (data) == [1000 1] ));
+assert (all ( size (data) == [500 1] ));
 % assert (~isscalar(data));
 
 x1 = data;
@@ -109,7 +109,7 @@ assert(divide(Fixed_Point_Properties, fi(N, Fixed_Point_Properties, F), fi(fs, F
     %xlim([1 3]);
 
 %CANCELLATION DC DRIFT AND NORMALIZATION
-%x1 = x1 - mean (x1 );    % cancel DC conponents
+x1 = x1 - mean (x1 );    % cancel DC conponents
 % x1 = x1/ max( abs(x1 )); % normalize to one
 max_x = fi(max(abs(x1)), Fixed_Point_Properties_signed, F_signed);
 % for i=1:length(x1)
@@ -256,8 +256,10 @@ x4 = conv (x1 ,h);
 x4 = x4 (2+ (1: N));
 % Make impulse response
 x4 = divide(Fixed_Point_Properties, x4, max( abs(x4 ))); % normalize to one
-figure(23)
-plot(x4);
+if(shouldOutput)
+    figure(23)
+    plot(x4);
+end
 % UNCOMMENT TO SEE PLOT OF EKG AFTER BEING A DERIVATIVE FILTER IS APPLIED
 
     %figure(7)
@@ -276,9 +278,10 @@ x5 = fi(x4.^2, F);
 % assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F));
 %x5 = mpower(x1, 2);
 %x5 = x5/ max( abs(x5 ));
-
-figure(24)
-plot(x5);
+if(shouldOutput)
+    figure(24)
+    plot(x5);
+end
 
 % UPDATES FIXED POINT DEFINITION TO BE UNSIGNED
 % assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F));
@@ -408,8 +411,7 @@ R_loc=R_loc(R_loc~=0);
     %subplot(2,1,2)
     %plot (t,x1/max(x1) , t(R_loc) ,R_value , 'r^', t(S_loc) ,S_value, '*',t(Q_loc) , Q_value, 'o');
     %xlim([1 3]);
-figure(31)
-plot(x1)
+
 % UNCOMMENT TO SEE RESULTS OF THE QRS DETECTION w/ ONLY R-PEAK RESULTS
 if(shouldOutput)
     figure(11)
@@ -672,7 +674,7 @@ for i=1:length(R_peak_vals)
 %             heart_beat_delta = (current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta;
 %             heart_beat_current_sum = heart_beat_current_sum + heart_beat_delta;
             % Updates the heart beat count
-            heart_beat_count = heart_beat_count + 1;
+              heart_beat_count = heart_beat_count + 1;
             
             % Updates the last index
             last_R_index = fi(R_peak_indices_channel_3(i), Fixed_Point_Properties, F);
@@ -681,7 +683,7 @@ for i=1:length(R_peak_vals)
     end
 end
 
-last_hr_delta = fi(sample_time, Fixed_Point_Properties, F) - last_R_index * time_delta;
+% last_hr_delta = fi(sample_time, Fixed_Point_Properties, F) - last_R_index * time_delta;
 % Removes all zero values from both the indice and value array
 R_peak_indices_channel_3 = R_peak_indices_channel_3(R_peak_indices_channel_3 ~= 0);
 % R_peak_vals = R_peak_vals(R_peak_vals ~= 0);
@@ -738,14 +740,13 @@ if (heart_beat_delta_sum == 0)
     heart_beat_count
     heart_beat_current_sum
     heart_beat_last_sum
-%     heart_rate = 230;
     return;
 end
 % heart_beat_delta_sum = heart_beat_current_sum;
 heart_rate  = divide(Fixed_Point_Properties, heart_beat_delta_sum, heart_beat_count);
 % Inverses it to produce HBPM
 heart_rate = divide(Fixed_Point_Properties, 1, heart_rate);
-heart_rate = heart_rate * 60
+heart_rate = heart_rate * 60;
 
 end
 

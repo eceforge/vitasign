@@ -88,6 +88,8 @@ filtered_output = x3;
 % Applies a dc offset
 dc_offset = max(abs(filtered_output));
 filtered_output = filtered_output + dc_offset;
+
+% Changes it to fixed point
 Fixed_Point_Properties = numerictype('WordLength', 12, 'FractionLength', 10, 'Signed', false);
 filtered_output = fi(filtered_output, Fixed_Point_Properties);
 end
