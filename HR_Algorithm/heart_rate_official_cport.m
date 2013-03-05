@@ -117,11 +117,15 @@ h = divide(Fixed_Point_Properties_signed, fi([-1 -2 0 2 1], Fixed_Point_Properti
 % Apply filter
 data = conv (data ,h);
 data = data (2+ (1: N));
+max_val = fi(0, Fixed_Point_Properties, F);
 % Finds the absolute value of the array
 for i=1:uint32(length(data))
-    data(i) = abs(data(i));
+    abs_data = abs(data(i));
+    if (abs_data > max_val)
+        max_val = abs_data;
+    end
 end 
-data = divide(Fixed_Point_Properties_signed,  data, max(data));
+data = divide(Fixed_Point_Properties_signed,  data, max_val);
 % UPDATES FIXED POINT DEFINITION TO BE UNSIGNED(CURRENTLY REVERESED TO BE
 % SIGNED B/C OF SPACE CONSTRAINTS
 Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',true);
@@ -430,7 +434,7 @@ end
 heart_rate  = divide(Fixed_Point_Properties, heart_beat_delta_sum, heart_beat_count);
 % Inverses it to produce HBPM
 heart_rate = divide(Fixed_Point_Properties, 1, heart_rate);
-heart_rate = heart_rate * fi(60, Fixed_Point_Properties, F);
+heart_rate = heart_rate * fi(60, Fixed_Point_Properties, F)
 
 end
 
