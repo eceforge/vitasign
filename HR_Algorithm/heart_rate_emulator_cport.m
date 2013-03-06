@@ -50,9 +50,10 @@ tic
 
 %CANCELLATION DC DRIFT AND NORMALIZATION
 data = data - mean (data );    % cancel DC conponents
-data = data/ max( abs(data )); % normalize to one
+data = data/ max( abs(data)); % normalize to one
 fs_prev = fs;
 if (fs > 100)
+fprintf('Downsampling to 100Hz..\n');
 % Applies bandstop to remove 50-60Hz hum
 preprocessingFilterSpec = fdesign.bandstop('Fp1,Fst1,Fst2,Fp2,Ap1,Ast,Ap2',43,50,60,68,.5,60,1,fs); 
 preprocessingFilter = design(preprocessingFilterSpec,'equiripple');
@@ -83,13 +84,15 @@ if (fs_prev > 100)
 % Applies front end filters
 fprintf('Applying front end filters\n');
 [filtered_full_signal, dc_offset] = front_end_filters(data, fs);
+% Offsets DC offset
 filtered_full_signal = double(filtered_full_signal) - dc_offset;
+figure(34)
+plot(filtered_full_signal)
 else
     fprintf('Getting dc offset\n');
     [~, dc_offset] = front_end_filters(data, fs);
     filtered_full_signal = data;
 end
-% Offsets DC offset
 indata = fi(filtered_full_signal, Fixed_Point_Properties_signed, F_signed);
 
 % Generates a CSV file that simulates the data that would be outputted by
@@ -136,6 +139,7 @@ t_avg = [];
 %t = [0:N-1]/fs;        % time index
 
 for step=0:(num_windows - 1)
+%     step
     begin_index = 1 + step_size*step;%[GB]N1 represents the beginning index of the window 
     begin_index = min(N, begin_index);
     end_index = begin_index + window_size-1;%[GB]N2 demarcates where the window ends
@@ -161,7 +165,7 @@ for step=0:(num_windows - 1)
 %     median(indatadouble(begin_index:end_index))   
 %     mean(indatadouble(begin_index:end_index))
 %     if (step >= 58 && step <= 68)
-      if (step == 30)
+      if (step == 100000)
         heart_rate = heart_rate_official_cport_w_debug(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(1),  fi(0, Fixed_Point_Properties, F))
         heart_rates_avg = heart_rates_avg + heart_rate;
         
@@ -176,7 +180,7 @@ for step=0:(num_windows - 1)
         t_avg = [t_avg (step_size +  step * step_size)/fs];
         heart_rates_avg = 0;
     end
-    %     break;
+%     return;
 end
 toc
     

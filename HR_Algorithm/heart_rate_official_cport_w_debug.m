@@ -388,7 +388,7 @@ R_loc = zeros(1, left_num_cols);
 for i=1:length(left)  
     [R_value(i) R_loc(i)] = max( x1(left(i):right(i)) );
     R_loc(i) = R_loc(i)-1+left(i); % add offset
-
+    
 %     [Q_value(i) Q_loc(i)] = min( x1(left(i):R_loc(i)) );
 %     Q_loc(i) = Q_loc(i)-1+left(i); % add offset
 

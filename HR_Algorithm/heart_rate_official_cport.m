@@ -126,6 +126,7 @@ for i=1:uint32(length(data))
     end
 end 
 data = divide(Fixed_Point_Properties_signed,  data, max_val);
+
 % UPDATES FIXED POINT DEFINITION TO BE UNSIGNED(CURRENTLY REVERESED TO BE
 % SIGNED B/C OF SPACE CONSTRAINTS
 Fixed_Point_Properties = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed',true);
@@ -244,7 +245,7 @@ for i=1:left_num_cols
          % Compares to find the maximum
          if(data2(j) > max_val)
              max_val = data2(j);
-             max_index = i;
+             max_index = j;
          end
      end
      
@@ -254,11 +255,10 @@ for i=1:left_num_cols
       
      % Resets max for next iteration
      max_val = fi(0, Fixed_Point_Properties, F);
-     R_peak_indices_channel_1(i) = R_peak_indices_channel_1(i)-1+left(i); % add offset
 end
 
 % there is no selective wave
-% R_peak_indices=R_peak_indices(R_peak_indices~=uint32(0));
+% R_peak_indices_channel_1=R_peak_indices_channel_1(R_peak_indices_channel_1~=uint32(0));
 
 
 % VITASIGN'S CODE BELOW
@@ -274,9 +274,9 @@ num_cols_indices = uint32(length(R_peak_indices_channel_1));
 
 % Creates a copy of the indices which store the indices where the 'R' peaks
 % lie
-% if(shouldOutput)
-%     num_cols_indices;
-% end
+if(shouldOutput)
+     num_cols_indices;
+end
 
 % R_peak_indices_channel_1 = R_peak_indices(1:num_cols_indices); 
 R_peak_indices_channel_2 = R_peak_indices_channel_1(1:num_cols_indices);
@@ -286,10 +286,10 @@ R_peak_indices_channel_2 = R_peak_indices_channel_1(1:num_cols_indices);
 [R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(data, threshold_2, uint32(R_peak_indices_channel_2), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
 % CAN RELEASE DATA HERE 
 
-% if(shouldOutput)
-%     chan1 = length(find(R_peak_indices_channel_1))
-%     chan2 = length(find(R_peak_indices_channel_2))
-% end
+if(shouldOutput)
+    chan1 = length(find(R_peak_indices_channel_1))
+    chan2 = length(find(R_peak_indices_channel_2))
+end
 % Ensures that noise and signal levels are fixed point
 assert(isfi(noise_lvl_channel_1));assert(isfi(signal_lvl_channel_1));
 assert(isfi(noise_lvl_channel_2));assert(isfi(signal_lvl_channel_2));
@@ -351,9 +351,9 @@ for i=1:num_cols_indices
     end
 end
 
-% if(shouldOutput)
-%     final = length(find(R_peak_indices_channel_2))
-% end
+if(shouldOutput)
+    final = length(find(R_peak_indices_channel_2))
+end
 % LEVEL 5 DETECTION: 
 %Refines heart beat detection by considering a heart beat's refactory period    
 
@@ -409,8 +409,8 @@ for i=1:num_cols_indices
             % Updates the heart beat count
           heart_beat_count = heart_beat_count + 1;
             
-            % Updates the last index
-            last_R_index = fi(R_peak_indices_channel_2(i),   Fixed_Point_Properties, F);
+         % Updates the last index
+         last_R_index = fi(R_peak_indices_channel_2(i),   Fixed_Point_Properties, F);
             
         end
     end
@@ -424,7 +424,7 @@ end
 % Produces a result which is avg heart beat delta(s)
 
 heart_beat_delta_sum = heart_beat_current_sum - heart_beat_last_sum;
-if (heart_beat_delta_sum == 0)
+if (heart_beat_delta_sum == 0)  
     heart_beat_count
     heart_beat_current_sum
     heart_beat_last_sum
@@ -434,7 +434,7 @@ end
 heart_rate  = divide(Fixed_Point_Properties, heart_beat_delta_sum, heart_beat_count);
 % Inverses it to produce HBPM
 heart_rate = divide(Fixed_Point_Properties, 1, heart_rate);
-heart_rate = heart_rate * fi(60, Fixed_Point_Properties, F)
+heart_rate = heart_rate * fi(60, Fixed_Point_Properties, F);
 
 end
 

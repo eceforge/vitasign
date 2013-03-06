@@ -46,8 +46,6 @@ high_pass = design(high_pass_spec,'window','window',@hamming);
 %x3 = x3 (16+[1: N]); %cancle delay
 x3 = filter(high_pass, x2);
 x3 = x3/ max( abs(x3 ));
-figure(33)
-plot(x3);
 
 %DERIVATIVE FILTER
 % 
