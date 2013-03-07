@@ -136,6 +136,7 @@ heart_rates_w_avg = [];
 heart_rates_avg = 0;
 t = [];
 t_avg = [];
+num_avg_samples = 4;
 %t = [0:N-1]/fs;        % time index
 
 for step=0:(num_windows - 1)
@@ -165,18 +166,19 @@ for step=0:(num_windows - 1)
 %     median(indatadouble(begin_index:end_index))   
 %     mean(indatadouble(begin_index:end_index))
 %     if (step >= 58 && step <= 68)
-      if (step == 100000)
+      if (step == 63)
         heart_rate = heart_rate_official_cport_w_debug(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(1),  fi(0, Fixed_Point_Properties, F))
         heart_rates_avg = heart_rates_avg + heart_rate;
         
         heart_rates = [heart_rates heart_rate];
+%         return
     else
         heart_rate = heart_rate_official_cport_w_debug(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(0),  fi(0, Fixed_Point_Properties, F));
         heart_rates_avg = heart_rates_avg + heart_rate;
         heart_rates = [heart_rates heart_rate];
     end
-    if (mod(uint32(step + 1), uint32(3)) == 0)
-        heart_rates_w_avg = [heart_rates_w_avg (heart_rates_avg / 3)];
+    if (mod(uint32(step + 1), uint32(num_avg_samples)) == 0)
+        heart_rates_w_avg = [heart_rates_w_avg (heart_rates_avg / num_avg_samples)];
         t_avg = [t_avg (step_size +  step * step_size)/fs];
         heart_rates_avg = 0;
     end

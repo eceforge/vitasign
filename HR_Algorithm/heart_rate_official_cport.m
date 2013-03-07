@@ -422,7 +422,6 @@ end
 %   Provides less quantized HR values
 
 % Produces a result which is avg heart beat delta(s)
-
 heart_beat_delta_sum = heart_beat_current_sum - heart_beat_last_sum;
 if (heart_beat_delta_sum == 0)  
     heart_beat_count

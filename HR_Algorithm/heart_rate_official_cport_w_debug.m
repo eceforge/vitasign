@@ -116,6 +116,10 @@ max_x = fi(max(abs(x1)), Fixed_Point_Properties_signed, F_signed);
 %     divide(Fixed_Point_Properties_signed, x1(i), max_x) % normalize to one
 % end
 x1 = divide(Fixed_Point_Properties_signed, x1, max_x); % normalize to one
+if(shouldOutput)
+    figure(50)
+    plot(x1);
+end
 assert(isequal(numerictype(x1),Fixed_Point_Properties_signed) && isequal(fimath(x1), F_signed));
 
 
@@ -296,7 +300,10 @@ x5 = fi(x5, Fixed_Point_Properties, F);
 % Normalizes the result of the squaring
 x5 = divide(Fixed_Point_Properties, x5, max( abs(x5 ))); % normalize to one
 assert(isequal(numerictype(x5),Fixed_Point_Properties) && isequal(fimath(x5), F));
-
+if(shouldOutput)
+    figure(25)
+    plot(x5)
+end
 % UNCOMMENT TO SEE PLOT OF EKG AFTER SQUARING
 %     if(shouldOutput)
         %figure(8)
@@ -386,7 +393,9 @@ end
 R_value = fi(zeros(1, left_num_cols), Fixed_Point_Properties, F);
 R_loc = zeros(1, left_num_cols);
 for i=1:length(left)  
-    [R_value(i) R_loc(i)] = max( x1(left(i):right(i)) );
+   [R_value(i) R_loc(i)] = max( sqrt(x5(left(i):right(i))));
+%     [R_value(i) R_loc(i)] = max( x5(left(i):right(i)));
+%     [R_value(i) R_loc(i)] = max( x1(left(i):right(i)));
     R_loc(i) = R_loc(i)-1+left(i); % add offset
     
 %     [Q_value(i) Q_loc(i)] = min( x1(left(i):R_loc(i)) );
@@ -417,10 +426,10 @@ if(shouldOutput)
     figure(11)
     subplot(2,1,1)
     title('ECG Signal with R points');
-    plot (t,x1/max(x1), t(R_loc), R_value, 'r^');
+    plot (t, x1, t(R_loc), R_value, 'r^');
     legend('ECG','R');
     subplot(2,1,2)
-    plot (t(100:300),x1(100:300)/max(x1) , t(R_loc) ,R_value , 'r^');
+    plot (t(100:300),x1(100:300) , t(R_loc) ,R_value , 'r^');
     xlim([1 3]);
 end
 
@@ -449,8 +458,13 @@ R_peak_indices_combined = R_peak_indices(1:num_cols_indices); % REPLACE THIS WIT
 %     if (shouldOutput)
 %         fprintf('Channel 1 Original: There are %i non-zero values\n',length(find(R_peak_indices_channel_1 ~= 0)));
 %     end
-
+if(shouldOutput)
+    fprintf('Processing channel 1..\n');
+end
 [R_peak_indices_channel_1, noise_lvl_channel_1, signal_lvl_channel_1] = dualThreshold(R_peak_vals, threshold_1, uint32(R_peak_indices_channel_1), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
+if(shouldOutput)
+    fprintf('Processing channel 2..\n');
+end
 [R_peak_indices_channel_2, noise_lvl_channel_2, signal_lvl_channel_2] = dualThreshold(R_peak_vals, threshold_2, uint32(R_peak_indices_channel_2), max_voltage, pos_deviance_threshold, neg_deviance_threshold, shouldOutput);
 if(shouldOutput)
     chan1 = length(find(R_peak_indices_channel_1))
@@ -651,6 +665,9 @@ for i=1:length(R_peak_vals)
         %Filters out any R_values which happen too soon after a previous
         % beat detection.
         if (last_R_index ~= 0 && ((current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta) < .200)
+            if(shouldOutput)
+                fprintf('Removing beat: beat occured too soon\n');
+            end
             R_peak_vals(i) = 0;
             R_peak_indices_channel_3(i) = 0;
          
@@ -733,7 +750,13 @@ end
 
 % CALCULATES HEART RATE USING AVERAGE TIME TIME DELTAS BETWEEN BEATS
 %   Provides less quantized HR values
+if(shouldOutput)
+    heart_beat_delta_sum = heart_beat_current_sum - heart_beat_last_sum
+    heart_beat_count
+    avg_delta = divide(Fixed_Point_Properties, heart_beat_delta_sum, heart_beat_count)
 
+    
+end 
 % Produces a result which is avg heart beat delta(s)
 heart_beat_delta_sum = heart_beat_current_sum - heart_beat_last_sum;
 if (heart_beat_delta_sum == 0)
@@ -829,11 +852,11 @@ end
                % Filters out any signal value which exceeds the allowed deviance from
                % the average signal value 
                if (~meets_deviance_threshold(R_peak_vals(index), signal_lvl, pos_deviance_threshold, neg_deviance_threshold) && index > 4)
-%                      if(shouldOutput)
-%                            fprintf('Does not meet the deviance threshold\n');
-%                            R_peak_vals(index)
-%                            signal_lvl
-%                      end
+                      if(shouldOutput)
+                            fprintf('Does not meet the deviance threshold\n');
+                            R_peak_vals(index)
+                            signal_lvl
+                      end
 
                    % Sets all the indices which R_vals don't meet the threshold to 0
                    indices(index) = 0; 
@@ -848,9 +871,9 @@ end
                    continue;
                end
                % DELETE AFTER DEBUGGING
-               %if (shouldOutput && channel == 2)
-               %   fprintf('The peak val is: %f\n',R_peak_vals(index));
-               %end
+               if (shouldOutput)
+                  fprintf('The peak val is: %f\n',double(R_peak_vals(index)));
+               end
                
                 % Updates the average signal lvl
                signal_sum = signal_sum + R_peak_vals(index);
