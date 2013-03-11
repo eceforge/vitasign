@@ -1,0 +1,4 @@
+
+INSTALLROOT_2803x_V126 = ../../
+INSTALLROOT_2803x_TO_IQMATH = ../../../../../libs/math/IQmath
+INSTALLROOT_2803x_TO_HCCAL = ../../../../../libs/utilities/hrcap_hccal
