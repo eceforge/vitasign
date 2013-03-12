@@ -3,7 +3,7 @@
  *
  * Code generation for function 'heart_rate_official_cport'
  *
- * C source code generated on: Sun Mar 10 21:17:39 2013
+ * C source code generated on: Mon Mar 11 20:10:04 2013
  *
  */
 
@@ -34,7 +34,8 @@ static int32_T div_s32_SR_near(int32_T numerator, int32_T denominator, uint16_T
   nShiftRight);
 static void dualThreshold(const int32_T R_peak_vals[500], int32_T threshold,
   uint32_T indices[500], int32_T max_voltage, int32_T pos_deviance_threshold,
-  int32_T neg_deviance_threshold, int32_T *noise_lvl, int32_T *signal_lvl);
+  int32_T neg_deviance_threshold, uint32_T num_cols_indices, int32_T *noise_lvl,
+  int32_T *signal_lvl);
 static int32_T mul_s32_s32_s32_sr14_sat_near(int32_T a, int32_T b);
 static int32_T mul_s32_s32_s32_sr15_sat_near(int32_T a, int32_T b);
 static int32_T mul_s32_s32_s32_sr27_sat_near(int32_T a, int32_T b);
@@ -140,7 +141,8 @@ static int32_T div_s32_SR_near(int32_T numerator, int32_T denominator, uint16_T
 
 static void dualThreshold(const int32_T R_peak_vals[500], int32_T threshold,
   uint32_T indices[500], int32_T max_voltage, int32_T pos_deviance_threshold,
-  int32_T neg_deviance_threshold, int32_T *noise_lvl, int32_T *signal_lvl)
+  int32_T neg_deviance_threshold, uint32_T num_cols_indices, int32_T *noise_lvl,
+  int32_T *signal_lvl)
 {
   int32_T noise_sum;
   int32_T signal_sum;
@@ -171,7 +173,7 @@ static void dualThreshold(const int32_T R_peak_vals[500], int32_T threshold,
   /*  Setting signal count to 1 ensures that the first value doesn't dominate the avg signal level */
   *noise_lvl = 0L;
   *signal_lvl = 0L;
-  for (b_index = 0; b_index < 500; b_index++) {
+  for (b_index = 0; (uint32_T)(b_index + 1) <= num_cols_indices; b_index++) {
     sLong2MultiWord(mul_s32_s32_s32_sat(R_peak_vals[b_index], max_voltage),
                     &r11.chunks[0U], 2);
     MultiWordSignedWrap(&r11.chunks[0U], 2, 22U, &r12.chunks[0U]);
@@ -428,6 +430,7 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
   int32_T qY;
   int32_T max_val;
   int16_T i;
+  static const int32_T iv0[5] = { -128L, -256L, 0L, 256L, 128L };
 #pragma SET_DATA_SECTION (".big_stuff3")
   static int32_T b_data[504];
   static int32_T c_data[506];
@@ -441,7 +444,6 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
 #pragma SET_DATA_SECTION(".big_stuff1")
   static uint32_T R_peak_indices_channel_1[500];
 #pragma SET_DATA_SECTION()
-  static const int32_T iv0[5] = { -128L, -256L, 0L, 256L, 128L };
   int32_T q1;
   int32_T iv1[7];
   int32_T max_voltage;
@@ -453,6 +455,7 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
   int64m_T r8;
   int64m_T r9;
   int64m_T r10;
+  uint32_T num_cols_indices;
   uint32_T j;
   int32_T heart_beat_count;
   int32_T heart_beat_last_sum;
@@ -687,6 +690,7 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
   memset((void *)&R_peak_indices_channel_1[0L], 0, 500U * sizeof(uint32_T));
   max_val = 0L;
   left_index = 0;
+  num_cols_indices = 0UL;
   i = 0;
   while (((uint16_T)(i + 1) < 501U) && (!(left[i] == 0UL))) {
     /*       [R_peak_vals(i) R_peak_indices(i)] = max(data(left(i):right(i)) ); */
@@ -704,6 +708,12 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
     /*  Saves the peak's index and value */
     data[i] = max_val;
     R_peak_indices_channel_1[i] = (uint32_T)left_index;
+    j = num_cols_indices + 1UL;
+    if (j < num_cols_indices) {
+      j = MAX_uint32_T;
+    }
+
+    num_cols_indices = j;
 
     /*  Resets max for next iteration */
     max_val = 0L;
@@ -719,6 +729,7 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
   /*  Level 2 Detection: Uses two channels to detect heart beats based on two threshold */
   /*  [num_rows_vals, num_cols_vals] = size(R_peak_vals); */
   /*  [~, num_cols_indices] = size(R_peak_indices); */
+  /*  num_cols_indices = uint32(length(R_peak_indices_channel_1)); */
   /*  Creates a copy of the indices which store the indices where the 'R' peaks */
   /*  lie */
   /*  if(shouldOutput) */
@@ -729,9 +740,10 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
   memcpy((void *)&left[0L], (void *)&R_peak_indices_channel_1[0L], 500U * sizeof
          (uint32_T));
   dualThreshold(data, threshold_1, left, max_voltage, pos_deviance_threshold,
-                neg_deviance_threshold, &heart_beat_last_sum, &heart_beat_count);
+                neg_deviance_threshold, num_cols_indices, &heart_beat_last_sum,
+                &heart_beat_count);
   dualThreshold(data, threshold_2, R_peak_indices_channel_1, max_voltage,
-                pos_deviance_threshold, neg_deviance_threshold,
+                pos_deviance_threshold, neg_deviance_threshold, num_cols_indices,
                 &noise_lvl_channel_2, &signal_lvl_channel_2);
 
   /*  CAN RELEASE DATA HERE  */
@@ -743,9 +755,7 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
   /*  Level 3 DETECTION: REFINES HEART BEAT DETECTION ACCURACY BY CHANNEL */
   /*  COMPARISON */
   /*  Combines both channels to refine beat detection */
-  for (i = 0; i < 500; i++) {
-    j = R_peak_indices_channel_1[i];
-
+  for (i = 0; (uint32_T)(i + 1) <= num_cols_indices; i++) {
     /*  Documents the other cases % */
     /*  If the signal's amplitude passes both the channels then there is a */
     /*  high chance of a beat */
@@ -758,7 +768,7 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
     /*  If the signal's amplitude fails both the channels then there is a */
     /*  high chance that the it's not a beat */
     if ((left[i] == 0UL) && (R_peak_indices_channel_1[i] == 0UL)) {
-      j = 0UL;
+      R_peak_indices_channel_1[i] = 0UL;
     } else {
       if ((left[i] != 0UL) && (R_peak_indices_channel_1[i] == 0UL)) {
         /*  Uses the decision of the channel w/ the highest Detection. */
@@ -842,12 +852,10 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
 
         /*          Ds_2 = max(0, Ds_2); */
         if (max_val > thresh) {
-          j = left[i];
+          R_peak_indices_channel_1[i] = left[i];
         }
       }
     }
-
-    R_peak_indices_channel_1[i] = j;
   }
 
   /*  if(shouldOutput) */
@@ -867,7 +875,7 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
 
   /*  Heart beat count is the amount of heart beats detected */
   heart_beat_count = 0L;
-  for (i = 0; i < 500; i++) {
+  for (i = 0; (uint16_T)(i + 1) <= (uint16_T)num_cols_indices; i++) {
     if (R_peak_indices_channel_1[i] == 0UL) {
       data[i] = 0L;
 
@@ -902,6 +910,7 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
 
         if (qY < 205L) {
           data[i] = 0L;
+          R_peak_indices_channel_1[i] = 0UL;
 
           /*  Initializes the first delta which is when the first heart */
           /*  beat occurs */
@@ -991,6 +1000,9 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
 
     /*  This is to ensure the Q value of HR is 20 */
   } else {
+    /*  heart_rate = heart_beat_delta_sum * heart_beat_delta_sum; % This is to ensure the Q value of HR is 20 */
+    /*  heart_beat_delta_sum = fi(heart_rate, Fixed_Point_Properties, F); */
+    /*  heart_beat_delta_sum = heart_beat_delta_sum + heart_beat_delta_sum; */
     /*  Inverses it to produce HBPM */
     *heart_rate = mul_s32_s32_s32_sr15_sat_near(div_s32_SR_near(1073741824L,
       div_repeat_s32_sat_near(thresh, heart_beat_count, 10U), 10U), 2013265920L);
