@@ -393,7 +393,7 @@ end
 R_value = fi(zeros(1, left_num_cols), Fixed_Point_Properties, F);
 R_loc = zeros(1, left_num_cols);
 for i=1:length(left)  
-   [R_value(i) R_loc(i)] = max( sqrt(x5(left(i):right(i))));
+   [R_value(i) R_loc(i)] = max( sqrt(x6(left(i):right(i))));
 %     [R_value(i) R_loc(i)] = max( x5(left(i):right(i)));
 %     [R_value(i) R_loc(i)] = max( x1(left(i):right(i)));
     R_loc(i) = R_loc(i)-1+left(i); % add offset

@@ -98,6 +98,8 @@ indata = fi(filtered_full_signal, Fixed_Point_Properties_signed, F_signed);
 % Generates a CSV file that simulates the data that would be outputted by
 % an ADC
 % fake_nonfiltered_data(data, fi(4096, Fixed_Point_Properties, F), fi(3.3, Fixed_Point_Properties, F), 100, sample_size);
+% figure(23);
+% plot(filtered_full_signal);
 % fake_nonfiltered_data(filtered_full_signal + 1.65, fi(4096, Fixed_Point_Properties, F), fi(3.3, Fixed_Point_Properties, F), 100, sample_size);
     
 % return;
@@ -140,7 +142,6 @@ num_avg_samples = 4;
 %t = [0:N-1]/fs;        % time index
 
 for step=0:(num_windows - 1)
-%     step
     begin_index = 1 + step_size*step;%[GB]N1 represents the beginning index of the window 
     begin_index = min(N, begin_index);
     end_index = begin_index + window_size-1;%[GB]N2 demarcates where the window ends
@@ -165,15 +166,22 @@ for step=0:(num_windows - 1)
 %     min(indatadouble(begin_index:end_index))
 %     median(indatadouble(begin_index:end_index))   
 %     mean(indatadouble(begin_index:end_index))
-%     if (step >= 58 && step <= 68)
-      if (step == 63)
-        heart_rate = heart_rate_official_cport_w_debug(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(1),  fi(0, Fixed_Point_Properties, F))
+%      if (step >= 63 && step <= 65)
+    if(step == 0)
+        % Generates a CSV file that simulates the data that would be outputted by
+        % an ADC
+         figure(23)
+         plot(indata(begin_index:end_index));
+         fake_nonfiltered_data(indata(begin_index:end_index) + 1.65, fi(4096, Fixed_Point_Properties, F), fi(3.3, Fixed_Point_Properties, F), 100, sample_size, fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), sample_size_t);
+        
+        % Finds the HR
+        heart_rate = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(1),  fi(0, Fixed_Point_Properties, F))
         heart_rates_avg = heart_rates_avg + heart_rate;
         
         heart_rates = [heart_rates heart_rate];
-%         return
+        return;
     else
-        heart_rate = heart_rate_official_cport_w_debug(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(0),  fi(0, Fixed_Point_Properties, F));
+        heart_rate = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(0),  fi(0, Fixed_Point_Properties, F));
         heart_rates_avg = heart_rates_avg + heart_rate;
         heart_rates = [heart_rates heart_rate];
     end
