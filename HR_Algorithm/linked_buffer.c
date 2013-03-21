@@ -36,7 +36,7 @@ unsigned int data_out[SAMPLE_TIME * FS];
  */
 static void printCircularLinkedBuffer(Linked_Buffer *head, Linked_Buffer *tail);
 static void copyDataOut(Linked_Buffer *head, unsigned int *buf);
-static void printData(unsigned int *data);
+static void printData(unsigned int *in_data, unsigned int N);
 
 int
 main(int argc, char **argv)
@@ -64,27 +64,27 @@ main(int argc, char **argv)
 	i = 0;
 	// Indicates whether all the buffers are full - used for init
 	// unsigned int buffers_full = 0;
-	while(how_many_times != 60) {
+	while(how_many_times != 80) {
 		data = (data + 1) % UINT_MAX;
-		if (num_empty_buffers_left == 0)
-			buffers_full = 1;
 		// fprintf(stderr, "Filling buffer @ index %i Buffer size is %u\n",  i, BUFFER_SIZE);
 		(current_linked_buffer->buffer)[i] = data; 
 		
 		// Checks if we are at the end of the buffer
-		if (i == BUFFER_SIZE - 1) {
-			printf("%s\n", "Hopping onto the next buffer...");
-			current_linked_buffer = current_linked_buffer->next;
-			printCircularLinkedBuffer(linked_buffer_head, linked_buffer_tail);
-
+		if (i == BUFFER_SIZE - 1) {	
 			// Updates the buffer full
 			if(!buffers_full)
 				num_empty_buffers_left--;
-			// Copies the data out of the linked buffer
-			else {
+			
+			current_linked_buffer = current_linked_buffer->next;
+			/**
+			 * Copies the data out of the linked buffer
+			 * Starts copying from the next buffer b/c that will be the beginning
+			 */
+			if (!num_empty_buffers_left){
 				copyDataOut(current_linked_buffer, data_out);
-				printData(data_out);
+				buffers_full = 1;
 			}
+
 		}
 		i = (i + 1) % (BUFFER_SIZE);
 		how_many_times++;
@@ -101,32 +101,34 @@ main(int argc, char **argv)
  */
 static void copyDataOut(Linked_Buffer *head, unsigned int *buf) {
 	printf("%s\n", "Copying the circular buffer our to the buffer" );
-	Linked_Buffer current_linked_buffer;
+	Linked_Buffer *current_linked_buffer = head;
 	unsigned int i, linked_buffer;
 
 	/**
 	 * Copies all the data out of the buffers in the linked list to buf
 	 */
 	for (linked_buffer=1; linked_buffer <= NUM_BUFFERS; linked_buffer++) {
-		current_linked_buffer = head[linked_buffer];
 		// Copies all the data out of the buffer
-		for(i=0; i < BUFFER_SIZE; i+=1)  {
-			buf[i * linked_buffer] = (current_linked_buffer.buffer)[i];
+		for(i = 0; i < BUFFER_SIZE; i+=1)  {
+			buf[i + ((linked_buffer - 1) * (BUFFER_SIZE))] = (current_linked_buffer->buffer)[i];
 		}
-		// current_linked_buffer = current_linked_buffer->next;
+		current_linked_buffer = current_linked_buffer->next;
 	}
-	
+	printf("\n");
+	printData(buf, SAMPLE_TIME * FS);
+	printf("\n");
 }
 
 /**
  * Prints the data out array
  */
-static void printData(unsigned int *data) {
+static void printData(unsigned int *in_data, unsigned int N) {
 	unsigned int i;
-	printf("Printing data out\n");
-	for(i = 0; i < BUFFER_SIZE; i+=1)  {
-		printf("%u ", data[i]);
+	printf("Printing data out N: %u \n", N);
+	for(i = 0; i < N; i+=1)  {
+		printf("%u ", in_data[i]);
 	}
+	printf("\n");
 }
 
 /**
@@ -148,4 +150,5 @@ static void printCircularLinkedBuffer(Linked_Buffer *head, Linked_Buffer *tail) 
 		current_linked_buffer = current_linked_buffer->next;
 	}
 	while(current_linked_buffer != head);
+	printf("\n");
 }
