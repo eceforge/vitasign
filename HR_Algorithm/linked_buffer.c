@@ -1,9 +1,7 @@
 #include <stddef.h>
 #include <stdio.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 #include <limits.h>
 // The length of data in seconds used for estimating HR
 #define SAMPLE_TIME 5
