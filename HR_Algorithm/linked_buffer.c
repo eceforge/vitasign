@@ -29,26 +29,65 @@ Linked_Buffer *linked_buffer_head, *linked_buffer_tail;
 Linked_Buffer circular_buffers[NUM_BUFFERS];
 Linked_Buffer *current_linked_buffer;
 unsigned int data_out[SAMPLE_TIME * FS];
+unsigned int num_empty_buffers_left = NUM_BUFFERS, buffers_full = 0, current_index = 0;
+
 
 /**
  * Function prototypes
  * @return
  */
 static void printCircularLinkedBuffer(Linked_Buffer *head, Linked_Buffer *tail);
-static void copyDataOut(Linked_Buffer *head, unsigned int *buf);
 static void printData(unsigned int *in_data, unsigned int N);
+static void copyDataOut(Linked_Buffer *head, unsigned int *buf);
+static void addData(unsigned int val);
+static void initLinkedBuffers();
 
 int
 main(int argc, char **argv)
 {
 	// Generates data to test circular linked list of buffers
 	unsigned int data = 0, how_many_times = 0;
-	unsigned int num_empty_buffers_left = NUM_BUFFERS, buffers_full = 0;
 	// unsigned int data[SAMPLE_TIME * FS];
 	// unsigned int num_buffers = ceil(SAMPLE_TIME/NEW_DATA_SAMPLE_TIME);
 
 	setbuf(stderr, NULL);
+	initLinkedBuffers();
+	
+	while(how_many_times != 80) {
+		data = (data + 1) % UINT_MAX;
+		// fprintf(stderr, "Filling buffer @ index %i Buffer size is %u\n",  i, BUFFER_SIZE);
+		addData(data);
+		how_many_times++;
+	}
+	return 0;
 
+}
+/**
+ * Adds data to the linked buffer list
+ * @param val [description]
+ */
+static void addData(unsigned int val) {
+	(current_linked_buffer->buffer)[current_index] = val; 
+	
+	// Checks if we are at the end of the buffer
+	if (current_index == BUFFER_SIZE - 1) {	
+		// Updates the buffer full
+		if(!buffers_full)
+			num_empty_buffers_left--;
+		
+		current_linked_buffer = current_linked_buffer->next;
+		/**
+		 * Copies the data out of the linked buffer
+		 * Starts copying from the next buffer b/c that will be the beginning
+		 */
+		if (!num_empty_buffers_left){
+			copyDataOut(current_linked_buffer, data_out);
+			buffers_full = 1;
+		}
+	}
+	current_index = (current_index + 1) % (BUFFER_SIZE);
+}
+static void initLinkedBuffers() {
 	// Builds the circular linked list
 	int i;
 	for(i = 0; i < NUM_BUFFERS; i++){
@@ -59,41 +98,7 @@ main(int argc, char **argv)
 	linked_buffer_tail = &circular_buffers[NUM_BUFFERS - 1];
 	
 	current_linked_buffer = linked_buffer_head;
-
-	// Resets i
-	i = 0;
-	// Indicates whether all the buffers are full - used for init
-	// unsigned int buffers_full = 0;
-	while(how_many_times != 80) {
-		data = (data + 1) % UINT_MAX;
-		// fprintf(stderr, "Filling buffer @ index %i Buffer size is %u\n",  i, BUFFER_SIZE);
-		(current_linked_buffer->buffer)[i] = data; 
-		
-		// Checks if we are at the end of the buffer
-		if (i == BUFFER_SIZE - 1) {	
-			// Updates the buffer full
-			if(!buffers_full)
-				num_empty_buffers_left--;
-			
-			current_linked_buffer = current_linked_buffer->next;
-			/**
-			 * Copies the data out of the linked buffer
-			 * Starts copying from the next buffer b/c that will be the beginning
-			 */
-			if (!num_empty_buffers_left){
-				copyDataOut(current_linked_buffer, data_out);
-				buffers_full = 1;
-			}
-
-		}
-		i = (i + 1) % (BUFFER_SIZE);
-		how_many_times++;
-	}
-	return 0;
-
 }
-
-
 /**
  * Prints all the buffers in the circularly linked list of buffers
  * @param head
