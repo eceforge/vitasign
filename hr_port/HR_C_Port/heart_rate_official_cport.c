@@ -431,17 +431,17 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
   int32_T max_val;
   int16_T i;
   static const int32_T iv0[5] = { -128L, -256L, 0L, 256L, 128L };
-#pragma SET_DATA_SECTION (".big_stuff3")
+#pragma SET_DATA_SECTION (".big_stuff")
   static int32_T b_data[504];
   static int32_T c_data[506];
   static uint32_T left[500];
 #pragma SET_DATA_SECTION()
 
-#pragma SET_DATA_SECTION(".big_stuff2")
+#pragma SET_DATA_SECTION(".big_stuff")
   static int16_T right[500];
 #pragma SET_DATA_SECTION()
 
-#pragma SET_DATA_SECTION(".big_stuff1")
+#pragma SET_DATA_SECTION(".big_stuff")
   static uint32_T R_peak_indices_channel_1[500];
 #pragma SET_DATA_SECTION()
   int32_T q1;

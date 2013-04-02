@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>Example_28035_Flash</name>
+	<name>Example_2806xFlash</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -19,64 +19,64 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>F2803x-FRM-DEV-PKG-UG.pdf</name>
+			<name>F2806x_CodeStartBranch.asm</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_2803x_V126/doc/F2803x-FRM-DEV-PKG-UG.pdf</locationURI>
+			<locationURI>INSTALLROOT_F2806x_V135/F2806x_common/source/F2806x_CodeStartBranch.asm</locationURI>
 		</link>
 		<link>
-			<name>DSP2803x_CodeStartBranch.asm</name>
+			<name>F2806x_CSMPasswords.asm</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_2803x_V126/DSP2803x_common/source/DSP2803x_CodeStartBranch.asm</locationURI>
+			<locationURI>INSTALLROOT_F2806x_V135/F2806x_common/source/F2806x_CSMPasswords.asm</locationURI>
 		</link>
 		<link>
-			<name>F28035.cmd</name>
+			<name>F2806x_Headers_nonBIOS.cmd</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_2803x_V126/DSP2803x_common/cmd/F28035.cmd</locationURI>
+			<locationURI>INSTALLROOT_F2806x_V135/F2806x_headers/cmd/F2806x_Headers_nonBIOS.cmd</locationURI>
 		</link>
 		<link>
-			<name>DSP2803x_SysCtrl.c</name>
+			<name>F2806x_PieCtrl.c</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_2803x_V126/DSP2803x_common/source/DSP2803x_SysCtrl.c</locationURI>
+			<locationURI>INSTALLROOT_F2806x_V135/F2806x_common/source/F2806x_PieCtrl.c</locationURI>
 		</link>
 		<link>
-			<name>DSP2803x_GlobalVariableDefs.c</name>
+			<name>F2806x_SysCtrl.c</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_2803x_V126/DSP2803x_headers/source/DSP2803x_GlobalVariableDefs.c</locationURI>
+			<locationURI>INSTALLROOT_F2806x_V135/F2806x_common/source/F2806x_SysCtrl.c</locationURI>
 		</link>
 		<link>
-			<name>DSP2803x_Headers_nonBIOS.cmd</name>
+			<name>F2806x_DefaultIsr.c</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_2803x_V126/DSP2803x_headers/cmd/DSP2803x_Headers_nonBIOS.cmd</locationURI>
+			<locationURI>INSTALLROOT_F2806x_V135/F2806x_common/source/F2806x_DefaultIsr.c</locationURI>
 		</link>
 		<link>
-			<name>DSP2803x_DefaultIsr.c</name>
+			<name>F28069.cmd</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_2803x_V126/DSP2803x_common/source/DSP2803x_DefaultIsr.c</locationURI>
+			<locationURI>INSTALLROOT_F2806x_V135/F2806x_common/cmd/F28069.cmd</locationURI>
 		</link>
 		<link>
-			<name>DSP2803x_usDelay.asm</name>
+			<name>F2806x-FRM-DEV-PKG-UG.pdf</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_2803x_V126/DSP2803x_common/source/DSP2803x_usDelay.asm</locationURI>
+			<locationURI>INSTALLROOT_F2806x_V135/doc/F2806x-FRM-DEV-PKG-UG.pdf</locationURI>
 		</link>
 		<link>
-			<name>DSP2803x_PieVect.c</name>
+			<name>F2806x_usDelay.asm</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_2803x_V126/DSP2803x_common/source/DSP2803x_PieVect.c</locationURI>
+			<locationURI>INSTALLROOT_F2806x_V135/F2806x_common/source/F2806x_usDelay.asm</locationURI>
 		</link>
 		<link>
-			<name>DSP2803x_EPwm.c</name>
+			<name>F2806x_PieVect.c</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_2803x_V126/DSP2803x_common/source/DSP2803x_EPwm.c</locationURI>
+			<locationURI>INSTALLROOT_F2806x_V135/F2806x_common/source/F2806x_PieVect.c</locationURI>
 		</link>
 		<link>
-			<name>DSP2803x_PieCtrl.c</name>
+			<name>F2806x_GlobalVariableDefs.c</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_2803x_V126/DSP2803x_common/source/DSP2803x_PieCtrl.c</locationURI>
+			<locationURI>INSTALLROOT_F2806x_V135/F2806x_headers/source/F2806x_GlobalVariableDefs.c</locationURI>
 		</link>
 		<link>
-			<name>DSP2803x_CSMPasswords.asm</name>
+			<name>F2806x_EPwm.c</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_2803x_V126/DSP2803x_common/source/DSP2803x_CSMPasswords.asm</locationURI>
+			<locationURI>INSTALLROOT_F2806x_V135/F2806x_common/source/F2806x_EPwm.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
