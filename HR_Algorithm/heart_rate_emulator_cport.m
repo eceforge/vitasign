@@ -187,19 +187,19 @@ for step=0:(num_windows - 1)
 %         [~, heart_rate] = fake_nonfiltered_data(indata(begin_index:end_index) + 1.65, fi(4096, Fixed_Point_Properties, F), fi(3.3, Fixed_Point_Properties, F), 100, sample_size, fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), sample_size_t);
         
         % Finds the HR
-        [heart_rate, hr_delta_sum, num_peak_deltas] = heart_rate_official_cport_w_debug(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(1),  fi(0, Fixed_Point_Properties, F), hr_delta_sum, fi(toss_thresh, Fixed_Point_Properties, F), num_peak_deltas, fi(neg_peak_deviance_threshold, Fixed_Point_Properties, F));
+        [heart_rate, hr_delta_sum, num_peak_deltas] = heart_rate_official_cport_w_debug(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), fi(0, Fixed_Point_Properties, F), hr_delta_sum, fi(toss_thresh, Fixed_Point_Properties, F), num_peak_deltas, fi(neg_peak_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(1));
         heart_rates_avg = heart_rates_avg + heart_rate;
         
         heart_rates = [heart_rates heart_rate];
 %         break
     else
 %       [~, heart_rate] = fake_nonfiltered_data(indata(begin_index:end_index) + 1.65, fi(4096, Fixed_Point_Properties, F), fi(3.3, Fixed_Point_Properties, F), 100, sample_size, fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), sample_size_t);         heart_rate = heart_rate_official_cport_w_debug(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(0),  fi(0, Fixed_Point_Properties, F));
-        [heart_rate, hr_delta_sum, num_peak_deltas] = heart_rate_official_cport_w_debug(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(0),  fi(0, Fixed_Point_Properties, F), hr_delta_sum, fi(toss_thresh, Fixed_Point_Properties, F), num_peak_deltas, fi(neg_peak_deviance_threshold, Fixed_Point_Properties, F));
+        [heart_rate, hr_delta_sum, num_peak_deltas] = heart_rate_official_cport_w_debug(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), fi(0, Fixed_Point_Properties, F), hr_delta_sum, fi(toss_thresh, Fixed_Point_Properties, F), num_peak_deltas, fi(neg_peak_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(0));
         heart_rates_avg = heart_rates_avg + heart_rate;
         
         heart_rates = [heart_rates heart_rate];
     end
-    hr_delta_avg = divide(Fixed_Point_Properties, hr_delta_sum, num_peak_deltas)
+%     hr_delta_avg = divide(Fixed_Point_Properties, hr_delta_sum, num_peak_deltas)
     % Calculates the hr_avg and resets the average
     if (mod(uint32(step + 1), uint32(num_avg_samples)) == 0)
         heart_rates_w_avg = [heart_rates_w_avg (heart_rates_avg / num_avg_samples)];

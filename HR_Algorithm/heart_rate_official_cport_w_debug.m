@@ -1,5 +1,5 @@
 %#codegen
-function [heart_rate, hr_delta_sum, num_peak_deltas] = heart_rate_official_cport_w_debug(data, fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_time, shouldOutput, prev_hr_delta, hr_delta_sum, toss_thresh, num_peak_deltas, neg_peak_deviance_threshold)  
+function [heart_rate, hr_delta_sum, num_peak_deltas] = heart_rate_official_cport_w_debug(data, fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, prev_hr_delta, hr_delta_sum, toss_thresh, num_peak_deltas, neg_peak_deviance_threshold, sample_time, shouldOutput)  
 %------ Heart Rate Detection Algorithm ----------
 %  Detects and calculates Heart rate from an EKG Signal. 
 %  The QRS Detection algorithm is based on Pan-Tompkin's famous paper
