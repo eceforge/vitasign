@@ -3,7 +3,7 @@
  *
  * Code generation for function 'heart_rate_official_cport_terminate'
  *
- * C source code generated on: Wed Feb 13 13:34:29 2013
+ * C source code generated on: Wed Feb 13 22:15:01 2013
  *
  */
 
@@ -11,7 +11,6 @@
 #include "rt_nonfinite.h"
 #include "heart_rate_official_cport.h"
 #include "heart_rate_official_cport_terminate.h"
-#include "heart_rate_official_cport_data.h"
 
 /* Type Definitions */
 
@@ -24,18 +23,9 @@
 /* Function Declarations */
 
 /* Function Definitions */
-
-void heart_rate_official_cport_atexit(void)
-{
-    emlrtExitTimeCleanup(&emlrtContextGlobal);
-    emlrtDestroyArray(&eml_mx);
-    emlrtDestroyArray(&b_eml_mx);
-    emlrtDestroyArray(&c_eml_mx);
-    emlrtDestroyArray(&d_eml_mx);
-}
-
 void heart_rate_official_cport_terminate(void)
 {
-    emlrtLeaveRtStack(&emlrtContextGlobal);
+  /* (no terminate code required) */
 }
+
 /* End of code generation (heart_rate_official_cport_terminate.c) */

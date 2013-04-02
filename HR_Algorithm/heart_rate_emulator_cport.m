@@ -63,9 +63,9 @@ data = filter(low_pass, data);
 % Decimates the signal to 300Hz
 % data = resample(data, 3, 2);
  datar = iddata(data,[],1/fs);
- data = idresamp(datar, fs/300);
+ data = idresamp(datar, fs/100);
  data = data.y;
- fs = 300; % Updates fs to the new value
+ fs = 100; % Updates fs to the new value
 %[GB] Ensures the the input args are of the correct data type
 Fixed_Point_Properties_signed = numerictype('WordLength', 32, 'FractionLength', 10, 'Signed', true);
 F_signed = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLength', 20,'ProductMode', 'SpecifyPrecision', 'MaxProductWordLength', 32, 'SumFractionLength', 10, 'SumMode', 'SpecifyPrecision','MaxSumWordLength', 32);
@@ -110,7 +110,10 @@ window_size =  sample_size * fs;
 step_size = fs;%[GB]Step size should be one second
 num_windows = floor((N - window_size)/step_size) + 1;
 heart_rates = [];
+heart_rates_w_avg = [];
+heart_rates_avg = 0;
 t = [];
+t_avg = [];
 %t = [0:N-1]/fs;        % time index
 
 for step=0:(num_windows - 1)
@@ -138,15 +141,21 @@ for step=0:(num_windows - 1)
 %     min(indatadouble(begin_index:end_index))
 %     median(indatadouble(begin_index:end_index))   
 %     mean(indatadouble(begin_index:end_index))
-
-    if (step == 6)
-        heart_rate = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(0));
+    if (step >= 58 && step <= 68)
+        heart_rate = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(1),  fi(0, Fixed_Point_Properties, F));
+        heart_rates_avg = heart_rates_avg + heart_rate;
         heart_rates = [heart_rates heart_rate];
     else
-        heart_rate = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(0));
+        heart_rate = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(0),  fi(0, Fixed_Point_Properties, F));
+        heart_rates_avg = heart_rates_avg + heart_rate;
         heart_rates = [heart_rates heart_rate];
     end
-%     break;
+    if (mod(uint32(step + 1), uint32(3)) == 0)
+        heart_rates_w_avg = [heart_rates_w_avg (heart_rates_avg / 3)];
+        t_avg = [t_avg (step_size +  step * step_size)/fs];
+        heart_rates_avg = 0;
+    end
+    %     break;
 end
 toc
     
@@ -192,3 +201,43 @@ ylabel('Heart Rate(bpm)');
 % legend('Heart Rate(bpm)','Avg HR', '+5','-5', '+15', '- 15', '+30', '-30' )
 % legend('Heart Rate(bpm)','Avg HR', '+5','-5', '+15', '- 15', 'Location', 'Best');
 
+% Averaged HR section
+
+figure(21)
+% Offsets each time value by the sample size
+t_avg = t_avg + sample_size;
+scatter(t_avg, heart_rates_w_avg);
+max_hr = double(max(max(heart_rates_w_avg), averageHR))
+min_hr = double(min(min(heart_rates_w_avg), averageHR))
+
+% Offsets the x-axis and extends the y-axis
+axis([sample_size, t_avg(length(t_avg)), max(min_hr - 30, 0), max_hr + 30])
+% grid on
+hold on
+% Plots the average HR on top of the graph
+x = [0, max(t_avg)];
+y = [averageHR, averageHR];
+plot(x, y, 'r', 'LineWidth', 1);
+% Plots the Error bars of HR on top of the graph
+x = [0, max(t_avg)];
+% +/- 5 error bars
+y = [averageHR + 5, averageHR + 5];
+plot(x, y, '-.m', 'LineWidth', 1);
+y = [averageHR - 5, averageHR - 5];
+plot(x, y, '-.m', 'LineWidth', 1);
+
+% +/- 15 error bars
+y = [averageHR + 15, averageHR + 15];
+plot(x, y, '-.g', 'LineWidth', 1);
+y = [averageHR - 15, averageHR - 15];
+plot(x, y, '-.g', 'LineWidth', 1);
+
+% +/- 30 error bars
+% y = [averageHR + 30, averageHR + 30];
+% plot(x, y, '-.k', 'LineWidth', 1);
+% y = [averageHR - 30, averageHR - 30];
+% plot(x, y, '-.k', 'LineWidth', 1);
+
+title('Average Heart Rates of 3 sample times');
+xlabel('Time(s)');
+ylabel('Heart Rate(bpm)');
