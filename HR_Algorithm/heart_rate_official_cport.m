@@ -1,5 +1,6 @@
  %#codegen
-function [heart_rate, last_hr_delta, data] = heart_rate_official_cport(data, fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_time, shouldOutput, prev_hr_delta)  
+function [heart_rate, last_hr_delta, hr_delta_sum, num_peak_deltas, data] = heart_rate_official_cport(data, fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, prev_hr_delta, hr_delta_sum, toss_thresh, num_peak_deltas, neg_peak_deviance_threshold, sample_time, shouldOutput)  
+
 %------ Heart Rate Detection Algorithm ----------
 %  Detects and calculates Heart rate from an EKG Signal. 
 %  The QRS Detection algorithm is based on Pan-Tompkin's famous paper
@@ -64,6 +65,10 @@ assert(isfi(pos_deviance_threshold));
 assert(isfi(neg_deviance_threshold));
 assert(isa(sample_time, 'uint32'));
 assert(isfi(prev_hr_delta));
+assert(isfi(hr_delta_sum));
+assert(isfi(neg_peak_deviance_threshold));
+assert(isfi(toss_thresh));
+assert(isfi(num_peak_deltas));
 
 % asserts that input parameters are of specific fixed point parameters
 assert(isequal(numerictype(data), Fixed_Point_Properties_signed) && isequal(fimath(data), F_signed));
@@ -74,6 +79,11 @@ assert(isequal(numerictype(threshold_2),Fixed_Point_Properties) && isequal(fimat
 assert(isequal(numerictype(threshold_3),Fixed_Point_Properties) && isequal(fimath(threshold_3), F));
 assert(isequal(numerictype(pos_deviance_threshold),Fixed_Point_Properties) && isequal(fimath(pos_deviance_threshold), F));
 assert(isequal(numerictype(neg_deviance_threshold),Fixed_Point_Properties) && isequal(fimath(neg_deviance_threshold), F));
+assert(isequal(numerictype(hr_delta_sum),Fixed_Point_Properties) && isequal(fimath(hr_delta_sum), F));
+assert(isequal(numerictype(num_peak_deltas),Fixed_Point_Properties) && isequal(fimath(num_peak_deltas), F));
+assert(isequal(numerictype(toss_thresh),Fixed_Point_Properties) && isequal(fimath(toss_thresh), F));
+assert(isequal(numerictype(neg_peak_deviance_threshold),Fixed_Point_Properties) && isequal(fimath(neg_peak_deviance_threshold), F));
+
 % Ensures that the prev time delta is unsigned and has fractional bits
 % specified by Fixed_Point_Properties
 assert(isequal(numerictype(prev_hr_delta),Fixed_Point_Properties) && isequal(fimath(prev_hr_delta), F));
@@ -396,7 +406,8 @@ for i=1:num_cols_indices
         
         %Filters out any R_values which happen too soon after a previous
         % beat detection.
-        if (last_R_index ~= 0 && ((current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta) < .200)
+        peak_delta = ((current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta);
+        if (last_R_index ~= 0 && peak_delta < .200)
             data(i) = 0;
             R_peak_indices_channel_2(i) = 0;
          
@@ -415,15 +426,31 @@ for i=1:num_cols_indices
             
         % Updates the last index if the R_value is valid
         else   
-          heart_beat_current_sum = heart_beat_current_sum + (current_R_index - 1) * time_delta;
-          heart_beat_last_sum = heart_beat_last_sum + (last_R_index - 1) * time_delta;
-%             heart_beat_delta = (current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta;
-%             heart_beat_current_sum = heart_beat_current_sum + heart_beat_delta;
-            % Updates the heart beat count
-          heart_beat_count = heart_beat_count + 1;
-            
-         % Updates the last index
-         last_R_index = fi(R_peak_indices_channel_2(i),   Fixed_Point_Properties, F);
+              heart_beat_delta = (current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta;
+              
+              % Calcs the HR peak delta average
+              if(num_peak_deltas ~= 0)
+                hr_delta_avg = divide(Fixed_Point_Properties, hr_delta_sum, num_peak_deltas);
+              end
+              
+              % Tosses out peaks which occur below the deviance threshold of the average peak delta
+              if (num_peak_deltas < toss_thresh || (num_peak_deltas >= toss_thresh && meets_deviance_threshold(heart_beat_delta, hr_delta_avg, fi(100, Fixed_Point_Properties, F), neg_peak_deviance_threshold)))
+                  % Updates the number of peaks and sum
+                  num_peak_deltas = num_peak_deltas + 1;
+                  hr_delta_sum = hr_delta_sum + heart_beat_delta;
+              else
+                  continue;
+              end           
+              
+              heart_beat_current_sum = heart_beat_current_sum + (current_R_index - 1) * time_delta;
+              heart_beat_last_sum = heart_beat_last_sum + (last_R_index - 1) * time_delta;
+    %             heart_beat_delta = (current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta;
+    %             heart_beat_current_sum = heart_beat_current_sum + heart_beat_delta;
+                % Updates the heart beat count
+              heart_beat_count = heart_beat_count + 1;
+
+             % Updates the last index
+             last_R_index = fi(R_peak_indices_channel_2(i),   Fixed_Point_Properties, F);
             
         end
     end
