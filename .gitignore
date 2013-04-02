@@ -2,6 +2,8 @@
 *.slo
 *.lo
 *.o
+*.out
+*.map
 
 # Compiled Dynamic libraries
 *.so
@@ -14,3 +16,8 @@
 
 # Matlab Junk
 *.fig
+
+# CCS Junk
+*/DEBUG/*
+*/FLASH/*
+*/RAM/*
