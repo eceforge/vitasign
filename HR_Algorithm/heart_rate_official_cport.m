@@ -213,15 +213,16 @@ for i=1:uint32(N)
             left_index = left_index + 1;
             continue;
         elseif(i == N)
-                right(right_index) = i;
-                right_index = right_index + 1;
-                continue;
+            right(right_index) = i;
+            right_index = right_index + 1;
+            continue;
         else
             % Checks if a beat is proceeded or preceeded by a beat
             if(data(i - 1) <= scaled_thresh)
                 left(left_index) = i;
                 left_index = left_index + 1;
-            elseif(data(i + 1) <= scaled_thresh)
+            end
+            if(data(i + 1) <= scaled_thresh)
                 right(right_index) = i;
                 right_index = right_index + 1;
             end
@@ -440,8 +441,12 @@ for i=1:num_cols_indices
                   hr_delta_sum = hr_delta_sum + heart_beat_delta;
               else
                   continue;
-              end           
+              end
               
+              if(shouldOutput)
+                hr_delta_avg
+                num_peak_deltas
+              end
               heart_beat_current_sum = heart_beat_current_sum + (current_R_index - 1) * time_delta;
               heart_beat_last_sum = heart_beat_last_sum + (last_R_index - 1) * time_delta;
     %             heart_beat_delta = (current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta;
@@ -553,7 +558,7 @@ end
                
                % Filters out any signal value which exceeds the allowed deviance from
                % the average signal value 
-               if (~meets_deviance_threshold(R_peak_vals(index), signal_lvl, pos_deviance_threshold, neg_deviance_threshold) && index > 4)
+               if (~meets_deviance_threshold(R_peak_vals(index), signal_lvl, pos_deviance_threshold, neg_deviance_threshold) && index > 2)
                    % Sets all the indices which R_vals don't meet the threshold to 0
                    indices(index) = 0;               
                    % Updates the average noise signal lvl

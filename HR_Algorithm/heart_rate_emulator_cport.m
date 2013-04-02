@@ -179,7 +179,7 @@ for step=0:(num_windows - 1)
 %     mean(indatadouble(begin_index:end_index))
 %      if (step >= 63 && step <= 65)
 %     step
-    if(step == 10000)
+    if(step == 46)
         % Generates a CSV file that simulates the data that would be outputted by
         % an ADC
 %         figure(23)
