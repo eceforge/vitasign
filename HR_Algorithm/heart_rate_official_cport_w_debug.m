@@ -427,9 +427,7 @@ for i=1:length(left)
 %     [R_value(i) R_loc(i)] = max( x5(left(i):right(i)));
 %     [R_value(i) R_loc(i)] = max( x1(left(i):right(i)));
     R_loc(i) = R_loc(i)-1+left(i); % add offset
-    if(shouldOutput)
-        test = 0;
-    end
+
 %     [Q_value(i) Q_loc(i)] = min( x1(left(i):R_loc(i)) );
 %     Q_loc(i) = Q_loc(i)-1+left(i); % add offset
 
@@ -749,11 +747,7 @@ for i=1:length(R_peak_vals)
               else
                   continue;
               end
-              
-              if(shouldOutput)
-                hr_delta_avg
-                num_peak_deltas
-              end
+
               heart_beat_current_sum = heart_beat_current_sum + (current_R_index - 1) * time_delta;
               heart_beat_last_sum = heart_beat_last_sum + (last_R_index - 1) * time_delta;
               

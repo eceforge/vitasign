@@ -178,8 +178,7 @@ for step=0:(num_windows - 1)
 %     median(indatadouble(begin_index:end_index))   
 %     mean(indatadouble(begin_index:end_index))
 %      if (step >= 63 && step <= 65)
-%     step
-    if(step == 46)
+    if(step == 10000)
         % Generates a CSV file that simulates the data that would be outputted by
         % an ADC
 %         figure(23)

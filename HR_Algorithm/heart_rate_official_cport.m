@@ -443,10 +443,6 @@ for i=1:num_cols_indices
                   continue;
               end
               
-              if(shouldOutput)
-                hr_delta_avg
-                num_peak_deltas
-              end
               heart_beat_current_sum = heart_beat_current_sum + (current_R_index - 1) * time_delta;
               heart_beat_last_sum = heart_beat_last_sum + (last_R_index - 1) * time_delta;
     %             heart_beat_delta = (current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta;
