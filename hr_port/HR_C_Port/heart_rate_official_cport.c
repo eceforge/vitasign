@@ -3,7 +3,7 @@
  *
  * Code generation for function 'heart_rate_official_cport'
  *
- * C source code generated on: Mon Mar 11 20:10:04 2013
+ * C source code generated on: Tue Apr  2 13:33:13 2013
  *
  */
 
@@ -36,6 +36,8 @@ static void dualThreshold(const int32_T R_peak_vals[500], int32_T threshold,
   uint32_T indices[500], int32_T max_voltage, int32_T pos_deviance_threshold,
   int32_T neg_deviance_threshold, uint32_T num_cols_indices, int32_T *noise_lvl,
   int32_T *signal_lvl);
+static real_T meets_deviance_threshold(int32_T hr_value, int32_T signal_level,
+  int32_T pos_deviance_threshold, int32_T neg_deviance_threshold);
 static int32_T mul_s32_s32_s32_sr14_sat_near(int32_T a, int32_T b);
 static int32_T mul_s32_s32_s32_sr15_sat_near(int32_T a, int32_T b);
 static int32_T mul_s32_s32_s32_sr27_sat_near(int32_T a, int32_T b);
@@ -149,17 +151,17 @@ static void dualThreshold(const int32_T R_peak_vals[500], int32_T threshold,
   int32_T noise_count;
   int32_T signal_count;
   int16_T b_index;
-  int64m_T r11;
-  int64m_T r12;
-  int64m_T r13;
   int64m_T r14;
+  int64m_T r15;
+  int64m_T r16;
+  int64m_T r17;
   int16_T is_neg;
   int32_T deviance;
   int32_T q0;
   int32_T qY;
-  int64m_T r15;
-  int64m_T r16;
-  int64m_T r17;
+  int64m_T r18;
+  int64m_T r19;
+  int64m_T r20;
 
   /* DUAL THRESHOLD PROCESSSING */
   /*  Filters out R_peaks which don't meet the threshold reqs */
@@ -175,12 +177,12 @@ static void dualThreshold(const int32_T R_peak_vals[500], int32_T threshold,
   *signal_lvl = 0L;
   for (b_index = 0; (uint32_T)(b_index + 1) <= num_cols_indices; b_index++) {
     sLong2MultiWord(mul_s32_s32_s32_sat(R_peak_vals[b_index], max_voltage),
-                    &r11.chunks[0U], 2);
-    MultiWordSignedWrap(&r11.chunks[0U], 2, 22U, &r12.chunks[0U]);
-    sLong2MultiWord(threshold, &r13.chunks[0U], 2);
-    sMultiWordShl(&r13.chunks[0U], 2, 10U, &r14.chunks[0U], 2);
-    MultiWordSignedWrap(&r14.chunks[0U], 2, 22U, &r11.chunks[0U]);
-    if (sMultiWordGt(&r12.chunks[0U], &r11.chunks[0U], 2)) {
+                    &r14.chunks[0U], 2);
+    MultiWordSignedWrap(&r14.chunks[0U], 2, 22U, &r15.chunks[0U]);
+    sLong2MultiWord(threshold, &r16.chunks[0U], 2);
+    sMultiWordShl(&r16.chunks[0U], 2, 10U, &r17.chunks[0U], 2);
+    MultiWordSignedWrap(&r17.chunks[0U], 2, 22U, &r14.chunks[0U]);
+    if (sMultiWordGt(&r15.chunks[0U], &r14.chunks[0U], 2)) {
       /*  Filters out any signal value which exceeds the allowed deviance from */
       /*  the average signal value  */
       /*  RETURNS TRUE IF THE INPUT SIGNAL VALUE MEETS THE DEVIANCE REQS. NOTE */
@@ -229,26 +231,26 @@ static void dualThreshold(const int32_T R_peak_vals[500], int32_T threshold,
 
         /*  Checks value against NEG and POS deviance threshold */
         if (is_neg != 0) {
-          sLong2MultiWord(deviance, &r15.chunks[0U], 2);
-          sMultiWordShl(&r15.chunks[0U], 2, 10U, &r16.chunks[0U], 2);
-          MultiWordSignedWrap(&r16.chunks[0U], 2, 22U, &r17.chunks[0U]);
+          sLong2MultiWord(deviance, &r18.chunks[0U], 2);
+          sMultiWordShl(&r18.chunks[0U], 2, 10U, &r19.chunks[0U], 2);
+          MultiWordSignedWrap(&r19.chunks[0U], 2, 22U, &r20.chunks[0U]);
           sLong2MultiWord(mul_s32_s32_s32_sr14_sat_near(neg_deviance_threshold,
-            1677721600L), &r15.chunks[0U], 2);
-          MultiWordSignedWrap(&r15.chunks[0U], 2, 22U, &r16.chunks[0U]);
-          if (sMultiWordLt(&r17.chunks[0U], &r16.chunks[0U], 2)) {
+            1677721600L), &r18.chunks[0U], 2);
+          MultiWordSignedWrap(&r18.chunks[0U], 2, 22U, &r19.chunks[0U]);
+          if (sMultiWordLt(&r20.chunks[0U], &r19.chunks[0U], 2)) {
             is_neg = 1;
           } else {
             /*              fprintf('Does not meet neg deviance threshold %d\n', double(deviance)); */
             is_neg = 0;
           }
         } else {
-          sLong2MultiWord(deviance, &r17.chunks[0U], 2);
-          sMultiWordShl(&r17.chunks[0U], 2, 10U, &r13.chunks[0U], 2);
-          MultiWordSignedWrap(&r13.chunks[0U], 2, 22U, &r14.chunks[0U]);
+          sLong2MultiWord(deviance, &r20.chunks[0U], 2);
+          sMultiWordShl(&r20.chunks[0U], 2, 10U, &r16.chunks[0U], 2);
+          MultiWordSignedWrap(&r16.chunks[0U], 2, 22U, &r17.chunks[0U]);
           sLong2MultiWord(mul_s32_s32_s32_sr14_sat_near(pos_deviance_threshold,
-            1677721600L), &r17.chunks[0U], 2);
-          MultiWordSignedWrap(&r17.chunks[0U], 2, 22U, &r13.chunks[0U]);
-          if (sMultiWordLt(&r14.chunks[0U], &r13.chunks[0U], 2)) {
+            1677721600L), &r20.chunks[0U], 2);
+          MultiWordSignedWrap(&r20.chunks[0U], 2, 22U, &r16.chunks[0U]);
+          if (sMultiWordLt(&r17.chunks[0U], &r16.chunks[0U], 2)) {
             is_neg = 1;
           } else {
             /*              fprintf('Does not meet pos deviance threshold %d\n', double(deviance)); */
@@ -257,7 +259,7 @@ static void dualThreshold(const int32_T R_peak_vals[500], int32_T threshold,
         }
       }
 
-      if ((!(is_neg != 0)) && (b_index + 1 > 4)) {
+      if ((!(is_neg != 0)) && (b_index + 1 > 2)) {
         /*  Sets all the indices which R_vals don't meet the threshold to 0 */
         indices[b_index] = 0UL;
 
@@ -332,6 +334,93 @@ static void dualThreshold(const int32_T R_peak_vals[500], int32_T threshold,
       *noise_lvl = div_repeat_s32_sat_near(noise_sum, noise_count, 10U);
     }
   }
+}
+
+static real_T meets_deviance_threshold(int32_T hr_value, int32_T signal_level,
+  int32_T pos_deviance_threshold, int32_T neg_deviance_threshold)
+{
+  real_T meets_deviance_req;
+  int32_T deviance;
+  int32_T q0;
+  int32_T qY;
+  int16_T is_neg;
+  int64m_T r4;
+  int64m_T r5;
+  int64m_T r6;
+
+  /*  RETURNS TRUE IF THE INPUT SIGNAL VALUE MEETS THE DEVIANCE REQS. NOTE */
+  /*  THE THRESHOLD VALUE CHANGES BASED ON WHETHER DEVIANCE IS NEG OR POS */
+  /*  asserts that the input parameters are of fixed point */
+  /*  asserts that input parameters are of specific fixed point parameters */
+  /* Accounts for the first signal value */
+  if (signal_level == 0L) {
+    meets_deviance_req = 1.0;
+  } else {
+    if (hr_value < signal_level) {
+      deviance = mul_s32_s32_s32_sr14_sat_near(signal_level, 1677721600L);
+      q0 = (deviance >> 10) + ((deviance & 512L) != 0L);
+      deviance = mul_s32_s32_s32_sr14_sat_near(hr_value, 1677721600L);
+      deviance = (deviance >> 10) + ((deviance & 512L) != 0L);
+      qY = q0 - deviance;
+      if ((q0 < 0L) && ((deviance >= 0L) && (qY >= 0L))) {
+        qY = MIN_int32_T;
+      } else {
+        if ((q0 >= 0L) && ((deviance < 0L) && (qY < 0L))) {
+          qY = MAX_int32_T;
+        }
+      }
+
+      deviance = div_repeat_s32_sat_near(qY, signal_level, 10U);
+      is_neg = 1;
+    } else {
+      deviance = mul_s32_s32_s32_sr14_sat_near(hr_value, 1677721600L);
+      q0 = (deviance >> 10) + ((deviance & 512L) != 0L);
+      deviance = mul_s32_s32_s32_sr14_sat_near(signal_level, 1677721600L);
+      deviance = (deviance >> 10) + ((deviance & 512L) != 0L);
+      qY = q0 - deviance;
+      if ((q0 < 0L) && ((deviance >= 0L) && (qY >= 0L))) {
+        qY = MIN_int32_T;
+      } else {
+        if ((q0 >= 0L) && ((deviance < 0L) && (qY < 0L))) {
+          qY = MAX_int32_T;
+        }
+      }
+
+      deviance = div_repeat_s32_sat_near(qY, signal_level, 10U);
+      is_neg = 0;
+    }
+
+    /*  Checks value against NEG and POS deviance threshold */
+    if (is_neg != 0) {
+      sLong2MultiWord(deviance, &r4.chunks[0U], 2);
+      sMultiWordShl(&r4.chunks[0U], 2, 10U, &r5.chunks[0U], 2);
+      MultiWordSignedWrap(&r5.chunks[0U], 2, 22U, &r6.chunks[0U]);
+      sLong2MultiWord(mul_s32_s32_s32_sr14_sat_near(neg_deviance_threshold,
+        1677721600L), &r4.chunks[0U], 2);
+      MultiWordSignedWrap(&r4.chunks[0U], 2, 22U, &r5.chunks[0U]);
+      if (sMultiWordLt(&r6.chunks[0U], &r5.chunks[0U], 2)) {
+        meets_deviance_req = 1.0;
+      } else {
+        /*              fprintf('Does not meet neg deviance threshold %d\n', double(deviance)); */
+        meets_deviance_req = 0.0;
+      }
+    } else {
+      sLong2MultiWord(deviance, &r6.chunks[0U], 2);
+      sMultiWordShl(&r6.chunks[0U], 2, 10U, &r4.chunks[0U], 2);
+      MultiWordSignedWrap(&r4.chunks[0U], 2, 22U, &r5.chunks[0U]);
+      sLong2MultiWord(mul_s32_s32_s32_sr14_sat_near(pos_deviance_threshold,
+        1677721600L), &r6.chunks[0U], 2);
+      MultiWordSignedWrap(&r6.chunks[0U], 2, 22U, &r4.chunks[0U]);
+      if (sMultiWordLt(&r5.chunks[0U], &r4.chunks[0U], 2)) {
+        meets_deviance_req = 1.0;
+      } else {
+        /*              fprintf('Does not meet pos deviance threshold %d\n', double(deviance)); */
+        meets_deviance_req = 0.0;
+      }
+    }
+  }
+
+  return meets_deviance_req;
 }
 
 static int32_T mul_s32_s32_s32_sr14_sat_near(int32_T a, int32_T b)
@@ -420,9 +509,10 @@ static boolean_T sMultiWordLt(const uint32_T u1[], const uint32_T u2[], int16_T
 
 void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
   threshold_1, int32_T threshold_2, int32_T threshold_3, int32_T
-  pos_deviance_threshold, int32_T neg_deviance_threshold, uint32_T sample_time,
-  uint32_T shouldOutput, int32_T prev_hr_delta, int32_T *heart_rate, int32_T
-  *last_hr_delta)
+  pos_deviance_threshold, int32_T neg_deviance_threshold, int32_T prev_hr_delta,
+  int32_T *hr_delta_sum, int32_T toss_thresh, int32_T *num_peak_deltas, int32_T
+  neg_peak_deviance_threshold, uint32_T sample_time, uint32_T shouldOutput,
+  int32_T *heart_rate, int32_T *last_hr_delta)
 {
   int32_T thresh;
   int16_T left_index;
@@ -444,24 +534,24 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
 #pragma SET_DATA_SECTION(".big_stuff")
   static uint32_T R_peak_indices_channel_1[500];
 #pragma SET_DATA_SECTION()
-  int32_T q1;
+
   int32_T iv1[7];
   int32_T max_voltage;
   int16_T right_index;
-  int64m_T r4;
-  int64m_T r5;
-  int64m_T r6;
   int64m_T r7;
   int64m_T r8;
   int64m_T r9;
   int64m_T r10;
+  int64m_T r11;
+  int64m_T r12;
+  int64m_T r13;
   uint32_T num_cols_indices;
   uint32_T j;
+  int32_T heart_beat_current_sum;
+  int32_T current_R_index;
   int32_T heart_beat_count;
   int32_T heart_beat_last_sum;
-  int32_T signal_lvl_channel_2;
-  int32_T noise_lvl_channel_2;
-  boolean_T guard1 = FALSE;
+  int32_T q1;
 
   /* ------ Heart Rate Detection Algorithm ---------- */
   /*   Detects and calculates Heart rate from an EKG Signal.  */
@@ -581,8 +671,8 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
   /*  SIGNED B/C OF SPACE CONSTRAINTS */
   /* SQUARING */
   for (i = 0; i < 500; i++) {
-    q1 = mul_s32_s32_s32_sat(data[i], data[i]);
-    data[i] = (q1 >> 10) + ((q1 & 512L) != 0L);
+    thresh = mul_s32_s32_s32_sat(data[i], data[i]);
+    data[i] = (thresh >> 10) + ((thresh & 512L) != 0L);
   }
 
   /*  data = fi(data.^2, Fixed_Point_Properties, F); */
@@ -631,12 +721,12 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
   left_index = 0;
   right_index = 0;
   for (i = 0; i < 500; i++) {
-    sLong2MultiWord(data[i], &r4.chunks[0U], 2);
-    sMultiWordShl(&r4.chunks[0U], 2, 10U, &r5.chunks[0U], 2);
-    MultiWordSignedWrap(&r5.chunks[0U], 2, 22U, &r6.chunks[0U]);
-    sLong2MultiWord(thresh, &r4.chunks[0U], 2);
-    MultiWordSignedWrap(&r4.chunks[0U], 2, 22U, &r5.chunks[0U]);
-    if (sMultiWordGt(&r6.chunks[0U], &r5.chunks[0U], 2)) {
+    sLong2MultiWord(data[i], &r7.chunks[0U], 2);
+    sMultiWordShl(&r7.chunks[0U], 2, 10U, &r8.chunks[0U], 2);
+    MultiWordSignedWrap(&r8.chunks[0U], 2, 22U, &r9.chunks[0U]);
+    sLong2MultiWord(thresh, &r7.chunks[0U], 2);
+    MultiWordSignedWrap(&r7.chunks[0U], 2, 22U, &r8.chunks[0U]);
+    if (sMultiWordGt(&r9.chunks[0U], &r8.chunks[0U], 2)) {
       /*  Checks for the edge cases */
       if (i + 1 == 1) {
         left[left_index] = 1UL;
@@ -646,24 +736,24 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
         right_index++;
       } else {
         /*  Checks if a beat is proceeded or preceeded by a beat */
-        sLong2MultiWord(data[i - 1], &r7.chunks[0U], 2);
-        sMultiWordShl(&r7.chunks[0U], 2, 10U, &r8.chunks[0U], 2);
-        MultiWordSignedWrap(&r8.chunks[0U], 2, 22U, &r4.chunks[0U]);
-        sLong2MultiWord(thresh, &r7.chunks[0U], 2);
-        MultiWordSignedWrap(&r7.chunks[0U], 2, 22U, &r8.chunks[0U]);
-        if (sMultiWordLe(&r4.chunks[0U], &r8.chunks[0U], 2)) {
+        sLong2MultiWord(data[i - 1], &r10.chunks[0U], 2);
+        sMultiWordShl(&r10.chunks[0U], 2, 10U, &r11.chunks[0U], 2);
+        MultiWordSignedWrap(&r11.chunks[0U], 2, 22U, &r7.chunks[0U]);
+        sLong2MultiWord(thresh, &r10.chunks[0U], 2);
+        MultiWordSignedWrap(&r10.chunks[0U], 2, 22U, &r11.chunks[0U]);
+        if (sMultiWordLe(&r7.chunks[0U], &r11.chunks[0U], 2)) {
           left[left_index] = (uint32_T)(i + 1);
           left_index++;
-        } else {
-          sLong2MultiWord(data[i + 1], &r9.chunks[0U], 2);
-          sMultiWordShl(&r9.chunks[0U], 2, 10U, &r10.chunks[0U], 2);
-          MultiWordSignedWrap(&r10.chunks[0U], 2, 22U, &r7.chunks[0U]);
-          sLong2MultiWord(thresh, &r9.chunks[0U], 2);
-          MultiWordSignedWrap(&r9.chunks[0U], 2, 22U, &r10.chunks[0U]);
-          if (sMultiWordLe(&r7.chunks[0U], &r10.chunks[0U], 2)) {
-            right[right_index] = i + 1;
-            right_index++;
-          }
+        }
+
+        sLong2MultiWord(data[i + 1], &r12.chunks[0U], 2);
+        sMultiWordShl(&r12.chunks[0U], 2, 10U, &r13.chunks[0U], 2);
+        MultiWordSignedWrap(&r13.chunks[0U], 2, 22U, &r10.chunks[0U]);
+        sLong2MultiWord(thresh, &r12.chunks[0U], 2);
+        MultiWordSignedWrap(&r12.chunks[0U], 2, 22U, &r13.chunks[0U]);
+        if (sMultiWordLe(&r10.chunks[0U], &r13.chunks[0U], 2)) {
+          right[right_index] = i + 1;
+          right_index++;
         }
       }
     } else {
@@ -740,11 +830,11 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
   memcpy((void *)&left[0L], (void *)&R_peak_indices_channel_1[0L], 500U * sizeof
          (uint32_T));
   dualThreshold(data, threshold_1, left, max_voltage, pos_deviance_threshold,
-                neg_deviance_threshold, num_cols_indices, &heart_beat_last_sum,
-                &heart_beat_count);
+                neg_deviance_threshold, num_cols_indices, &current_R_index,
+                &heart_beat_current_sum);
   dualThreshold(data, threshold_2, R_peak_indices_channel_1, max_voltage,
                 pos_deviance_threshold, neg_deviance_threshold, num_cols_indices,
-                &noise_lvl_channel_2, &signal_lvl_channel_2);
+                &heart_beat_last_sum, &heart_beat_count);
 
   /*  CAN RELEASE DATA HERE  */
   /*  if(shouldOutput) */
@@ -777,13 +867,13 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
         /*  If the delta between the peak value and the noise level is < 0 */
         /*  then due to unsigned fixed point rules this value is 0 which is what we */
         /*  want anyways so this proves to be a useful overflow case. */
-        if (heart_beat_count < heart_beat_last_sum) {
+        if (heart_beat_current_sum < current_R_index) {
           max_val = 0L;
         } else {
-          q1 = mul_s32_s32_s32_sr14_sat_near(data[i], 1677721600L);
-          q0 = (q1 >> 10) + ((q1 & 512L) != 0L);
-          q1 = mul_s32_s32_s32_sr14_sat_near(heart_beat_last_sum, 1677721600L);
-          q1 = (q1 >> 10) + ((q1 & 512L) != 0L);
+          thresh = mul_s32_s32_s32_sr14_sat_near(data[i], 1677721600L);
+          q0 = (thresh >> 10) + ((thresh & 512L) != 0L);
+          thresh = mul_s32_s32_s32_sr14_sat_near(current_R_index, 1677721600L);
+          q1 = (thresh >> 10) + ((thresh & 512L) != 0L);
           qY = q0 - q1;
           if ((q0 < 0L) && ((q1 >= 0L) && (qY >= 0L))) {
             qY = MIN_int32_T;
@@ -793,10 +883,11 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
             }
           }
 
-          q1 = mul_s32_s32_s32_sr14_sat_near(heart_beat_count, 1677721600L);
-          q0 = (q1 >> 10) + ((q1 & 512L) != 0L);
-          q1 = mul_s32_s32_s32_sr14_sat_near(heart_beat_last_sum, 1677721600L);
-          q1 = (q1 >> 10) + ((q1 & 512L) != 0L);
+          thresh = mul_s32_s32_s32_sr14_sat_near(heart_beat_current_sum,
+            1677721600L);
+          q0 = (thresh >> 10) + ((thresh & 512L) != 0L);
+          thresh = mul_s32_s32_s32_sr14_sat_near(current_R_index, 1677721600L);
+          q1 = (thresh >> 10) + ((thresh & 512L) != 0L);
           thresh = q0 - q1;
           if ((q0 < 0L) && ((q1 >= 0L) && (thresh >= 0L))) {
             thresh = MIN_int32_T;
@@ -814,13 +905,14 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
         }
 
         /*          Ds_1 = max(0, Ds_1); */
-        if (signal_lvl_channel_2 < noise_lvl_channel_2) {
+        if (heart_beat_count < heart_beat_last_sum) {
           thresh = 0L;
         } else {
-          q1 = mul_s32_s32_s32_sr14_sat_near(data[i], 1677721600L);
-          q0 = (q1 >> 10) + ((q1 & 512L) != 0L);
-          q1 = mul_s32_s32_s32_sr14_sat_near(noise_lvl_channel_2, 1677721600L);
-          q1 = (q1 >> 10) + ((q1 & 512L) != 0L);
+          thresh = mul_s32_s32_s32_sr14_sat_near(data[i], 1677721600L);
+          q0 = (thresh >> 10) + ((thresh & 512L) != 0L);
+          thresh = mul_s32_s32_s32_sr14_sat_near(heart_beat_last_sum,
+            1677721600L);
+          q1 = (thresh >> 10) + ((thresh & 512L) != 0L);
           qY = q0 - q1;
           if ((q0 < 0L) && ((q1 >= 0L) && (qY >= 0L))) {
             qY = MIN_int32_T;
@@ -830,10 +922,11 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
             }
           }
 
-          q1 = mul_s32_s32_s32_sr14_sat_near(signal_lvl_channel_2, 1677721600L);
-          q0 = (q1 >> 10) + ((q1 & 512L) != 0L);
-          q1 = mul_s32_s32_s32_sr14_sat_near(noise_lvl_channel_2, 1677721600L);
-          q1 = (q1 >> 10) + ((q1 & 512L) != 0L);
+          thresh = mul_s32_s32_s32_sr14_sat_near(heart_beat_count, 1677721600L);
+          q0 = (thresh >> 10) + ((thresh & 512L) != 0L);
+          thresh = mul_s32_s32_s32_sr14_sat_near(heart_beat_last_sum,
+            1677721600L);
+          q1 = (thresh >> 10) + ((thresh & 512L) != 0L);
           thresh = q0 - q1;
           if ((q0 < 0L) && ((q1 >= 0L) && (thresh >= 0L))) {
             thresh = MIN_int32_T;
@@ -864,13 +957,13 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
   /*  LEVEL 5 DETECTION:  */
   /* Refines heart beat detection by considering a heart beat's refactory period     */
   /*  Sets R values to zero which failed any of the previous phases */
-  thresh = 0L;
+  max_voltage = 0L;
 
   /*  Sample time delta is based off the Fs passed in */
   /*  time_delta = divide(Fixed_Point_Properties, fi(1, Fixed_Point_Properties, F), fi(100, Fixed_Point_Properties, F)); */
   /*  Heart beat delta sum is the summation of the time between heart beats. It's used for */
   /*  HR calculation */
-  max_voltage = 0L;
+  heart_beat_current_sum = 0L;
   heart_beat_last_sum = 0L;
 
   /*  Heart beat count is the amount of heart beats detected */
@@ -886,72 +979,88 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
       /*  Updates the index */
       j = R_peak_indices_channel_1[i];
       if (j > 2097151UL) {
-        max_val = MAX_int32_T;
+        current_R_index = MAX_int32_T;
       } else {
-        max_val = (int32_T)j << 10;
+        current_R_index = (int32_T)j << 10;
       }
 
       /* Filters out any R_values which happen too soon after a previous */
       /*  beat detection. */
-      guard1 = FALSE;
-      if ((uint32_T)thresh != 0UL) {
-        q1 = mul_s32_s32_s32_sr27_sat_near(minus(max_val), 1374389535L);
-        q0 = (q1 >> 10) + ((q1 & 512L) != 0L);
-        q1 = mul_s32_s32_s32_sr27_sat_near(minus(thresh), 1374389535L);
-        q1 = (q1 >> 10) + ((q1 & 512L) != 0L);
-        qY = q0 - q1;
-        if ((q0 < 0L) && ((q1 >= 0L) && (qY >= 0L))) {
-          qY = MIN_int32_T;
-        } else {
-          if ((q0 >= 0L) && ((q1 < 0L) && (qY < 0L))) {
-            qY = MAX_int32_T;
-          }
-        }
-
-        if (qY < 205L) {
-          data[i] = 0L;
-          R_peak_indices_channel_1[i] = 0UL;
-
-          /*  Initializes the first delta which is when the first heart */
-          /*  beat occurs */
-        } else {
-          guard1 = TRUE;
-        }
+      thresh = mul_s32_s32_s32_sr27_sat_near(minus(current_R_index), 1374389535L);
+      q0 = (thresh >> 10) + ((thresh & 512L) != 0L);
+      thresh = mul_s32_s32_s32_sr27_sat_near(minus(max_voltage), 1374389535L);
+      q1 = (thresh >> 10) + ((thresh & 512L) != 0L);
+      max_val = q0 - q1;
+      if ((q0 < 0L) && ((q1 >= 0L) && (max_val >= 0L))) {
+        max_val = MIN_int32_T;
       } else {
-        guard1 = TRUE;
+        if ((q0 >= 0L) && ((q1 < 0L) && (max_val < 0L))) {
+          max_val = MAX_int32_T;
+        }
       }
 
-      if (guard1 == TRUE) {
-        if ((uint32_T)thresh == 0UL) {
-          /*              assert(isequal(numerictype(prev_hr_delta),Fixed_Point_Properties) && isequal(fimath(prev_hr_delta), F)); */
-          /*              heart_beat_delta = (current_R_index - 1) * time_delta + prev_hr_delta; */
-          /*              heart_beat_current_sum = heart_beat_delta + 0; % For future iterations: Add the previous delta from the previous data window. i.e. the amount of secs between the last peak in the sample and the next one in the next sample */
-          /*  Updates the last index */
-          j = R_peak_indices_channel_1[i];
-          if (j > 2097151UL) {
-            thresh = MAX_int32_T;
-          } else {
-            thresh = (int32_T)j << 10;
-          }
+      if (((uint32_T)max_voltage != 0UL) && (max_val < 205L)) {
+        data[i] = 0L;
+        R_peak_indices_channel_1[i] = 0UL;
 
-          /*  Updates the heart beat count */
-          /*              heart_beat_count = heart_beat_count + 1; */
-          /*  Updates the last index if the R_value is valid */
+        /*  Initializes the first delta which is when the first heart */
+        /*  beat occurs */
+      } else if ((uint32_T)max_voltage == 0UL) {
+        /*              assert(isequal(numerictype(prev_hr_delta),Fixed_Point_Properties) && isequal(fimath(prev_hr_delta), F)); */
+        /*              heart_beat_delta = (current_R_index - 1) * time_delta + prev_hr_delta; */
+        /*              heart_beat_current_sum = heart_beat_delta + 0; % For future iterations: Add the previous delta from the previous data window. i.e. the amount of secs between the last peak in the sample and the next one in the next sample */
+        /*  Updates the last index */
+        j = R_peak_indices_channel_1[i];
+        if (j > 2097151UL) {
+          max_voltage = MAX_int32_T;
         } else {
-          q1 = mul_s32_s32_s32_sr27_sat_near(minus(max_val), 1374389535L);
-          q1 = (q1 >> 10) + ((q1 & 512L) != 0L);
-          qY = max_voltage + q1;
-          if ((max_voltage < 0L) && ((q1 < 0L) && (qY >= 0L))) {
+          max_voltage = (int32_T)j << 10;
+        }
+
+        /*  Updates the heart beat count */
+        /*              heart_beat_count = heart_beat_count + 1; */
+        /*  Updates the last index if the R_value is valid */
+      } else {
+        /*                heart_beat_delta = (current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta; */
+        /*  Calcs the HR peak delta average */
+        if (*num_peak_deltas != 0L) {
+          thresh = div_repeat_s32_sat_near(*hr_delta_sum, *num_peak_deltas, 10U);
+        } else {
+          thresh = 0L;
+        }
+
+        /*  Tosses out peaks which occur below the deviance threshold of the average peak delta */
+        if ((*num_peak_deltas < toss_thresh) || ((*num_peak_deltas >=
+              toss_thresh) && (meets_deviance_threshold(max_val, thresh, 102400L,
+               neg_peak_deviance_threshold) != 0.0))) {
+          /*  Updates the number of peaks and sum */
+          *num_peak_deltas = plus(*num_peak_deltas);
+          q0 = *hr_delta_sum;
+          qY = q0 + max_val;
+          if ((q0 < 0L) && ((max_val < 0L) && (qY >= 0L))) {
             qY = MIN_int32_T;
           } else {
-            if ((max_voltage > 0L) && ((q1 > 0L) && (qY <= 0L))) {
+            if ((q0 > 0L) && ((max_val > 0L) && (qY <= 0L))) {
               qY = MAX_int32_T;
             }
           }
 
-          max_voltage = qY;
-          q1 = mul_s32_s32_s32_sr27_sat_near(minus(thresh), 1374389535L);
-          q1 = (q1 >> 10) + ((q1 & 512L) != 0L);
+          *hr_delta_sum = qY;
+          thresh = mul_s32_s32_s32_sr27_sat_near(minus(current_R_index),
+            1374389535L);
+          q1 = (thresh >> 10) + ((thresh & 512L) != 0L);
+          qY = heart_beat_current_sum + q1;
+          if ((heart_beat_current_sum < 0L) && ((q1 < 0L) && (qY >= 0L))) {
+            qY = MIN_int32_T;
+          } else {
+            if ((heart_beat_current_sum > 0L) && ((q1 > 0L) && (qY <= 0L))) {
+              qY = MAX_int32_T;
+            }
+          }
+
+          heart_beat_current_sum = qY;
+          thresh = mul_s32_s32_s32_sr27_sat_near(minus(max_voltage), 1374389535L);
+          q1 = (thresh >> 10) + ((thresh & 512L) != 0L);
           qY = heart_beat_last_sum + q1;
           if ((heart_beat_last_sum < 0L) && ((q1 < 0L) && (qY >= 0L))) {
             qY = MIN_int32_T;
@@ -971,9 +1080,9 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
           /*  Updates the last index */
           j = R_peak_indices_channel_1[i];
           if (j > 2097151UL) {
-            thresh = MAX_int32_T;
+            max_voltage = MAX_int32_T;
           } else {
-            thresh = (int32_T)j << 10;
+            max_voltage = (int32_T)j << 10;
           }
         }
       }
@@ -985,11 +1094,13 @@ void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
   /*  CALCULATES HEART RATE USING AVERAGE TIME TIME DELTAS BETWEEN BEATS */
   /*    Provides less quantized HR values */
   /*  Produces a result which is avg heart beat delta(s) */
-  thresh = max_voltage - heart_beat_last_sum;
-  if ((max_voltage < 0L) && ((heart_beat_last_sum >= 0L) && (thresh >= 0L))) {
+  thresh = heart_beat_current_sum - heart_beat_last_sum;
+  if ((heart_beat_current_sum < 0L) && ((heart_beat_last_sum >= 0L) && (thresh >=
+        0L))) {
     thresh = MIN_int32_T;
   } else {
-    if ((max_voltage >= 0L) && ((heart_beat_last_sum < 0L) && (thresh < 0L))) {
+    if ((heart_beat_current_sum >= 0L) && ((heart_beat_last_sum < 0L) && (thresh
+          < 0L))) {
       thresh = MAX_int32_T;
     }
   }
