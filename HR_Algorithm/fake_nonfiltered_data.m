@@ -1,4 +1,4 @@
-function [ adc_data ] = fake_nonfiltered_data( data, max_sample_int, max_voltage, fs, sample_time, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size_t)
+function [ adc_data, heart_rate_adc ] = fake_nonfiltered_data( data, max_sample_int, max_voltage, fs, sample_time, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size_t)
 
 % plot(data)
 N = length(data);
@@ -9,6 +9,7 @@ adc_data = zeros(N, 1);
 % Converts data to what an ADC would produce
 for i=1:N
     adc_data(i) = int32(double(data(i)) * double(max_sample_int) / double(max_voltage)) - int32(2048);
+%     adc_data(i) = int32(double(data(i)) * double(max_sample_int) / double(max_voltage));
 %     adc_data(i) = int32(double(max_sample_int * data(i) / max_voltage)) - int32(2048);
 end
 figure(26)
@@ -37,7 +38,7 @@ assert(isequal(numerictype(final_data), Fixed_Point_Properties_signed) && isequa
 figure(28)
 plot(final_data);
 
-heart_rate = heart_rate_official_cport(final_data, uint32(fs), fi(threshold_1, Fixed_Point_Properties_signed, F_signed), fi(threshold_2, Fixed_Point_Properties_signed, F_signed), fi(threshold_3, Fixed_Point_Properties_signed, F_signed), fi(pos_deviance_threshold, Fixed_Point_Properties_signed, F_signed), fi(neg_deviance_threshold, Fixed_Point_Properties_signed, F_signed), uint32(sample_size_t), uint32(1),  fi(0, Fixed_Point_Properties_signed, F_signed))
+heart_rate_adc = heart_rate_official_cport_w_debug(final_data, uint32(fs), fi(threshold_1, Fixed_Point_Properties_signed, F_signed), fi(threshold_2, Fixed_Point_Properties_signed, F_signed), fi(threshold_3, Fixed_Point_Properties_signed, F_signed), fi(pos_deviance_threshold, Fixed_Point_Properties_signed, F_signed), fi(neg_deviance_threshold, Fixed_Point_Properties_signed, F_signed), uint32(sample_size_t), uint32(0),  fi(0, Fixed_Point_Properties_signed, F_signed));
 
 end
 
