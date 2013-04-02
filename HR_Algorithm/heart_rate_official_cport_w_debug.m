@@ -116,6 +116,8 @@ max_x = fi(max(abs(x1)), Fixed_Point_Properties_signed, F_signed);
 %     divide(Fixed_Point_Properties_signed, x1(i), max_x) % normalize to one
 % end
 x1 = divide(Fixed_Point_Properties_signed, x1, max_x); % normalize to one
+figure(50)
+plot(x1);
 if(shouldOutput)
     figure(50)
     plot(x1);
@@ -331,6 +333,10 @@ x6 = x6 (3+(1: N));
 % Normalizes the signal 
 % x6 = x6 / max( abs(x6 ));
 x6 = divide(Fixed_Point_Properties, x6, max( abs(x6 ))); % normalize to one
+if(shouldOutput)
+    figure(26)
+    plot(x6);
+end
 % figure(25)
 % plot(x6);
 assert(isequal(numerictype(x6),Fixed_Point_Properties) && isequal(fimath(x6), F));
@@ -426,10 +432,10 @@ if(shouldOutput)
     figure(11)
     subplot(2,1,1)
     title('ECG Signal with R points');
-    plot (t, x1, t(R_loc), R_value, 'r^');
+    plot (t, sqrt(x6), t(R_loc), R_value, 'r^');
     legend('ECG','R');
     subplot(2,1,2)
-    plot (t(100:300),x1(100:300) , t(R_loc) ,R_value , 'r^');
+    plot (t(100:300),sqrt(x6(100:300)) , t(R_loc) ,R_value , 'r^');
     xlim([1 3]);
 end
 
@@ -616,6 +622,20 @@ if(shouldOutput)
     final = length(find(R_peak_indices_combined))
 end
 
+% UNCOMMENT TO SEE RESULTS OF THE QRS DETECTION w/ ONLY R-PEAK RESULTS
+if(shouldOutput)
+    figure(51)
+    subplot(2,1,1)
+    title('Final ECG Signal with R points');
+    R_peak_indices_plot = R_peak_indices_combined(find(R_peak_indices_combined ~= 0));
+    R_peak_vals_plot = R_peak_vals(R_peak_indices_combined ~= 0);
+    plot (t, sqrt(x6), t(R_peak_indices_plot), R_peak_vals_plot, 'r^');
+    legend('ECG','R');
+    subplot(2,1,2)
+    plot (t(100:300),sqrt(x6(100:300)) , t(R_peak_indices_plot) ,R_peak_vals_plot , 'r^');
+    xlim([1 3]);
+end
+
 % UNCOMMENT TO SEE THE NUMBER OF PEAKS AFTER LEVEL 3 PROCESSING
 %     if (shouldOutput)
 %         fprintf('Combined Post: There are %i non-zero values\n',length(find(R_peak_indices_combined ~= 0)));
@@ -664,7 +684,8 @@ for i=1:length(R_peak_vals)
         
         %Filters out any R_values which happen too soon after a previous
         % beat detection.
-        if (last_R_index ~= 0 && ((current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta) < .200)
+        %.353
+        if (last_R_index ~= 0 && ((current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta) < .353)
             if(shouldOutput)
                 fprintf('Removing beat: beat occured too soon\n');
             end
@@ -851,7 +872,7 @@ end
                
                % Filters out any signal value which exceeds the allowed deviance from
                % the average signal value 
-               if (~meets_deviance_threshold(R_peak_vals(index), signal_lvl, pos_deviance_threshold, neg_deviance_threshold) && index > 4)
+               if (~meets_deviance_threshold(R_peak_vals(index), signal_lvl, pos_deviance_threshold, neg_deviance_threshold) && index > 2)
                       if(shouldOutput)
                             fprintf('Does not meet the deviance threshold\n');
                             R_peak_vals(index)
