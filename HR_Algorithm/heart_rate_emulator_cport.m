@@ -199,6 +199,7 @@ for step=0:(num_windows - 1)
         
         heart_rates = [heart_rates heart_rate];
     end
+    hr_delta_avg = divide(Fixed_Point_Properties, hr_delta_sum, num_peak_deltas)
     % Calculates the hr_avg and resets the average
     if (mod(uint32(step + 1), uint32(num_avg_samples)) == 0)
         heart_rates_w_avg = [heart_rates_w_avg (heart_rates_avg / num_avg_samples)];
@@ -207,6 +208,8 @@ for step=0:(num_windows - 1)
     end
     % Resets the hr_delta_avg and peak count
     if (mod(uint32(step + 1), uint32(reset_thresh)) == 0)
+%         hr_delta_avg = divide(Fixed_Point_Properties, hr_delta_sum, num_peak_deltas);
+%         num_peak_deltas
         num_peak_deltas = fi(0, Fixed_Point_Properties, F);
         hr_delta_sum = fi(0, Fixed_Point_Properties, F);
     end

@@ -1,6 +1,6 @@
  % Reads the text file to    fetch a column of file names and a column of
 % sampling rates
-function [] = EKG_Testing(root_dir, csv_fileName, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size)
+function [] = EKG_Testing(root_dir, csv_fileName, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, toss_thresh, reset_thresh, neg_peak_deviance_threshold, sample_size)
 
 % Reads the file names and sampling rates from the file
 fullfile(root_dir,csv_fileName)
@@ -28,9 +28,9 @@ for i=1:size(sampling_rates,1)
     data = importdata(filename, ' ');
     % Handles data which doesn't come with a time vector
     if (size(data, 2) == 1)
-        heart_rate_emulator_cport(data(:,1), fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size, average_HR);
+        heart_rate_emulator_cport(data(:,1), fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, toss_thresh, reset_thresh, neg_peak_deviance_threshold, sample_size, average_HR);
     else
-        heart_rate_emulator_cport(data(:,2), fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, sample_size, average_HR);
+        heart_rate_emulator_cport(data(:,2), fs, threshold_1, threshold_2, threshold_3, pos_deviance_threshold, neg_deviance_threshold, toss_thresh, reset_thresh, neg_peak_deviance_threshold, sample_size, average_HR);
     end
         
     %pause(30);

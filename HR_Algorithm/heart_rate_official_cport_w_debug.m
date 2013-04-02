@@ -79,7 +79,7 @@ assert(isa(sample_time, 'uint32'));
 assert(isfi(prev_hr_delta));
 assert(isfi(hr_delta_sum));
 assert(isfi(neg_peak_deviance_threshold));
-assert(isa(toss_thresh, 'uint32'));
+assert(isfi(toss_thresh));
 assert(isfi(num_peak_deltas));
 
 
@@ -97,6 +97,7 @@ assert(isequal(numerictype(neg_deviance_threshold),Fixed_Point_Properties) && is
 assert(isequal(numerictype(prev_hr_delta),Fixed_Point_Properties) && isequal(fimath(prev_hr_delta), F));
 assert(isequal(numerictype(hr_delta_sum),Fixed_Point_Properties) && isequal(fimath(hr_delta_sum), F));
 assert(isequal(numerictype(num_peak_deltas),Fixed_Point_Properties) && isequal(fimath(num_peak_deltas), F));
+assert(isequal(numerictype(toss_thresh),Fixed_Point_Properties) && isequal(fimath(toss_thresh), F));
 assert(isequal(numerictype(neg_peak_deviance_threshold),Fixed_Point_Properties) && isequal(fimath(neg_peak_deviance_threshold), F));
 
 % assert(isequal(numerictype(sample_time),Fixed_Point_Properties) && isequal(fimath(sample_time), F));
@@ -709,7 +710,7 @@ for i=1:length(R_peak_vals)
         % beat detection.
         %.353
         peak_delta = ((current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta);
-        if (last_R_index ~= 0 && peak_delta < .353)
+        if (last_R_index ~= 0 && peak_delta < .200)
             if(shouldOutput)
                 fprintf('Removing beat: beat occured too soon\n');
             end
@@ -733,11 +734,13 @@ for i=1:length(R_peak_vals)
         else   
               heart_beat_delta = (current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta;
               
-              % HR peak delta average
-              hr_delta_avg = divide(Fixed_Point_Properties, hr_delta_sum, num_peak_deltas);
+              % Calcs the HR peak delta average
+              if(num_peak_deltas ~= 0)
+                hr_delta_avg = divide(Fixed_Point_Properties, hr_delta_sum, num_peak_deltas);
+              end
               
               % Tosses out peaks which occur below the deviance threshold of the average peak delta
-              if (num_peak_deltas <= toss_thresh && meets_deviance_threshold(heart_beat_delta, hr_delta_avg, 100, neg_peak_deviance_threshold))
+              if (num_peak_deltas < toss_thresh || (num_peak_deltas >= toss_thresh && meets_deviance_threshold(heart_beat_delta, hr_delta_avg, fi(100, Fixed_Point_Properties, F), neg_peak_deviance_threshold)))
                   % Updates the number of peaks and sum
                   num_peak_deltas = num_peak_deltas + 1;
                   hr_delta_sum = hr_delta_sum + heart_beat_delta;
