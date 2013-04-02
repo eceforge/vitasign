@@ -18,6 +18,6 @@
 *.fig
 
 # CCS Junk
-*/DEBUG/*
+Debug/
 */FLASH/*
 */RAM/*
