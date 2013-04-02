@@ -73,17 +73,29 @@
 #pragma CODE_SECTION(epwm1_timer_isr, "ramfuncs");
 #pragma CODE_SECTION(adc_isr, "ramfuncs");
 #pragma CODE_SECTION(InitFlash, "ramfuncs");
-
+#pragma CODE_SECTION(i2c_int1, "ramfuncs");
 
 // Prototype statements for functions found within this file.
 interrupt void epwm1_timer_isr(void);
 interrupt void adc_isr(void);
+interrupt void i2c_int1(void);
 void InitEPwmTimer(void);
 void init_adc(void);
 
 // Global variables used in this example
 Uint32  EPwm1TimerIntCount;
 Uint32  LoopCount;
+uint32_t isr_counter = 0;
+uint16_t ConversionCount = 0;
+Uint16 IntSource = 0;
+
+uint16_t num_rec_slave_addr = 0; // Number of times i2c module has recognized it's own slave address(or 0x00 -- general call) on the bus
+uint16_t num_bytes_moved_to_tx_shift = 0; // Number of bytes that have moved to the transmit shift register from the data transmit register (as counted by XRDY interrupt)
+
+char output_value = 0x00;
+char outputs [] = {"0bob0cas"};
+
+
 int adc_0 = 0; // These are where we will store the values of the ADC conversion
 int adc_1 = 0; // They are signed ints instead of unsigned ints because we are going to need to subtract them later
 
@@ -109,6 +121,8 @@ extern Uint16 RamfuncsLoadSize;
 #define BUFFER_SIZE NEW_DATA_SAMPLE_TIME * FS
 #define CEIL(VARIABLE) ( (VARIABLE - (int)VARIABLE)==0 ? (int)VARIABLE : (int)VARIABLE+1 )
 #define NUM_BUFFERS CEIL(SAMPLE_TIME/NEW_DATA_SAMPLE_TIME)
+// How many sample sizes before we reset the hr delta avg
+#define RESET_THRESH 10
 /**
  * Defines the PCB struct
  */
@@ -130,11 +144,33 @@ Linked_Buffer circular_buffers[NUM_BUFFERS];
 Linked_Buffer *current_linked_buffer;
 //unsigned int data_out[SAMPLE_TIME * FS];
 unsigned int num_empty_buffers_left = NUM_BUFFERS, buffers_full = 0, current_index = 0;
-
+/**
+ * Heart Rate Algorithm parameters
+ */
+//long threshold_1 = 153; // .15
+long threshold_1 = 184; // .18
+//long threshold_1 = 112; // .11
+//long threshold_1 = 122; //.12
+long threshold_2 = 307;
+long threshold_3 = 204;
+long pos_deviance = 5120; // 5
+//long pos_deviance = 10240; // 10
+//long neg_deviance = 665; // .65
+//long neg_deviance = 686; // .67
+//long neg_deviance = 716; // .7
+long neg_deviance = 512; // .5
+//long neg_deviance = 768; //.75
+uint32_T sample_time = 5;
+uint32_T should_output = 0;
+int32_T prev_hr_delta = 0;
+int32_T hr_delta_sum = 0;
+int32_T toss_thresh = 5120; // 5
+int32_T num_peak_deltas = 0;
+int32_T neg_peak_deviance_threshold = 266; // .25
+unsigned int hr_index = 0, num_hrs = 0, reset_counter = 0;
 /**
  * Heart Rate Output variables
  */
-unsigned int hr_index = 0, num_hrs = 0;
 // Holds the HRs
 int32_T heart_rates[NUM_HRS_AVG];
 int32_T heart_rate_avg;
@@ -188,7 +224,93 @@ int32_T Voltages[FS * SAMPLE_TIME];
 //int32_T Voltages[500] = {-7,-24,-37,-48,-56,-63,-69,-74,-77,-81,-88,-104,-132,-167,-189,-166,-69,115,364,590,683,583,336,57,-155,-265,-284,-245,-188,-142,-116,-105,-100,-98,-94,-91,-88,-86,-85,-84,-79,-74,-65,-54,-42,-29,-13,5,24,46,68,90,112,133,152,169,182,190,195,195,190,180,166,148,127,104,81,56,32,7,-16,-36,-54,-71,-85,-97,-107,-114,-120,-125,-128,-131,-132,-133,-133,-133,-133,-133,-133,-132,-132,-131,-130,-128,-128,-127,-126,-125,-125,-124,-122,-121,-120,-120,-119,-117,-116,-115,-114,-114,-113,-111,-110,-109,-108,-108,-107,-105,-104,-103,-102,-100,-99,-99,-98,-97,-96,-93,-92,-91,-90,-88,-87,-85,-82,-77,-73,-65,-56,-42,-25,-6,16,39,63,84,101,112,115,112,100,83,61,36,13,-8,-25,-40,-48,-56,-62,-67,-70,-74,-76,-81,-92,-114,-147,-174,-170,-99,57,291,540,692,658,447,169,-64,-195,-228,-194,-134,-87,-60,-48,-44,-40,-35,-30,-27,-23,-20,-17,-12,-6,4,16,30,46,64,84,104,127,150,173,195,216,234,249,260,266,266,262,253,240,223,204,181,156,132,108,85,64,45,27,12,0,-11,-18,-25,-30,-34,-36,-37,-39,-39,-39,-37,-37,-36,-36,-35,-34,-33,-31,-31,-30,-29,-28,-27,-25,-25,-24,-23,-22,-20,-20,-19,-18,-17,-17,-16,-14,-14,-13,-12,-12,-11,-10,-10,-8,-7,-7,-6,-5,-5,-4,-4,-2,-1,-1,0,1,1,5,9,15,24,35,50,67,87,109,132,154,171,183,187,184,172,155,132,108,84,62,44,30,20,11,4,-2,-7,-11,-14,-20,-36,-64,-99,-116,-84,33,238,489,685,714,544,269,23,-122,-162,-128,-73,-28,-5,3,6,9,11,15,18,21,23,26,29,35,45,57,72,89,107,126,147,169,190,211,229,245,257,264,267,263,256,243,226,205,181,156,130,104,80,58,38,20,4,-10,-20,-29,-36,-42,-46,-50,-52,-53,-54,-56,-57,-57,-58,-58,-58,-59,-59,-59,-59,-59,-59,-60,-60,-60,-60,-60,-60,-60,-60,-62,-62,-62,-62,-62,-62,-62,-62,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-62,-60,-59,-56,-50,-42,-30,-16,3,24,47,69,87,101,107,104,95,76,55,30,6,-14,-31,-46,-57,-67,-74,-80,-84,-86,-91,-102,-126,-159,-183,-161,-56,144,395,587,600,418,142,-103,-251,-294,-265,-207,-159,-132,-121,-116,-114,-110,-105,-100,-98,-96,-92,-88,-81,-71,-59,-46,-29,-11,9,30,52,75,98};
 #pragma SET_DATA_SECTION()
 
+void init_i2c(){
 
+  EALLOW;
+  // Enable Clock routing to the I2C Module
+  SysCtrlRegs.PCLKCR0.bit.I2CAENCLK = 1;
+  EDIS;
+
+  ///////////////////////////////////////////////
+  ///////       GPIO Setup             //////////
+  //////    SDA: GPIO28, SCL GPIO29    //////////
+  ///////////////////////////////////////////////
+
+  EALLOW;
+  // Setup GPIO Modes
+  GpioCtrlRegs.GPAMUX2.bit.GPIO28 = 2; // Set GPIO28 to i2c SDA function (2 == 0b10) (see below warning:)
+  GpioCtrlRegs.GPAMUX2.bit.GPIO29 = 2; // Set GPIO29 to i2c SCL function (warning: if you use GPIO32 and GPIO 33 instead, the number is 1 (aka 0b01) not 2)
+
+  // Disable Internal Pull Ups (already provided by master side)
+  GpioCtrlRegs.GPAPUD.bit.GPIO28 = 0; // Disable Pull Up for GPIO28
+  GpioCtrlRegs.GPAPUD.bit.GPIO29 = 0; // Disable Pull Up for GPIO29
+
+
+  // Set qualifications type on SDA and SCL to async (digital signals from another micro don't need multiple validations)
+  GpioCtrlRegs.GPAQSEL2.bit.GPIO28 = 3;
+  GpioCtrlRegs.GPAQSEL2.bit.GPIO29 = 3; // 3 == 0b11
+
+  EDIS;
+
+
+
+  ///////////////////////////////////////////////
+  //////////    Interrupt Setup    //////////////
+  //////////////////////////////////////////////
+
+  EALLOW;  // This is needed to write to EALLOW protected registers
+	  PieVectTable.I2CINT1A = &i2c_int1; // Register the Interrupt handler for i2c in the PIE table
+
+	  PieCtrlRegs.PIEIER8.bit.INTx1 = 1; // Enable Group 8 Subgroup 1 Interrupt in the PIE table
+
+	  IER |= M_INT8; // Enable the CPU interrupt (8) that is responsible for this PIE group (group 8)
+  EDIS;    // This is needed to disable write to EALLOW protected registers
+
+
+  // Clear all status bits for the i2c module (reset)
+  I2caRegs.I2CMDR.bit.IRS = 0;   // Technically this triggers a i2c reset
+
+  // Enable i2c "addressed as slave" interrupt
+  I2caRegs.I2CIER.bit.AAS = 1;
+
+  // Enable the XRDYINT (Transmit read condition interrupt). Enabled so I can see if data is getting to the transmit shift register
+  I2caRegs.I2CIER.bit.XRDY = 1;
+
+  // Change Clock divider
+  I2caRegs.I2CPSC.all = 2;       // Prescaler - set to 128 giving module clk of SYSCLKOUT/129 => 465kHz
+
+  // More clock stuff here
+  I2caRegs.I2CCLKL = 5;     // NOTE: must be non zero
+  I2caRegs.I2CCLKH = 5;     // NOTE: must be non zero
+
+
+  // Setup the i2c module in slave mode
+  I2caRegs.I2CMDR.bit.MST = 0;
+
+  // Setup the i2c module as a receiver (so now we are in slave-reciever mode)
+  I2caRegs.I2CMDR.bit.TRX = 0;
+
+  // 7BIT address mode
+  I2caRegs.I2CMDR.bit.XA = 0;
+
+  // 8bit data mode
+  I2caRegs.I2CMDR.bit.BC = 0;
+
+
+  I2caRegs.I2CIER.bit.RRDY = 1;   // Enable Receive Interrupt
+
+  // Set i2c address of this module
+  I2caRegs.I2COAR = 0x48;
+
+  I2caRegs.I2CCNT = 4;          // Get/send 4 bytes
+
+  I2caRegs.I2CDXR = 0xF5; // Fill the transmission buffer
+
+  // Re-Enable the Module now that configuration is done
+  I2caRegs.I2CMDR.bit.IRS = 1;
+
+
+}
 
 
 void main(void)
@@ -248,6 +370,8 @@ void main(void)
 // InitPeripherals();  // Not required for this example
    InitEPwmTimer();    // For this example, only initialize the ePWM Timers
    init_adc();
+
+   init_i2c();
 
 // Initalize counters:
    LoopCount = 0;
@@ -386,7 +510,7 @@ static void initLinkedBuffers() {
  * @param tail
  */
 static void copyDataOut(Linked_Buffer *head, int32_T *buf) {
-	DINT; // This is a critical code section, lockout of the buffer is required for coherency
+	IER &= ~M_INT1;  // This is a critical code section, lockout of the buffer is required for coherency
 	Linked_Buffer *src_linked_buffer = head;
 	unsigned int i, linked_buffer;
 	/**
@@ -400,8 +524,7 @@ static void copyDataOut(Linked_Buffer *head, int32_T *buf) {
 		src_linked_buffer = src_linked_buffer->next;
 	}
 	// Release the lock
-	EINT;   // Enable Global interrupt INTM
-	ERTM;   // Enable Global realtime interrupt DBGM
+	IER |= M_INT1;
 
 }
 /**
@@ -416,31 +539,11 @@ static void runHRAlgo() {
 			Voltages[i] = (Voltages[i] >> 10) + ((Voltages[i] & 512L) != 0L);
 		}
 
-
-	//   	void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
-	//   	  threshold_1, int32_T threshold_2, int32_T threshold_3, int32_T
-	//   	  pos_deviance_threshold, int32_T neg_deviance_threshold, uint32_T sample_time,
-	//   	  uint32_T shouldOutput, int32_T prev_hr_delta, int32_T *heart_rate, int32_T
-	//   	  *last_hr_delta)
-//	  		long threshold_1 = 153; // .15
-	  		long threshold_1 = 184; // .18
-//			long threshold_1 = 112; // .11
-//	  		long threshold_1 = 122; //.12
-	  		long threshold_2 = 307;
-	  		long threshold_3 = 204;
-	  		long pos_deviance = 5120; // 5
-//	  		long pos_deviance = 10240; // 10
-//	  		long neg_deviance = 665; // .65
-//	  		long neg_deviance = 686; // .67
-//	   		long neg_deviance = 716; // .7
-	  		long neg_deviance = 512; // .5
-//	  		long neg_deviance = 768; //.75
-	  		uint32_T sample_time = 5;
-	  		uint32_T should_output = 0;
-	  		int32_T prev_hr_delta = 0;
 	  		heart_rate = 0;
 			calculating = 1;
-	  		heart_rate_official_cport(Voltages, 100, threshold_1, threshold_2, threshold_3, pos_deviance, neg_deviance, sample_time, should_output, prev_hr_delta, &heart_rate, &last_hr_delta);
+//	  		heart_rate_official_cport(Voltages, 100, threshold_1, threshold_2, threshold_3, pos_deviance, neg_deviance, sample_time, should_output, prev_hr_delta, &heart_rate, &last_hr_delta);
+			heart_rate_official_cport(Voltages, 100, threshold_1, threshold_2, threshold_3, pos_deviance, neg_deviance, prev_hr_delta, &hr_delta_sum, toss_thresh, &num_peak_deltas, neg_peak_deviance_threshold, sample_time, should_output, &heart_rate, &last_hr_delta);
+
 	  		calculating = 0;
 	  		// Grabs the heart rate value
 	  		heart_rates[hr_index] = heart_rate;
@@ -459,7 +562,15 @@ static void runHRAlgo() {
 				hr_sum = 0;
 				num_hrs = 0;
 	  		}
-
+			// Resets the hr delta avg
+			if (reset_counter < RESET_THRESH){
+				reset_counter++;
+			}
+			else{
+				num_peak_deltas  = 0;
+				hr_delta_sum = 0;
+				reset_counter = 0;
+			}
 
 //			for(i = 0; i < 500; i++) {
 //				Voltages2[i] = Voltages[i];
@@ -560,6 +671,36 @@ void InitEPwmTimer()
 	SysCtrlRegs.PCLKCR0.bit.TBCLKSYNC = 1;         // Start all the timers synced
 	EDIS;
 
+}
+
+interrupt void i2c_int1(void){
+  isr_counter++;
+
+
+  IntSource = I2caRegs.I2CISRC.all;
+
+  if( IntSource == I2C_AAS_ISRC){
+    num_rec_slave_addr++;
+
+  }
+
+  if (IntSource == I2C_TX_ISRC){
+
+    num_bytes_moved_to_tx_shift ++;
+
+
+    I2caRegs.I2CSTR.bit.XRDY = 1; // Clear the XRDY interrupt (re-arm it) since it does not get auto-cleared by reading I2CISRC
+    I2caRegs.I2CDXR = outputs[output_value]; // Fill the transmission buffer
+//    I2caRegs.I2CDXR = heart_rate_avg; // Update
+    output_value = output_value + 1;
+    if(output_value == 8){
+    	output_value = 0;
+    }
+  }
+
+
+  // Acknowledge this interrupt to receive more interrupts from group 8
+  PieCtrlRegs.PIEACK.all = PIEACK_GROUP8;
 }
 
 
