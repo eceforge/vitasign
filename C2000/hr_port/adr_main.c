@@ -121,6 +121,8 @@ extern Uint16 RamfuncsLoadSize;
 #define BUFFER_SIZE NEW_DATA_SAMPLE_TIME * FS
 #define CEIL(VARIABLE) ( (VARIABLE - (int)VARIABLE)==0 ? (int)VARIABLE : (int)VARIABLE+1 )
 #define NUM_BUFFERS CEIL(SAMPLE_TIME/NEW_DATA_SAMPLE_TIME)
+// How many sample sizes before we reset the hr delta avg
+#define RESET_THRESH 10
 /**
  * Defines the PCB struct
  */
@@ -142,11 +144,39 @@ Linked_Buffer circular_buffers[NUM_BUFFERS];
 Linked_Buffer *current_linked_buffer;
 //unsigned int data_out[SAMPLE_TIME * FS];
 unsigned int num_empty_buffers_left = NUM_BUFFERS, buffers_full = 0, current_index = 0;
+/**
+ * Heart Rate Algorithm parameters
+ */
+//long threshold_1 = 153; // .15
+long threshold_1 = 184; // .18
+//long threshold_1 = 112; // .11
+//long threshold_1 = 122; //.12
+long threshold_2 = 307;
+long threshold_3 = 204;
+long pos_deviance = 5120; // 5
+//long pos_deviance = 10240; // 10
+//long neg_deviance = 665; // .65
+//long neg_deviance = 686; // .67
+long neg_deviance = 716; // .7
+//long neg_deviance = 512; // .5
+//long neg_deviance = 768; //.75
+uint32_T sample_time = 5;
+uint32_T should_output = 0;
+int32_T prev_hr_delta = 0;
+int32_T hr_delta_sum = 0;
+//int32_T toss_thresh = 5120; // 5
+int32_T toss_thresh = 7168; // 7
+int32_T num_peak_deltas = 0;
+//int32_T neg_peak_deviance_threshold = 266; // .25
+//int32_T neg_peak_deviance_threshold = 307; // .3
+//int32_T neg_peak_deviance_threshold = 358; // .35
+int32_T neg_peak_deviance_threshold = 409; // .35
+//int32_T neg_peak_deviance_threshold = 102400; // 100 - Essentially disables noise filtering based on peak delta dev.
 
+unsigned int hr_index = 0, num_hrs = 0, reset_counter = 0;
 /**
  * Heart Rate Output variables
  */
-unsigned int hr_index = 0, num_hrs = 0;
 // Holds the HRs
 int32_T heart_rates[NUM_HRS_AVG];
 int32_T heart_rate_avg;
@@ -515,31 +545,11 @@ static void runHRAlgo() {
 			Voltages[i] = (Voltages[i] >> 10) + ((Voltages[i] & 512L) != 0L);
 		}
 
-
-	//   	void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
-	//   	  threshold_1, int32_T threshold_2, int32_T threshold_3, int32_T
-	//   	  pos_deviance_threshold, int32_T neg_deviance_threshold, uint32_T sample_time,
-	//   	  uint32_T shouldOutput, int32_T prev_hr_delta, int32_T *heart_rate, int32_T
-	//   	  *last_hr_delta)
-//	  		long threshold_1 = 153; // .15
-	  		long threshold_1 = 184; // .18
-//			long threshold_1 = 112; // .11
-//	  		long threshold_1 = 122; //.12
-	  		long threshold_2 = 307;
-	  		long threshold_3 = 204;
-	  		long pos_deviance = 5120; // 5
-//	  		long pos_deviance = 10240; // 10
-//	  		long neg_deviance = 665; // .65
-//	  		long neg_deviance = 686; // .67
-//	   		long neg_deviance = 716; // .7
-	  		long neg_deviance = 512; // .5
-//	  		long neg_deviance = 768; //.75
-	  		uint32_T sample_time = 5;
-	  		uint32_T should_output = 0;
-	  		int32_T prev_hr_delta = 0;
 	  		heart_rate = 0;
 			calculating = 1;
-	  		heart_rate_official_cport(Voltages, 100, threshold_1, threshold_2, threshold_3, pos_deviance, neg_deviance, sample_time, should_output, prev_hr_delta, &heart_rate, &last_hr_delta);
+//	  		heart_rate_official_cport(Voltages, 100, threshold_1, threshold_2, threshold_3, pos_deviance, neg_deviance, sample_time, should_output, prev_hr_delta, &heart_rate, &last_hr_delta);
+			heart_rate_official_cport(Voltages, 100, threshold_1, threshold_2, threshold_3, pos_deviance, neg_deviance, prev_hr_delta, &hr_delta_sum, toss_thresh, &num_peak_deltas, neg_peak_deviance_threshold, sample_time, should_output, &heart_rate, &last_hr_delta);
+
 	  		calculating = 0;
 	  		// Grabs the heart rate value
 	  		heart_rates[hr_index] = heart_rate;
@@ -558,7 +568,15 @@ static void runHRAlgo() {
 				hr_sum = 0;
 				num_hrs = 0;
 	  		}
-
+			// Resets the hr delta avg
+			if (reset_counter < RESET_THRESH){
+				reset_counter++;
+			}
+			else{
+				num_peak_deltas  = 0;
+				hr_delta_sum = 0;
+				reset_counter = 0;
+			}
 
 //			for(i = 0; i < 500; i++) {
 //				Voltages2[i] = Voltages[i];
