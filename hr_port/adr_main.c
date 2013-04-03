@@ -157,16 +157,22 @@ long pos_deviance = 5120; // 5
 //long pos_deviance = 10240; // 10
 //long neg_deviance = 665; // .65
 //long neg_deviance = 686; // .67
-//long neg_deviance = 716; // .7
-long neg_deviance = 512; // .5
+long neg_deviance = 716; // .7
+//long neg_deviance = 512; // .5
 //long neg_deviance = 768; //.75
 uint32_T sample_time = 5;
 uint32_T should_output = 0;
 int32_T prev_hr_delta = 0;
 int32_T hr_delta_sum = 0;
-int32_T toss_thresh = 5120; // 5
+//int32_T toss_thresh = 5120; // 5
+int32_T toss_thresh = 7168; // 7
 int32_T num_peak_deltas = 0;
-int32_T neg_peak_deviance_threshold = 266; // .25
+//int32_T neg_peak_deviance_threshold = 266; // .25
+//int32_T neg_peak_deviance_threshold = 307; // .3
+//int32_T neg_peak_deviance_threshold = 358; // .35
+int32_T neg_peak_deviance_threshold = 409; // .35
+//int32_T neg_peak_deviance_threshold = 102400; // 100 - Essentially disables noise filtering based on peak delta dev.
+
 unsigned int hr_index = 0, num_hrs = 0, reset_counter = 0;
 /**
  * Heart Rate Output variables
