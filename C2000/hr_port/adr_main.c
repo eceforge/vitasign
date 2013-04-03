@@ -66,6 +66,13 @@
 #define DELAY 1000000L
 
 #define PWM1_TIMER_TBPRD   18750 // Helps determine the PWM Freq. (helps only, doesn't entirely determin the freq)
+#define slave_address 0x48
+
+#define unique_address 0x01 // Unique address within the SWAG-Owls Infrastructure
+#define header_byte 42 // TODO: Needs work
+
+char shifts[] = {8, 16, 24};
+char current_shift_index = 0;
 
 // Functions that will be run from RAM need to be assigned to
 // a different section.  This section will then be mapped using
@@ -91,9 +98,6 @@ Uint16 IntSource = 0;
 
 uint16_t num_rec_slave_addr = 0; // Number of times i2c module has recognized it's own slave address(or 0x00 -- general call) on the bus
 uint16_t num_bytes_moved_to_tx_shift = 0; // Number of bytes that have moved to the transmit shift register from the data transmit register (as counted by XRDY interrupt)
-
-char output_value = 0x00;
-char outputs [] = {"0bob0cas"};
 
 
 int adc_0 = 0; // These are where we will store the values of the ADC conversion
@@ -310,7 +314,7 @@ void init_i2c(){
 
   I2caRegs.I2CCNT = 4;          // Get/send 4 bytes
 
-  I2caRegs.I2CDXR = 0xF5; // Fill the transmission buffer
+  I2caRegs.I2CDXR = header_byte; // Fill the transmission buffer
 
   // Re-Enable the Module now that configuration is done
   I2caRegs.I2CMDR.bit.IRS = 1;
@@ -685,25 +689,39 @@ interrupt void i2c_int1(void){
 
   IntSource = I2caRegs.I2CISRC.all;
 
-  if( IntSource == I2C_AAS_ISRC){
-    num_rec_slave_addr++;
+  if( IntSource == I2C_AAS_ISRC){ // Addressed as slave
+    num_rec_slave_addr++; // Good indicator to show that i2c module has recognized it's slave address
 
+    I2caRegs.I2CDXR = header_byte; // First time we are get called by the master we put get the header byte ready to send.
+    current_shift_index = 0;
   }
 
-  if (IntSource == I2C_TX_ISRC){
+  if (IntSource == I2C_TX_ISRC){ // Read requested
 
-    num_bytes_moved_to_tx_shift ++;
+    num_bytes_moved_to_tx_shift ++; // Good indicator to show that i2c is shifting out values
 
 
     I2caRegs.I2CSTR.bit.XRDY = 1; // Clear the XRDY interrupt (re-arm it) since it does not get auto-cleared by reading I2CISRC
-    I2caRegs.I2CDXR = outputs[output_value]; // Fill the transmission buffer
-//    I2caRegs.I2CDXR = heart_rate_avg; // Update
-    output_value = output_value + 1;
-    if(output_value == 8){
-    	output_value = 0;
+
+
+    I2caRegs.I2CDXR = heart_rate_avg>>shifts[current_shift_index]; // Update to newest value we have at time of call
+    if(current_shift_index == 2){
+    	current_shift_index = 0;
+    }else{
+    	current_shift_index++;
     }
+
   }
 
+  if(IntSource == I2C_SCD_ISRC){ // Stop Condtion Detected
+	  // This could potentially happen BEFORE we are able to shift out all 4 bytes.
+	  //	hence why have to be ready for the next time they ask, to start the protocol from top
+
+	  // Reset the pointer to start of hear_rate_avg
+	  current_shift_index = 0;
+	  // Reset the value of I2CDXR to unique_address
+	  I2caRegs.I2CDXR = header_byte;
+  }
 
   // Acknowledge this interrupt to receive more interrupts from group 8
   PieCtrlRegs.PIEACK.all = PIEACK_GROUP8;
