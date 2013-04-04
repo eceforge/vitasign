@@ -71,7 +71,7 @@
 #define unique_address 0x01 // Unique address within the SWAG-Owls Infrastructure
 #define header_byte 42 // TODO: Needs work
 
-char shifts[] = {8, 16, 24};
+char shifts[] = {24, 16, 8};
 char current_shift_index = 0;
 
 // Functions that will be run from RAM need to be assigned to
@@ -159,9 +159,9 @@ long threshold_2 = 307;
 long threshold_3 = 204;
 long pos_deviance = 5120; // 5
 //long pos_deviance = 10240; // 10
-//long neg_deviance = 665; // .65
+long neg_deviance = 665; // .65
 //long neg_deviance = 686; // .67
-long neg_deviance = 716; // .7
+//long neg_deviance = 716; // .7
 //long neg_deviance = 512; // .5
 //long neg_deviance = 768; //.75
 uint32_T sample_time = 5;
@@ -174,8 +174,8 @@ int32_T num_peak_deltas = 0;
 //int32_T neg_peak_deviance_threshold = 266; // .25
 //int32_T neg_peak_deviance_threshold = 307; // .3
 //int32_T neg_peak_deviance_threshold = 358; // .35
-int32_T neg_peak_deviance_threshold = 409; // .35
-//int32_T neg_peak_deviance_threshold = 102400; // 100 - Essentially disables noise filtering based on peak delta dev.
+//int32_T neg_peak_deviance_threshold = 409; // .35
+int32_T neg_peak_deviance_threshold = 102400; // 100 - Essentially disables noise filtering based on peak delta dev.
 
 unsigned int hr_index = 0, num_hrs = 0, reset_counter = 0;
 /**
@@ -282,6 +282,7 @@ void init_i2c(){
 
   // Enable i2c "addressed as slave" interrupt
   I2caRegs.I2CIER.bit.AAS = 1;
+  I2caRegs.I2CIER.bit.SCD = 1;
 
   // Enable the XRDYINT (Transmit read condition interrupt). Enabled so I can see if data is getting to the transmit shift register
   I2caRegs.I2CIER.bit.XRDY = 1;
@@ -692,7 +693,7 @@ interrupt void i2c_int1(void){
   if( IntSource == I2C_AAS_ISRC){ // Addressed as slave
     num_rec_slave_addr++; // Good indicator to show that i2c module has recognized it's slave address
 
-    I2caRegs.I2CDXR = header_byte; // First time we are get called by the master we put get the header byte ready to send.
+//    I2caRegs.I2CDXR = header_byte; // First time we are get called by the master we put get the header byte ready to send.
     current_shift_index = 0;
   }
 
