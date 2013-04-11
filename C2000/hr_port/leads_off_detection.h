@@ -17,12 +17,12 @@ extern int32_T heart_rate_avg;
 void InitLeadsOffDetection(void){
 	// Setup GPIO 0 and 1 to inputs
 	EALLOW;
-	GpioCtrlRegs.GPADIR.bit.GPIO0 = 0;
 	GpioCtrlRegs.GPADIR.bit.GPIO1 = 0;
+	GpioCtrlRegs.GPADIR.bit.GPIO2 = 0;
 
 	// Setup GPIO 0 and 1 to run as interrupt triggers
-	GpioIntRegs.GPIOXINT1SEL.all = 0; // GPIO0 triggers XINT1
-	GpioIntRegs.GPIOXINT2SEL.all = 1; // GPIO1 triggers XINT2
+	GpioIntRegs.GPIOXINT1SEL.all = 1; // GPIO0 triggers XINT1
+	GpioIntRegs.GPIOXINT2SEL.all = 2; // GPIO1 triggers XINT2
 
 	// Configure the interrupt requirements
 	XIntruptRegs.XINT1CR.all = 3; // AKA 0b11 -- Trigger Xint1 on both raising and falling edges of GPIO
