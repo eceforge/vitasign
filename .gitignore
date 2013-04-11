@@ -19,5 +19,5 @@
 
 # CCS Junk
 Debug/
-*/FLASH/*
-*/RAM/*
+FLASH/
+RAM/
