@@ -485,8 +485,8 @@ static void addData(int32_T val) {
 		 */
 		if (!num_empty_buffers_left){
 			copying = 1;
-			// Tests if we are ever calculating and copying
-			if(calculating == 1){
+			// Tests if we are ever calculating and copying or if the leads are off
+			if(calculating == 1 || (leads_off_alarm == 1 || leads_off_alarm == 2)){
 				copying = 0;
 				return; // Waits til next copy cycle to run the algorithm on new data
 			}
