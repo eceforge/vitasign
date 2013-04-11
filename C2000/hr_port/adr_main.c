@@ -69,7 +69,6 @@
 #define PWM1_TIMER_TBPRD   18750 // Helps determine the PWM Freq. (helps only, doesn't entirely determin the freq)
 #define slave_address 0x48
 
-#define unique_address 0x01 // Unique address within the SWAG-Owls Infrastructure
 #define header_byte 42 // TODO: Needs work
 
 char shifts[] = {24, 16, 8};
