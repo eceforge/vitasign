@@ -59,6 +59,7 @@
 #include "HR_C_Port/heart_rate_official_cport.h"
 #include "HR_C_Port/plus.h"
 #include <stdint.h>
+#include "leads_off_detection.h"
 
 
 
@@ -393,13 +394,9 @@ void main(void)
    EINT;   // Enable Global interrupt INTM
    ERTM;   // Enable Global realtime interrupt DBGM
 
-// Step 6. IDLE loop. Just sit and loop forever (optional):
-   EALLOW;
-   GpioCtrlRegs.GPBMUX1.bit.GPIO34 = 0;
-   GpioCtrlRegs.GPBDIR.bit.GPIO34 = 1;
-   EDIS;
 
-   // Eat ME!!!!
+   // Initialize Leads off detection hardware
+   InitLeadsOffDetection();
 
    /** VITASIGN CODE **/
 
