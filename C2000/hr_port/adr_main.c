@@ -69,10 +69,10 @@
 #define PWM1_TIMER_TBPRD   18750 // Helps determine the PWM Freq. (helps only, doesn't entirely determin the freq)
 #define slave_address 0x48
 
-#define header_byte 42 // TODO: Needs work
+#define header_byte 42 // Unique header byte given to System team every time we communicate with them.
 
-char shifts[] = {24, 16, 8};
-char current_shift_index = 0;
+char shifts[] = {24, 16, 8}; // Used to define the number of shifts that occur each time we shift out a byte on the i2c line
+char current_shift_index = 0; // The current index into shifts. Must be global because used in interrupt
 
 // Functions that will be run from RAM need to be assigned to
 // a different section.  This section will then be mapped using
