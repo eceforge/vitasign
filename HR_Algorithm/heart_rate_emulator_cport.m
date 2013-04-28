@@ -178,7 +178,8 @@ for step=0:(num_windows - 1)
 %     median(indatadouble(begin_index:end_index))   
 %     mean(indatadouble(begin_index:end_index))
 %      if (step >= 63 && step <= 65)
-    if(step == 10000)
+%     step
+    if(step == 4)
         % Generates a CSV file that simulates the data that would be outputted by
         % an ADC
 %         figure(23)
@@ -186,16 +187,16 @@ for step=0:(num_windows - 1)
 %         [~, heart_rate] = fake_nonfiltered_data(indata(begin_index:end_index) + 1.65, fi(4096, Fixed_Point_Properties, F), fi(3.3, Fixed_Point_Properties, F), 100, sample_size, fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), sample_size_t);
         
         % Finds the HR
-%         [heart_rate, hr_delta_sum, num_peak_deltas] = heart_rate_official_cport_w_debug(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), fi(0, Fixed_Point_Properties, F), hr_delta_sum, fi(toss_thresh, Fixed_Point_Properties, F), num_peak_deltas, fi(neg_peak_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(1));
-        [heart_rate, ~, hr_delta_sum, num_peak_deltas, ~] = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), fi(0, Fixed_Point_Properties, F), hr_delta_sum, fi(toss_thresh, Fixed_Point_Properties, F), num_peak_deltas, fi(neg_peak_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(1));
+        [heart_rate, hr_delta_sum, num_peak_deltas] = heart_rate_official_cport_w_debug(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), fi(0, Fixed_Point_Properties, F), hr_delta_sum, fi(toss_thresh, Fixed_Point_Properties, F), num_peak_deltas, fi(neg_peak_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(1))
+%         [heart_rate, ~, hr_delta_sum, num_peak_deltas, ~] = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), fi(0, Fixed_Point_Properties, F), hr_delta_sum, fi(toss_thresh, Fixed_Point_Properties, F), num_peak_deltas, fi(neg_peak_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(1));
         heart_rates_avg = heart_rates_avg + heart_rate;
         
         heart_rates = [heart_rates heart_rate];
-%         break
+        break
     else
 %       [~, heart_rate] = fake_nonfiltered_data(indata(begin_index:end_index) + 1.65, fi(4096, Fixed_Point_Properties, F), fi(3.3, Fixed_Point_Properties, F), 100, sample_size, fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), sample_size_t);        
-%         [heart_rate, hr_delta_sum, num_peak_deltas] = heart_rate_official_cport_w_debug(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), fi(0, Fixed_Point_Properties, F), hr_delta_sum, fi(toss_thresh, Fixed_Point_Properties, F), num_peak_deltas, fi(neg_peak_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(0));
-        [heart_rate, ~, hr_delta_sum, num_peak_deltas, ~] = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), fi(0, Fixed_Point_Properties, F), hr_delta_sum, fi(toss_thresh, Fixed_Point_Properties, F), num_peak_deltas, fi(neg_peak_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(0));
+        [heart_rate, hr_delta_sum, num_peak_deltas] = heart_rate_official_cport_w_debug(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), fi(0, Fixed_Point_Properties, F), hr_delta_sum, fi(toss_thresh, Fixed_Point_Properties, F), num_peak_deltas, fi(neg_peak_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(0))
+%         [heart_rate, ~, hr_delta_sum, num_peak_deltas, ~] = heart_rate_official_cport(indata(begin_index:end_index), uint32(fs), fi(threshold_1, Fixed_Point_Properties, F), fi(threshold_2, Fixed_Point_Properties, F), fi(threshold_3, Fixed_Point_Properties, F), fi(pos_deviance_threshold, Fixed_Point_Properties, F), fi(neg_deviance_threshold, Fixed_Point_Properties, F), fi(0, Fixed_Point_Properties, F), hr_delta_sum, fi(toss_thresh, Fixed_Point_Properties, F), num_peak_deltas, fi(neg_peak_deviance_threshold, Fixed_Point_Properties, F), uint32(sample_size_t), uint32(0));
         heart_rates_avg = heart_rates_avg + heart_rate;
         
         heart_rates = [heart_rates heart_rate];
