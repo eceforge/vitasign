@@ -59,6 +59,7 @@
 #include "HR_C_Port/heart_rate_official_cport.h"
 #include "HR_C_Port/plus.h"
 #include <stdint.h>
+#include "leads_off_detection.h"
 
 
 
@@ -66,6 +67,12 @@
 #define DELAY 1000000L
 
 #define PWM1_TIMER_TBPRD   18750 // Helps determine the PWM Freq. (helps only, doesn't entirely determin the freq)
+#define slave_address 0x48
+
+#define header_byte 42 // Unique header byte given to System team every time we communicate with them.
+
+char shifts[] = {24, 16, 8}; // Used to define the number of shifts that occur each time we shift out a byte on the i2c line
+char current_shift_index = 0; // The current index into shifts. Must be global because used in interrupt
 
 // Functions that will be run from RAM need to be assigned to
 // a different section.  This section will then be mapped using
@@ -91,9 +98,6 @@ Uint16 IntSource = 0;
 
 uint16_t num_rec_slave_addr = 0; // Number of times i2c module has recognized it's own slave address(or 0x00 -- general call) on the bus
 uint16_t num_bytes_moved_to_tx_shift = 0; // Number of bytes that have moved to the transmit shift register from the data transmit register (as counted by XRDY interrupt)
-
-char output_value = 0x00;
-char outputs [] = {"0bob0cas"};
 
 
 int adc_0 = 0; // These are where we will store the values of the ADC conversion
@@ -121,6 +125,8 @@ extern Uint16 RamfuncsLoadSize;
 #define BUFFER_SIZE NEW_DATA_SAMPLE_TIME * FS
 #define CEIL(VARIABLE) ( (VARIABLE - (int)VARIABLE)==0 ? (int)VARIABLE : (int)VARIABLE+1 )
 #define NUM_BUFFERS CEIL(SAMPLE_TIME/NEW_DATA_SAMPLE_TIME)
+// How many sample sizes before we reset the hr delta avg
+#define RESET_THRESH 10
 /**
  * Defines the PCB struct
  */
@@ -142,11 +148,39 @@ Linked_Buffer circular_buffers[NUM_BUFFERS];
 Linked_Buffer *current_linked_buffer;
 //unsigned int data_out[SAMPLE_TIME * FS];
 unsigned int num_empty_buffers_left = NUM_BUFFERS, buffers_full = 0, current_index = 0;
+/**
+ * Heart Rate Algorithm parameters
+ */
+//long threshold_1 = 153; // .15
+long threshold_1 = 184; // .18
+//long threshold_1 = 112; // .11
+//long threshold_1 = 122; //.12
+long threshold_2 = 307;
+long threshold_3 = 204;
+long pos_deviance = 5120; // 5
+//long pos_deviance = 10240; // 10
+long neg_deviance = 665; // .65
+//long neg_deviance = 686; // .67
+//long neg_deviance = 716; // .7
+//long neg_deviance = 512; // .5
+//long neg_deviance = 768; //.75
+uint32_T sample_time = 5;
+uint32_T should_output = 0;
+int32_T prev_hr_delta = 0;
+int32_T hr_delta_sum = 0;
+//int32_T toss_thresh = 5120; // 5
+int32_T toss_thresh = 7168; // 7
+int32_T num_peak_deltas = 0;
+//int32_T neg_peak_deviance_threshold = 266; // .25
+//int32_T neg_peak_deviance_threshold = 307; // .3
+//int32_T neg_peak_deviance_threshold = 358; // .35
+//int32_T neg_peak_deviance_threshold = 409; // .35
+int32_T neg_peak_deviance_threshold = 102400; // 100 - Essentially disables noise filtering based on peak delta dev.
 
+unsigned int hr_index = 0, num_hrs = 0, reset_counter = 0;
 /**
  * Heart Rate Output variables
  */
-unsigned int hr_index = 0, num_hrs = 0;
 // Holds the HRs
 int32_T heart_rates[NUM_HRS_AVG];
 int32_T heart_rate_avg;
@@ -197,7 +231,7 @@ int32_T Voltages[FS * SAMPLE_TIME];
 //int32_T Voltages[500] = {-4,-66,53,111,64,22,-60,30,-50,-53,44,20,87,-25,-34,-24,22,-10,27,15,-30,49,226,1040,711,-407,-1174,-60,134,297,313,161,136,1,-41,11,1,19,18,92,68,31,-2,29,2,26,86,21,6,-22,11,-110,-107,-80,60,30,53,128,50,36,-49,-69,-139,-250,-264,-206,-97,-84,-124,-199,-182,170,151,100,96,91,-13,24,161,105,59,78,121,-49,158,123,38,-28,-37,-51,85,86,111,96,53,106,45,18,62,41,46,-26,-158,-106,-3,175,563,807,-1005,-927,-344,-19,280,241,185,-26,-68,-38,-38,25,102,45,21,61,40,49,-24,6,71,64,62,-37,4,-127,-221,-103,-98,49,5,36,66,9,40,7,70,87,77,45,53,-16,-18,-41,-52,-19,-8,11,-39,33,-33,15,10,-36,-2,52,28,-73,61,8,5,52,75,69,85,-13,-31,11,72,-112,-52,-1,0,-6,-12,-2,-50,-67,-19,6,-21,72,20,38,-37,105,412,1059,-822,-1240,-367,-174,226,296,93,149,119,109,5,43,-47,-33,77,71,0,-17,6,65,-25,4,31,3,-41,-83,-105,-65,-77,-64,23,72,140,102,28,-13,30,38,-22,14,38,10,-45,26,-20,4,42,5,-43,-3,24,-16,-65,-66,-17,-41,52,98,19,56,-36,20,-16,-52,12,-9,102,16,13,-26,-71,9,-31,30,34,19,18,13,2,43,-24,-14,35,48,90,-43,-13,-9,-8,83,28,85,-41,-101,500,874,71,-861,-1198,-602,197,404,329,195,123,14,-69,-22,30,85,3,72,51,3,44,-26,55,30,66,64,4,-7,-64,-146,-199,-157,-51,132,149,208,95,-1,75,38,36,-82,16,3,-5,-10,-39,15,-38,-3,81,31,-26,-50,-17,-8,19,62,77,25,47,8,-25,42,25,-33,-84,-22,50,-24,-41,-4,64,31,49,-4,-21,5,65,53,38,-22,-37,-64,-39,6,-49,1,-3,-11,-33,-12,545,-7,-776,-540,-258,-23,273,193,-50,-75,-43,23,38,84,44,-15,-47,-23,18,-58,-7,49,3,65,-31,4,8,-84,-72,-117,-52,-81,8,72,17,100,30,37,99,97,95,-41,-45,-3,-56,-22,-3,9,51,-37,19,-23,-75,37,-10,70,-1,2,-15,61,32,2,38,48,-44,-29,-13,-8,35,-4,-26,-32,-21,25,-30,58,70,-1,-7,-68,-15,-59,41,70,-16,-12,-106,388,65,-1071,-1020,-493,-271,215,413,214,173,24,69,-32,-21,56,-11,-30,-95,-5,-49,50,83,168,132,76,40,59,-14,-162,-191,-220};
 
 // Database 40bpm
-//int32_T Voltages[500] = {-7,-24,-37,-48,-56,-63,-69,-74,-77,-81,-88,-104,-132,-167,-189,-166,-69,115,364,590,683,583,336,57,-155,-265,-284,-245,-188,-142,-116,-105,-100,-98,-94,-91,-88,-86,-85,-84,-79,-74,-65,-54,-42,-29,-13,5,24,46,68,90,112,133,152,169,182,190,195,195,190,180,166,148,127,104,81,56,32,7,-16,-36,-54,-71,-85,-97,-107,-114,-120,-125,-128,-131,-132,-133,-133,-133,-133,-133,-133,-132,-132,-131,-130,-128,-128,-127,-126,-125,-125,-124,-122,-121,-120,-120,-119,-117,-116,-115,-114,-114,-113,-111,-110,-109,-108,-108,-107,-105,-104,-103,-102,-100,-99,-99,-98,-97,-96,-93,-92,-91,-90,-88,-87,-85,-82,-77,-73,-65,-56,-42,-25,-6,16,39,63,84,101,112,115,112,100,83,61,36,13,-8,-25,-40,-48,-56,-62,-67,-70,-74,-76,-81,-92,-114,-147,-174,-170,-99,57,291,540,692,658,447,169,-64,-195,-228,-194,-134,-87,-60,-48,-44,-40,-35,-30,-27,-23,-20,-17,-12,-6,4,16,30,46,64,84,104,127,150,173,195,216,234,249,260,266,266,262,253,240,223,204,181,156,132,108,85,64,45,27,12,0,-11,-18,-25,-30,-34,-36,-37,-39,-39,-39,-37,-37,-36,-36,-35,-34,-33,-31,-31,-30,-29,-28,-27,-25,-25,-24,-23,-22,-20,-20,-19,-18,-17,-17,-16,-14,-14,-13,-12,-12,-11,-10,-10,-8,-7,-7,-6,-5,-5,-4,-4,-2,-1,-1,0,1,1,5,9,15,24,35,50,67,87,109,132,154,171,183,187,184,172,155,132,108,84,62,44,30,20,11,4,-2,-7,-11,-14,-20,-36,-64,-99,-116,-84,33,238,489,685,714,544,269,23,-122,-162,-128,-73,-28,-5,3,6,9,11,15,18,21,23,26,29,35,45,57,72,89,107,126,147,169,190,211,229,245,257,264,267,263,256,243,226,205,181,156,130,104,80,58,38,20,4,-10,-20,-29,-36,-42,-46,-50,-52,-53,-54,-56,-57,-57,-58,-58,-58,-59,-59,-59,-59,-59,-59,-60,-60,-60,-60,-60,-60,-60,-60,-62,-62,-62,-62,-62,-62,-62,-62,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-62,-60,-59,-56,-50,-42,-30,-16,3,24,47,69,87,101,107,104,95,76,55,30,6,-14,-31,-46,-57,-67,-74,-80,-84,-86,-91,-102,-126,-159,-183,-161,-56,144,395,587,600,418,142,-103,-251,-294,-265,-207,-159,-132,-121,-116,-114,-110,-105,-100,-98,-96,-92,-88,-81,-71,-59,-46,-29,-11,9,30,52,75,98};
+//int32_T Voltages[500] = {-7,-24,-37,-48,-56,-6-2.03,-69,-74,-77,-81,-88,-104,-132,-167,-189,-166,-69,115,364,590,683,583,336,57,-155,-265,-284,-245,-188,-142,-116,-105,-100,-98,-94,-91,-88,-86,-85,-84,-79,-74,-65,-54,-42,-29,-13,5,24,46,68,90,112,133,152,169,182,190,195,195,190,180,166,148,127,104,81,56,32,7,-16,-36,-54,-71,-85,-97,-107,-114,-120,-125,-128,-131,-132,-133,-133,-133,-133,-133,-133,-132,-132,-131,-130,-128,-128,-127,-126,-125,-125,-124,-122,-121,-120,-120,-119,-117,-116,-115,-114,-114,-113,-111,-110,-109,-108,-108,-107,-105,-104,-103,-102,-100,-99,-99,-98,-97,-96,-93,-92,-91,-90,-88,-87,-85,-82,-77,-73,-65,-56,-42,-25,-6,16,39,63,84,101,112,115,112,100,83,61,36,13,-8,-25,-40,-48,-56,-62,-67,-70,-74,-76,-81,-92,-114,-147,-174,-170,-99,57,291,540,692,658,447,169,-64,-195,-228,-194,-134,-87,-60,-48,-44,-40,-35,-30,-27,-23,-20,-17,-12,-6,4,16,30,46,64,84,104,127,150,173,195,216,234,249,260,266,266,262,253,240,223,204,181,156,132,108,85,64,45,27,12,0,-11,-18,-25,-30,-34,-36,-37,-39,-39,-39,-37,-37,-36,-36,-35,-34,-33,-31,-31,-30,-29,-28,-27,-25,-25,-24,-23,-22,-20,-20,-19,-18,-17,-17,-16,-14,-14,-13,-12,-12,-11,-10,-10,-8,-7,-7,-6,-5,-5,-4,-4,-2,-1,-1,0,1,1,5,9,15,24,35,50,67,87,109,132,154,171,183,187,184,172,155,132,108,84,62,44,30,20,11,4,-2,-7,-11,-14,-20,-36,-64,-99,-116,-84,33,238,489,685,714,544,269,23,-122,-162,-128,-73,-28,-5,3,6,9,11,15,18,21,23,26,29,35,45,57,72,89,107,126,147,169,190,211,229,245,257,264,267,263,256,243,226,205,181,156,130,104,80,58,38,20,4,-10,-20,-29,-36,-42,-46,-50,-52,-53,-54,-56,-57,-57,-58,-58,-58,-59,-59,-59,-59,-59,-59,-60,-60,-60,-60,-60,-60,-60,-60,-62,-62,-62,-62,-62,-62,-62,-62,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-62,-60,-59,-56,-50,-42,-30,-16,3,24,47,69,87,101,107,104,95,76,55,30,6,-14,-31,-46,-57,-67,-74,-80,-84,-86,-91,-102,-126,-159,-183,-161,-56,144,395,587,600,418,142,-103,-251,-294,-265,-207,-159,-132,-121,-116,-114,-110,-105,-100,-98,-96,-92,-88,-81,-71,-59,-46,-29,-11,9,30,52,75,98};
 #pragma SET_DATA_SECTION()
 
 void init_i2c(){
@@ -248,6 +282,7 @@ void init_i2c(){
 
   // Enable i2c "addressed as slave" interrupt
   I2caRegs.I2CIER.bit.AAS = 1;
+  I2caRegs.I2CIER.bit.SCD = 1;
 
   // Enable the XRDYINT (Transmit read condition interrupt). Enabled so I can see if data is getting to the transmit shift register
   I2caRegs.I2CIER.bit.XRDY = 1;
@@ -280,7 +315,7 @@ void init_i2c(){
 
   I2caRegs.I2CCNT = 4;          // Get/send 4 bytes
 
-  I2caRegs.I2CDXR = 0xF5; // Fill the transmission buffer
+  I2caRegs.I2CDXR = header_byte; // Fill the transmission buffer
 
   // Re-Enable the Module now that configuration is done
   I2caRegs.I2CMDR.bit.IRS = 1;
@@ -358,13 +393,9 @@ void main(void)
    EINT;   // Enable Global interrupt INTM
    ERTM;   // Enable Global realtime interrupt DBGM
 
-// Step 6. IDLE loop. Just sit and loop forever (optional):
-   EALLOW;
-   GpioCtrlRegs.GPBMUX1.bit.GPIO34 = 0;
-   GpioCtrlRegs.GPBDIR.bit.GPIO34 = 1;
-   EDIS;
 
-   // Eat ME!!!!
+   // Initialize Leads off detection hardware
+   InitLeadsOffDetection();
 
    /** VITASIGN CODE **/
 
@@ -454,8 +485,8 @@ static void addData(int32_T val) {
 		 */
 		if (!num_empty_buffers_left){
 			copying = 1;
-			// Tests if we are ever calculating and copying
-			if(calculating == 1){
+			// Tests if we are ever calculating and copying or if the leads are off
+			if(calculating == 1 || (leads_off_alarm == 1 || leads_off_alarm == 2)){
 				copying = 0;
 				return; // Waits til next copy cycle to run the algorithm on new data
 			}
@@ -515,31 +546,11 @@ static void runHRAlgo() {
 			Voltages[i] = (Voltages[i] >> 10) + ((Voltages[i] & 512L) != 0L);
 		}
 
-
-	//   	void heart_rate_official_cport(int32_T data[500], uint32_T fs, int32_T
-	//   	  threshold_1, int32_T threshold_2, int32_T threshold_3, int32_T
-	//   	  pos_deviance_threshold, int32_T neg_deviance_threshold, uint32_T sample_time,
-	//   	  uint32_T shouldOutput, int32_T prev_hr_delta, int32_T *heart_rate, int32_T
-	//   	  *last_hr_delta)
-//	  		long threshold_1 = 153; // .15
-	  		long threshold_1 = 184; // .18
-//			long threshold_1 = 112; // .11
-//	  		long threshold_1 = 122; //.12
-	  		long threshold_2 = 307;
-	  		long threshold_3 = 204;
-	  		long pos_deviance = 5120; // 5
-//	  		long pos_deviance = 10240; // 10
-//	  		long neg_deviance = 665; // .65
-//	  		long neg_deviance = 686; // .67
-//	   		long neg_deviance = 716; // .7
-	  		long neg_deviance = 512; // .5
-//	  		long neg_deviance = 768; //.75
-	  		uint32_T sample_time = 5;
-	  		uint32_T should_output = 0;
-	  		int32_T prev_hr_delta = 0;
 	  		heart_rate = 0;
 			calculating = 1;
-	  		heart_rate_official_cport(Voltages, 100, threshold_1, threshold_2, threshold_3, pos_deviance, neg_deviance, sample_time, should_output, prev_hr_delta, &heart_rate, &last_hr_delta);
+//	  		heart_rate_official_cport(Voltages, 100, threshold_1, threshold_2, threshold_3, pos_deviance, neg_deviance, sample_time, should_output, prev_hr_delta, &heart_rate, &last_hr_delta);
+			heart_rate_official_cport(Voltages, 100, threshold_1, threshold_2, threshold_3, pos_deviance, neg_deviance, prev_hr_delta, &hr_delta_sum, toss_thresh, &num_peak_deltas, neg_peak_deviance_threshold, sample_time, should_output, &heart_rate, &last_hr_delta);
+
 	  		calculating = 0;
 	  		// Grabs the heart rate value
 	  		heart_rates[hr_index] = heart_rate;
@@ -558,7 +569,15 @@ static void runHRAlgo() {
 				hr_sum = 0;
 				num_hrs = 0;
 	  		}
-
+			// Resets the hr delta avg
+			if (reset_counter < RESET_THRESH){
+				reset_counter++;
+			}
+			else{
+				num_peak_deltas  = 0;
+				hr_delta_sum = 0;
+				reset_counter = 0;
+			}
 
 //			for(i = 0; i < 500; i++) {
 //				Voltages2[i] = Voltages[i];
@@ -662,30 +681,44 @@ void InitEPwmTimer()
 }
 
 interrupt void i2c_int1(void){
-  isr_counter++;
+//  isr_counter++;
 
 
   IntSource = I2caRegs.I2CISRC.all;
 
-  if( IntSource == I2C_AAS_ISRC){
-    num_rec_slave_addr++;
+  if( IntSource == I2C_AAS_ISRC){ // Addressed as slave
+    num_rec_slave_addr++; // Good indicator to show that i2c module has recognized it's slave address
 
+//    I2caRegs.I2CDXR = header_byte; // First time we are get called by the master we put get the header byte ready to send.
+    current_shift_index = 0;
   }
 
-  if (IntSource == I2C_TX_ISRC){
+  if (IntSource == I2C_TX_ISRC){ // Read requested
 
-    num_bytes_moved_to_tx_shift ++;
+    num_bytes_moved_to_tx_shift ++; // Good indicator to show that i2c is shifting out values
 
 
     I2caRegs.I2CSTR.bit.XRDY = 1; // Clear the XRDY interrupt (re-arm it) since it does not get auto-cleared by reading I2CISRC
-    I2caRegs.I2CDXR = outputs[output_value]; // Fill the transmission buffer
-//    I2caRegs.I2CDXR = heart_rate_avg; // Update
-    output_value = output_value + 1;
-    if(output_value == 8){
-    	output_value = 0;
+
+
+    I2caRegs.I2CDXR = heart_rate_avg>>shifts[current_shift_index]; // Update to newest value we have at time of call
+    if(current_shift_index == 2){
+    	current_shift_index = 0;
+    }else{
+    	current_shift_index++;
     }
+
   }
 
+  if(IntSource == I2C_SCD_ISRC){ // Stop Condtion Detected
+	  // This could potentially happen BEFORE we are able to shift out all 4 bytes.
+	  //	hence why have to be ready for the next time they ask, to start the protocol from top
+
+	  // Reset the pointer to start of hear_rate_avg
+	  current_shift_index = 0;
+	  // Reset the value of I2CDXR to unique_address
+	  I2caRegs.I2CDXR = header_byte;
+  }
 
   // Acknowledge this interrupt to receive more interrupts from group 8
   PieCtrlRegs.PIEACK.all = PIEACK_GROUP8;

@@ -6,6 +6,8 @@ CG_TOOL_ROOT := /opt/ti/ccsv5/tools/compiler/c2000_6.1.0
 
 ORDERED_OBJS += \
 $(GEN_CMDS__FLAG) \
+-l"rts2800_fpu32_fast_supplement.lib" \
+-l"rts2800_fpu32.lib" \
 "./HR_C_Port/sqrt.obj" \
 "./HR_C_Port/rt_nonfinite.obj" \
 "./HR_C_Port/rtGetNaN.obj" \
@@ -20,20 +22,21 @@ $(GEN_CMDS__FLAG) \
 "./HR_C_Port/heart_rate_official_cport.obj" \
 "./HR_C_Port/conv.obj" \
 "./HR_C_Port/abs.obj" \
-"./Example_2803xFlash.obj" \
-"./DSP2803x_usDelay.obj" \
-"./DSP2803x_SysCtrl.obj" \
-"./DSP2803x_PieVect.obj" \
-"./DSP2803x_PieCtrl.obj" \
-"./DSP2803x_GlobalVariableDefs.obj" \
-"./DSP2803x_EPwm.obj" \
-"./DSP2803x_DefaultIsr.obj" \
-"./DSP2803x_CodeStartBranch.obj" \
-"./DSP2803x_CSMPasswords.obj" \
--l"rts2800_ml.lib" \
--l"IQmath.lib" \
-"/home/adrian/.wine/drive_c/ti/controlSUITE/device_support/f2803x/v126/DSP2803x_headers/cmd/DSP2803x_Headers_nonBIOS.cmd" \
-"/home/adrian/.wine/drive_c/ti/controlSUITE/device_support/f2803x/v126/DSP2803x_common/cmd/F28035.cmd" \
+"./adr_main.obj" \
+"./F2806x_usDelay.obj" \
+"./F2806x_SysCtrl.obj" \
+"./F2806x_PieVect.obj" \
+"./F2806x_PieCtrl.obj" \
+"./F2806x_I2C.obj" \
+"./F2806x_GlobalVariableDefs.obj" \
+"./F2806x_EPwm.obj" \
+"./F2806x_DefaultIsr.obj" \
+"./F2806x_CodeStartBranch.obj" \
+"./F2806x_CSMPasswords.obj" \
+"./F2806x_Adc.obj" \
+-l"IQmath_fpu32.lib" \
+"/home/adrian/.wine/drive_c/ti/controlSUITE/device_support/f2806x/v135/F2806x_common/cmd/F28069.cmd" \
+"/home/adrian/.wine/drive_c/ti/controlSUITE/device_support/f2806x/v135/F2806x_headers/cmd/F2806x_Headers_nonBIOS.cmd" \
 
 -include ../makefile.init
 
@@ -134,22 +137,22 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: Example_28035_Flash.out
+all: Example_2806xFlash.out
 
 # Tool invocations
-Example_28035_Flash.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
+Example_2806xFlash.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: C2000 Linker'
-	"/opt/ti/ccsv5/tools/compiler/c2000_6.1.0/bin/cl2000" -v28 -ml -mt --cla_support=cla0 -g --define="_DEBUG" --define="LARGE_MODEL" --quiet --verbose_diagnostics --diag_warning=225 --issue_remarks --output_all_syms --cdebug_asm_data -z --stack_size=0x380 -m"Example_28035_Flash.map" --warn_sections -i"/opt/ti/ccsv5/tools/compiler/c2000_6.1.0/lib" -i"/opt/ti/ccsv5/tools/compiler/c2000_6.1.0/include" -i"/home/adrian/.wine/drive_c/ti/controlSUITE/device_support/f2803x/v126/DSP2803x_examples_ccsv4/flash_f28035" -i"/home/adrian/.wine/drive_c/ti/controlSUITE/device_support/f2803x/v126/DSP2803x_common/lib" -i"/home/adrian/.wine/drive_c/ti/controlSUITE/libs/math/IQmath/v15c/lib" --reread_libs --verbose_diagnostics --issue_remarks --entry_point=code_start --rom_model -o "Example_28035_Flash.out" $(ORDERED_OBJS)
+	"/opt/ti/ccsv5/tools/compiler/c2000_6.1.0/bin/cl2000" -v28 -ml -mt --cla_support=cla0 --float_support=fpu32 --vcu_support=vcu0 -g --define="_DEBUG" --define="LARGE_MODEL" --quiet --verbose_diagnostics --diag_warning=225 --issue_remarks --output_all_syms --cdebug_asm_data -z --stack_size=0x200 -m"Example_2806xFlash.map" --warn_sections -i"/opt/ti/ccsv5/tools/compiler/c2000_6.1.0/lib" -i"/opt/ti/ccsv5/tools/compiler/c2000_6.1.0/include" -i"/home/adrian/controlSUITE/device_support/f2806x/v135/F2806x_common/lib" -i"/home/adrian/controlSUITE/libs/math/IQmath/v15c/lib" -i"/home/adrian/controlSUITE/libs/math/FPUfastRTS/V100/lib" --reread_libs --priority --verbose_diagnostics --issue_remarks --entry_point=code_start --rom_model -o "Example_2806xFlash.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(C2000_EXECUTABLE_OUTPUTS__QUOTED) "Example_28035_Flash.out"
-	-$(RM) "DSP2803x_DefaultIsr.pp" "DSP2803x_EPwm.pp" "DSP2803x_GlobalVariableDefs.pp" "DSP2803x_PieCtrl.pp" "DSP2803x_PieVect.pp" "DSP2803x_SysCtrl.pp" "Example_2803xFlash.pp" "HR_C_Port/abs.pp" "HR_C_Port/conv.pp" "HR_C_Port/heart_rate_official_cport.pp" "HR_C_Port/heart_rate_official_cport_initialize.pp" "HR_C_Port/heart_rate_official_cport_rtwutil.pp" "HR_C_Port/heart_rate_official_cport_terminate.pp" "HR_C_Port/max.pp" "HR_C_Port/mean.pp" "HR_C_Port/minus.pp" "HR_C_Port/plus.pp" "HR_C_Port/rtGetInf.pp" "HR_C_Port/rtGetNaN.pp" "HR_C_Port/rt_nonfinite.pp" "HR_C_Port/sqrt.pp" 
-	-$(RM) "DSP2803x_CSMPasswords.obj" "DSP2803x_CodeStartBranch.obj" "DSP2803x_DefaultIsr.obj" "DSP2803x_EPwm.obj" "DSP2803x_GlobalVariableDefs.obj" "DSP2803x_PieCtrl.obj" "DSP2803x_PieVect.obj" "DSP2803x_SysCtrl.obj" "DSP2803x_usDelay.obj" "Example_2803xFlash.obj" "HR_C_Port/abs.obj" "HR_C_Port/conv.obj" "HR_C_Port/heart_rate_official_cport.obj" "HR_C_Port/heart_rate_official_cport_initialize.obj" "HR_C_Port/heart_rate_official_cport_rtwutil.obj" "HR_C_Port/heart_rate_official_cport_terminate.obj" "HR_C_Port/max.obj" "HR_C_Port/mean.obj" "HR_C_Port/minus.obj" "HR_C_Port/plus.obj" "HR_C_Port/rtGetInf.obj" "HR_C_Port/rtGetNaN.obj" "HR_C_Port/rt_nonfinite.obj" "HR_C_Port/sqrt.obj" 
-	-$(RM) "DSP2803x_CSMPasswords.pp" "DSP2803x_CodeStartBranch.pp" "DSP2803x_usDelay.pp" 
+	-$(RM) $(C2000_EXECUTABLE_OUTPUTS__QUOTED) "Example_2806xFlash.out"
+	-$(RM) "F2806x_Adc.pp" "F2806x_DefaultIsr.pp" "F2806x_EPwm.pp" "F2806x_GlobalVariableDefs.pp" "F2806x_I2C.pp" "F2806x_PieCtrl.pp" "F2806x_PieVect.pp" "F2806x_SysCtrl.pp" "adr_main.pp" "HR_C_Port/abs.pp" "HR_C_Port/conv.pp" "HR_C_Port/heart_rate_official_cport.pp" "HR_C_Port/heart_rate_official_cport_initialize.pp" "HR_C_Port/heart_rate_official_cport_rtwutil.pp" "HR_C_Port/heart_rate_official_cport_terminate.pp" "HR_C_Port/max.pp" "HR_C_Port/mean.pp" "HR_C_Port/minus.pp" "HR_C_Port/plus.pp" "HR_C_Port/rtGetInf.pp" "HR_C_Port/rtGetNaN.pp" "HR_C_Port/rt_nonfinite.pp" "HR_C_Port/sqrt.pp" 
+	-$(RM) "F2806x_Adc.obj" "F2806x_CSMPasswords.obj" "F2806x_CodeStartBranch.obj" "F2806x_DefaultIsr.obj" "F2806x_EPwm.obj" "F2806x_GlobalVariableDefs.obj" "F2806x_I2C.obj" "F2806x_PieCtrl.obj" "F2806x_PieVect.obj" "F2806x_SysCtrl.obj" "F2806x_usDelay.obj" "adr_main.obj" "HR_C_Port/abs.obj" "HR_C_Port/conv.obj" "HR_C_Port/heart_rate_official_cport.obj" "HR_C_Port/heart_rate_official_cport_initialize.obj" "HR_C_Port/heart_rate_official_cport_rtwutil.obj" "HR_C_Port/heart_rate_official_cport_terminate.obj" "HR_C_Port/max.obj" "HR_C_Port/mean.obj" "HR_C_Port/minus.obj" "HR_C_Port/plus.obj" "HR_C_Port/rtGetInf.obj" "HR_C_Port/rtGetNaN.obj" "HR_C_Port/rt_nonfinite.obj" "HR_C_Port/sqrt.obj" 
+	-$(RM) "F2806x_CSMPasswords.pp" "F2806x_CodeStartBranch.pp" "F2806x_usDelay.pp" 
 	-@echo 'Finished clean'
 	-@echo ' '
 
