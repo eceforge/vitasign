@@ -585,7 +585,6 @@ static void runHRAlgo() {
 			hr_delta_sum = 0;
 			reset_counter = 0;
 		}
-
 }
 
 void init_adc(){
@@ -684,7 +683,7 @@ void InitEPwmTimer()
 }
 
 interrupt void i2c_int1(void){
-  isr_counter++;
+//  isr_counter++;
 
 
   IntSource = I2caRegs.I2CISRC.all;
@@ -730,7 +729,7 @@ interrupt void i2c_int1(void){
 
 interrupt void adc_isr(void){
 	LoopCount++;
-	GpioDataRegs.GPBTOGGLE.bit.GPIO34 = 1;
+	GpioDataRegs.GPATOGGLE.bit.GPIO0 = 1;
 
 	int adc_0 =  AdcResult.ADCRESULT0;
 	int adc_1 = AdcResult.ADCRESULT1;
