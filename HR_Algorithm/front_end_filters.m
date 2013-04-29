@@ -22,18 +22,13 @@ N = length (x1);       % Signal length
 
 %LOW PASS FILTERING
 
-%CANCELLATION DC DRIFT AND NORMALIZATION
-x1 = x1 - mean (x1 );    % cancel DC conponents
-x1 = x1/ max( abs(x1 )); % normalize to one
-
 Fc  = 16;
 low_pass_order = 2;   % FIR filter order
 low_pass_spec = fdesign.lowpass('N,Fc',low_pass_order,Fc,fs);
 low_pass = design(low_pass_spec,'window','window',@hamming);
 x2 = filter(low_pass, x1);
-%x2 = x2 (6+[1: N]); %cancle delay
+% x2 = x2 (6+[1: N]); %cancle delay
 x2 = x2/ max( abs(x2 )); % normalize , for convenience .
-
 
 %HIGH PASS FILTERING
 
@@ -52,7 +47,6 @@ high_pass = design(high_pass_spec,'window','window',@hamming);
 x3 = filter(high_pass, x2);
 x3 = x3/ max( abs(x3 ));
 
-
 %DERIVATIVE FILTER
 % 
 % % Make impulse response
@@ -63,6 +57,7 @@ x3 = x3/ max( abs(x3 ));
 % x4 = x4/ max( abs(x4));
 %   
 filtered_output = x3;
+
 %SQUARING
 
 %x5 = x4 .^2;
@@ -91,6 +86,8 @@ filtered_output = x3;
 % Applies a dc offset
 dc_offset = max(abs(filtered_output));
 filtered_output = filtered_output + dc_offset;
+
+% Changes it to fixed point
 Fixed_Point_Properties = numerictype('WordLength', 12, 'FractionLength', 10, 'Signed', false);
 filtered_output = fi(filtered_output, Fixed_Point_Properties);
 end

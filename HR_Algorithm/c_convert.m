@@ -7,3 +7,4 @@ cfg.HardwareImplementation = hw_cfg;
 cfg.CCompilerOptimization = 'on';
 cfg.InlineStackLimit = 1000;
 cfg.StackUsageMax = 1000;
+% cfg.DynamicMemoryAllocation = 'AllVariableSizeArrays'
