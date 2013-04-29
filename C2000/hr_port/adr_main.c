@@ -111,7 +111,9 @@ extern Uint16 RamfuncsLoadSize;
 
 
 // Number of HR results we average over
-#define NUM_HRS_AVG  6
+//#define NUM_HRS_AVG  6
+#define NUM_HRS_AVG  15
+
 #define NUM_HRS_AVG_FI NUM_HRS_AVG * 1024 // Equal to 4 In Fixed point:
 /**
  * Linked buffer definitions
@@ -126,7 +128,7 @@ extern Uint16 RamfuncsLoadSize;
 #define CEIL(VARIABLE) ( (VARIABLE - (int)VARIABLE)==0 ? (int)VARIABLE : (int)VARIABLE+1 )
 #define NUM_BUFFERS CEIL(SAMPLE_TIME/NEW_DATA_SAMPLE_TIME)
 // How many sample sizes before we reset the hr delta avg
-#define RESET_THRESH 10
+#define RESET_THRESH 15
 /**
  * Defines the PCB struct
  */
@@ -374,6 +376,10 @@ void main(void)
    GpioCtrlRegs.GPAMUX1.bit.GPIO3 = 0; // Set as General Purpose on Mux
    GpioCtrlRegs.GPADIR.bit.GPIO3 = 1; // Set as ouput
    GpioDataRegs.GPASET.bit.GPIO3 = 1; // Set GPIO as 1 (HIGH)
+
+//   GpioCtrlRegs.GPAMUX1.bit.GPIO0 = 0;
+//   GpioCtrlRegs.GPADIR.bit.GPIO0 = 1;
+//   GpioDataRegs.GPASET.bit.GPIO0 = 1;
    EDIS;
 
 // Step 4. Initialize all the Device Peripherals:
@@ -579,10 +585,6 @@ static void runHRAlgo() {
 				reset_counter = 0;
 			}
 
-//			for(i = 0; i < 500; i++) {
-//				Voltages2[i] = Voltages[i];
-//			}
-
 }
 
 void init_adc(){
@@ -727,7 +729,7 @@ interrupt void i2c_int1(void){
 
 interrupt void adc_isr(void){
 	LoopCount++;
-	GpioDataRegs.GPBTOGGLE.bit.GPIO34 = 1;
+	GpioDataRegs.GPATOGGLE.bit.GPIO0 = 1;
 
 	int adc_0 =  AdcResult.ADCRESULT0;
 	int adc_1 = AdcResult.ADCRESULT1;
