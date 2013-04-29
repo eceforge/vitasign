@@ -561,10 +561,11 @@ static void runHRAlgo() {
 		 * Averages the HR value over the last num_indp_hrs
 		 */
 		int32_T hr_sum = 0; int index = offset;
-		for(i=0; i < (num_hrs - 1)/ SAMPLE_TIME; i+=1){
-			index = (index + 5) % NUM_HRS_AVG;
-			hr_sum += heart_rates[i];
+		int num_times = (num_hrs - 1 ) / SAMPLE_TIME + 1;
+		for(i=0; i < num_times; i+=1){
+			hr_sum += heart_rates[index];
 			num_indp_hrs = plus(num_indp_hrs); // Increments the number of independent hrs we are averaging over
+			index = (index + 5) % NUM_HRS_AVG;
 		}
 		hr_sum = (hr_sum >> 10) + ((hr_sum & 512L) != 0L); // Converts back to Q=10 Fixed Point from Q=20 Fixed point
 		// Saves the heart rate average to the out variable
