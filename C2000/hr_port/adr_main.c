@@ -111,10 +111,9 @@ extern Uint16 RamfuncsLoadSize;
 
 
 // Number of HR results we average over
-//#define NUM_HRS_AVG  6
-#define NUM_HRS_AVG  15
-
+#define NUM_HRS_AVG  16
 #define NUM_HRS_AVG_FI NUM_HRS_AVG * 1024 // Equal to 4 In Fixed point:
+#define NUM_INDP_HRS 4 // Num of independent 'sample time' chunks we are averaging over - for documentation purposes not used in the actual code. Also based on the num_hrs_avg time of 16
 /**
  * Linked buffer definitions
  */
@@ -128,7 +127,7 @@ extern Uint16 RamfuncsLoadSize;
 #define CEIL(VARIABLE) ( (VARIABLE - (int)VARIABLE)==0 ? (int)VARIABLE : (int)VARIABLE+1 )
 #define NUM_BUFFERS CEIL(SAMPLE_TIME/NEW_DATA_SAMPLE_TIME)
 // How many sample sizes before we reset the hr delta avg
-#define RESET_THRESH 15
+#define RESET_THRESH 10
 /**
  * Defines the PCB struct
  */
@@ -179,7 +178,8 @@ int32_T num_peak_deltas = 0;
 //int32_T neg_peak_deviance_threshold = 409; // .35
 int32_T neg_peak_deviance_threshold = 102400; // 100 - Essentially disables noise filtering based on peak delta dev.
 
-unsigned int hr_index = 0, num_hrs = 0, reset_counter = 0;
+unsigned int hr_index = 0, num_hrs = 0, reset_counter = 0, offset = 0;
+int32_T num_indp_hrs = 0;
 /**
  * Heart Rate Output variables
  */
@@ -233,7 +233,7 @@ int32_T Voltages[FS * SAMPLE_TIME];
 //int32_T Voltages[500] = {-4,-66,53,111,64,22,-60,30,-50,-53,44,20,87,-25,-34,-24,22,-10,27,15,-30,49,226,1040,711,-407,-1174,-60,134,297,313,161,136,1,-41,11,1,19,18,92,68,31,-2,29,2,26,86,21,6,-22,11,-110,-107,-80,60,30,53,128,50,36,-49,-69,-139,-250,-264,-206,-97,-84,-124,-199,-182,170,151,100,96,91,-13,24,161,105,59,78,121,-49,158,123,38,-28,-37,-51,85,86,111,96,53,106,45,18,62,41,46,-26,-158,-106,-3,175,563,807,-1005,-927,-344,-19,280,241,185,-26,-68,-38,-38,25,102,45,21,61,40,49,-24,6,71,64,62,-37,4,-127,-221,-103,-98,49,5,36,66,9,40,7,70,87,77,45,53,-16,-18,-41,-52,-19,-8,11,-39,33,-33,15,10,-36,-2,52,28,-73,61,8,5,52,75,69,85,-13,-31,11,72,-112,-52,-1,0,-6,-12,-2,-50,-67,-19,6,-21,72,20,38,-37,105,412,1059,-822,-1240,-367,-174,226,296,93,149,119,109,5,43,-47,-33,77,71,0,-17,6,65,-25,4,31,3,-41,-83,-105,-65,-77,-64,23,72,140,102,28,-13,30,38,-22,14,38,10,-45,26,-20,4,42,5,-43,-3,24,-16,-65,-66,-17,-41,52,98,19,56,-36,20,-16,-52,12,-9,102,16,13,-26,-71,9,-31,30,34,19,18,13,2,43,-24,-14,35,48,90,-43,-13,-9,-8,83,28,85,-41,-101,500,874,71,-861,-1198,-602,197,404,329,195,123,14,-69,-22,30,85,3,72,51,3,44,-26,55,30,66,64,4,-7,-64,-146,-199,-157,-51,132,149,208,95,-1,75,38,36,-82,16,3,-5,-10,-39,15,-38,-3,81,31,-26,-50,-17,-8,19,62,77,25,47,8,-25,42,25,-33,-84,-22,50,-24,-41,-4,64,31,49,-4,-21,5,65,53,38,-22,-37,-64,-39,6,-49,1,-3,-11,-33,-12,545,-7,-776,-540,-258,-23,273,193,-50,-75,-43,23,38,84,44,-15,-47,-23,18,-58,-7,49,3,65,-31,4,8,-84,-72,-117,-52,-81,8,72,17,100,30,37,99,97,95,-41,-45,-3,-56,-22,-3,9,51,-37,19,-23,-75,37,-10,70,-1,2,-15,61,32,2,38,48,-44,-29,-13,-8,35,-4,-26,-32,-21,25,-30,58,70,-1,-7,-68,-15,-59,41,70,-16,-12,-106,388,65,-1071,-1020,-493,-271,215,413,214,173,24,69,-32,-21,56,-11,-30,-95,-5,-49,50,83,168,132,76,40,59,-14,-162,-191,-220};
 
 // Database 40bpm
-//int32_T Voltages[500] = {-7,-24,-37,-48,-56,-6-2.03,-69,-74,-77,-81,-88,-104,-132,-167,-189,-166,-69,115,364,590,683,583,336,57,-155,-265,-284,-245,-188,-142,-116,-105,-100,-98,-94,-91,-88,-86,-85,-84,-79,-74,-65,-54,-42,-29,-13,5,24,46,68,90,112,133,152,169,182,190,195,195,190,180,166,148,127,104,81,56,32,7,-16,-36,-54,-71,-85,-97,-107,-114,-120,-125,-128,-131,-132,-133,-133,-133,-133,-133,-133,-132,-132,-131,-130,-128,-128,-127,-126,-125,-125,-124,-122,-121,-120,-120,-119,-117,-116,-115,-114,-114,-113,-111,-110,-109,-108,-108,-107,-105,-104,-103,-102,-100,-99,-99,-98,-97,-96,-93,-92,-91,-90,-88,-87,-85,-82,-77,-73,-65,-56,-42,-25,-6,16,39,63,84,101,112,115,112,100,83,61,36,13,-8,-25,-40,-48,-56,-62,-67,-70,-74,-76,-81,-92,-114,-147,-174,-170,-99,57,291,540,692,658,447,169,-64,-195,-228,-194,-134,-87,-60,-48,-44,-40,-35,-30,-27,-23,-20,-17,-12,-6,4,16,30,46,64,84,104,127,150,173,195,216,234,249,260,266,266,262,253,240,223,204,181,156,132,108,85,64,45,27,12,0,-11,-18,-25,-30,-34,-36,-37,-39,-39,-39,-37,-37,-36,-36,-35,-34,-33,-31,-31,-30,-29,-28,-27,-25,-25,-24,-23,-22,-20,-20,-19,-18,-17,-17,-16,-14,-14,-13,-12,-12,-11,-10,-10,-8,-7,-7,-6,-5,-5,-4,-4,-2,-1,-1,0,1,1,5,9,15,24,35,50,67,87,109,132,154,171,183,187,184,172,155,132,108,84,62,44,30,20,11,4,-2,-7,-11,-14,-20,-36,-64,-99,-116,-84,33,238,489,685,714,544,269,23,-122,-162,-128,-73,-28,-5,3,6,9,11,15,18,21,23,26,29,35,45,57,72,89,107,126,147,169,190,211,229,245,257,264,267,263,256,243,226,205,181,156,130,104,80,58,38,20,4,-10,-20,-29,-36,-42,-46,-50,-52,-53,-54,-56,-57,-57,-58,-58,-58,-59,-59,-59,-59,-59,-59,-60,-60,-60,-60,-60,-60,-60,-60,-62,-62,-62,-62,-62,-62,-62,-62,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-62,-60,-59,-56,-50,-42,-30,-16,3,24,47,69,87,101,107,104,95,76,55,30,6,-14,-31,-46,-57,-67,-74,-80,-84,-86,-91,-102,-126,-159,-183,-161,-56,144,395,587,600,418,142,-103,-251,-294,-265,-207,-159,-132,-121,-116,-114,-110,-105,-100,-98,-96,-92,-88,-81,-71,-59,-46,-29,-11,9,30,52,75,98};
+//int32_T Voltages[500] = {-7,-24,-37,-48,-56,-63,-69,-74,-77,-81,-88,-104,-132,-167,-189,-166,-69,115,364,590,683,583,336,57,-155,-265,-284,-245,-188,-142,-116,-105,-100,-98,-94,-91,-88,-86,-85,-84,-79,-74,-65,-54,-42,-29,-13,5,24,46,68,90,112,133,152,169,182,190,195,195,190,180,166,148,127,104,81,56,32,7,-16,-36,-54,-71,-85,-97,-107,-114,-120,-125,-128,-131,-132,-133,-133,-133,-133,-133,-133,-132,-132,-131,-130,-128,-128,-127,-126,-125,-125,-124,-122,-121,-120,-120,-119,-117,-116,-115,-114,-114,-113,-111,-110,-109,-108,-108,-107,-105,-104,-103,-102,-100,-99,-99,-98,-97,-96,-93,-92,-91,-90,-88,-87,-85,-82,-77,-73,-65,-56,-42,-25,-6,16,39,63,84,101,112,115,112,100,83,61,36,13,-8,-25,-40,-48,-56,-62,-67,-70,-74,-76,-81,-92,-114,-147,-174,-170,-99,57,291,540,692,658,447,169,-64,-195,-228,-194,-134,-87,-60,-48,-44,-40,-35,-30,-27,-23,-20,-17,-12,-6,4,16,30,46,64,84,104,127,150,173,195,216,234,249,260,266,266,262,253,240,223,204,181,156,132,108,85,64,45,27,12,0,-11,-18,-25,-30,-34,-36,-37,-39,-39,-39,-37,-37,-36,-36,-35,-34,-33,-31,-31,-30,-29,-28,-27,-25,-25,-24,-23,-22,-20,-20,-19,-18,-17,-17,-16,-14,-14,-13,-12,-12,-11,-10,-10,-8,-7,-7,-6,-5,-5,-4,-4,-2,-1,-1,0,1,1,5,9,15,24,35,50,67,87,109,132,154,171,183,187,184,172,155,132,108,84,62,44,30,20,11,4,-2,-7,-11,-14,-20,-36,-64,-99,-116,-84,33,238,489,685,714,544,269,23,-122,-162,-128,-73,-28,-5,3,6,9,11,15,18,21,23,26,29,35,45,57,72,89,107,126,147,169,190,211,229,245,257,264,267,263,256,243,226,205,181,156,130,104,80,58,38,20,4,-10,-20,-29,-36,-42,-46,-50,-52,-53,-54,-56,-57,-57,-58,-58,-58,-59,-59,-59,-59,-59,-59,-60,-60,-60,-60,-60,-60,-60,-60,-62,-62,-62,-62,-62,-62,-62,-62,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-63,-62,-60,-59,-56,-50,-42,-30,-16,3,24,47,69,87,101,107,104,95,76,55,30,6,-14,-31,-46,-57,-67,-74,-80,-84,-86,-91,-102,-126,-159,-183,-161,-56,144,395,587,600,418,142,-103,-251,-294,-265,-207,-159,-132,-121,-116,-114,-110,-105,-100,-98,-96,-92,-88,-81,-71,-59,-46,-29,-11,9,30,52,75,98};
 #pragma SET_DATA_SECTION()
 
 void init_i2c(){
@@ -376,10 +376,6 @@ void main(void)
    GpioCtrlRegs.GPAMUX1.bit.GPIO3 = 0; // Set as General Purpose on Mux
    GpioCtrlRegs.GPADIR.bit.GPIO3 = 1; // Set as ouput
    GpioDataRegs.GPASET.bit.GPIO3 = 1; // Set GPIO as 1 (HIGH)
-
-//   GpioCtrlRegs.GPAMUX1.bit.GPIO0 = 0;
-//   GpioCtrlRegs.GPADIR.bit.GPIO0 = 1;
-//   GpioDataRegs.GPASET.bit.GPIO0 = 1;
    EDIS;
 
 // Step 4. Initialize all the Device Peripherals:
@@ -452,13 +448,6 @@ void main(void)
 	}
 	for(i=0; i < NUM_HRS_AVG; i++)
 		heart_rates[i] = 0;
-
-//  	// Converts the DC values to fixed point values
-//	for(i = 0; i < 500; i++) {
-//		Voltages2[i] = mul_s32_s32_s32_sat(Voltages2[i], div_repeat_s32_sat_near(3379, 4096, 10U)); // 3379 is 3.3 is fixed point
-//		Voltages2[i] = (Voltages2[i] >> 10) + ((Voltages2[i] & 512L) != 0L);
-//		Voltages[i] = Voltages2[i];
-//	}
 
    for(;;)
    {
@@ -552,39 +541,49 @@ static void runHRAlgo() {
 			Voltages[i] = (Voltages[i] >> 10) + ((Voltages[i] & 512L) != 0L);
 		}
 
-	  		heart_rate = 0;
-			calculating = 1;
+		heart_rate = 0;
+		calculating = 1;
 //	  		heart_rate_official_cport(Voltages, 100, threshold_1, threshold_2, threshold_3, pos_deviance, neg_deviance, sample_time, should_output, prev_hr_delta, &heart_rate, &last_hr_delta);
-			heart_rate_official_cport(Voltages, 100, threshold_1, threshold_2, threshold_3, pos_deviance, neg_deviance, prev_hr_delta, &hr_delta_sum, toss_thresh, &num_peak_deltas, neg_peak_deviance_threshold, sample_time, should_output, &heart_rate, &last_hr_delta);
+		heart_rate_official_cport(Voltages, 100, threshold_1, threshold_2, threshold_3, pos_deviance, neg_deviance, prev_hr_delta, &hr_delta_sum, toss_thresh, &num_peak_deltas, neg_peak_deviance_threshold, sample_time, should_output, &heart_rate, &last_hr_delta);
 
-	  		calculating = 0;
-	  		// Grabs the heart rate value
-	  		heart_rates[hr_index] = heart_rate;
-			hr_index = (hr_index + 1) % NUM_HRS_AVG;
-	  		// Ceilings the number of heart rate samples we average pver
-	  		if(num_hrs < NUM_HRS_AVG_FI)
-	  			num_hrs = plus(num_hrs); //1024 is = 1 in Q=10 Fixed Point
-	  		else {
-				// Averages the HR value over the last NUM_HRS
-				int32_T hr_sum = 0;
-				for(i=0; i < NUM_HRS_AVG; i++)
-					hr_sum += heart_rates[i];
-				hr_sum = (hr_sum >> 10) + ((hr_sum & 512L) != 0L); // Converts back to Q=10 Fixed Point from Q=20 Fixed point
-				// Saves the heart rate average to the out variable
-				heart_rate_avg = div_repeat_s32_sat_near(hr_sum, num_hrs, 10U);
-				hr_sum = 0;
-				num_hrs = 0;
-	  		}
-			// Resets the hr delta avg
-			if (reset_counter < RESET_THRESH){
-				reset_counter++;
-			}
-			else{
-				num_peak_deltas  = 0;
-				hr_delta_sum = 0;
-				reset_counter = 0;
-			}
+		calculating = 0;
+		// Grabs the heart rate value
+		heart_rates[hr_index] = heart_rate;
+		hr_index = (hr_index + 1) % NUM_HRS_AVG;
 
+//		// Ceilings the number of heart rate samples we average over
+//		if(num_hrs < NUM_HRS_AVG_FI){
+//			num_hrs = plus(num_hrs); //1024 is = 1 in Q=10 Fixed Point
+//		}
+		if(num_hrs < NUM_HRS_AVG)
+			num_hrs++;
+		/**
+		 * Averages the HR value over the last num_indp_hrs
+		 */
+		int32_T hr_sum = 0; int index = offset;
+		for(i=0; i < (num_hrs - 1)/ SAMPLE_TIME; i+=1){
+			index = (index + 5) % NUM_HRS_AVG;
+			hr_sum += heart_rates[i];
+			num_indp_hrs = plus(num_indp_hrs); // Increments the number of independent hrs we are averaging over
+		}
+		hr_sum = (hr_sum >> 10) + ((hr_sum & 512L) != 0L); // Converts back to Q=10 Fixed Point from Q=20 Fixed point
+		// Saves the heart rate average to the out variable
+		heart_rate_avg = div_repeat_s32_sat_near(hr_sum, num_indp_hrs, 10U);
+		// Updates the offset
+		offset = (offset + 1) % NUM_HRS_AVG;
+		// Resets the sum and count variables
+		hr_sum = 0;
+		num_indp_hrs = 0;
+
+		// Resets the hr delta avg
+		if (reset_counter < RESET_THRESH){
+			reset_counter++;
+		}
+		else{
+			num_peak_deltas  = 0;
+			hr_delta_sum = 0;
+			reset_counter = 0;
+		}
 }
 
 void init_adc(){

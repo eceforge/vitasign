@@ -9,8 +9,8 @@
 					<stringMacro name="INSTALLROOT_F2806x_V135" type="VALUE_PATH_DIR" value="${ORIGINAL_PROJECT_ROOT}/../.."/>
 					<stringMacro name="ORIGINAL_PROJECT_ROOT" type="VALUE_PATH_DIR" value="/home/adrian/controlSUITE/device_support/f2806x/v135/F2806x_examples/flash_f28069"/>
 					<stringMacro name="INSTALLROOT_F2806x_TO_IQMATH" type="VALUE_PATH_DIR" value="${ORIGINAL_PROJECT_ROOT}/../../../../../libs/math/IQmath"/>
-					<stringMacro name="INSTALLROOT_F2806x_TO_HCCAL" type="VALUE_PATH_DIR" value="${ORIGINAL_PROJECT_ROOT}/../../../../../libs/utilities/hrcap_hccal"/>
 					<stringMacro name="INSTALLROOT_F2806x_V135_TO_MWARE" type="VALUE_PATH_DIR" value="${ORIGINAL_PROJECT_ROOT}/../../MWare"/>
+					<stringMacro name="INSTALLROOT_F2806x_TO_HCCAL" type="VALUE_PATH_DIR" value="${ORIGINAL_PROJECT_ROOT}/../../../../../libs/utilities/hrcap_hccal"/>
 					<stringMacro name="INSTALLROOT_F2806x_TO_FASTRTS" type="VALUE_PATH_DIR" value="${ORIGINAL_PROJECT_ROOT}/../../../../../libs/math/FPUfastRTS"/>
 				</macros>
 				<externalSettings/>
