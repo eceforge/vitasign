@@ -64,7 +64,7 @@ F = fimath('OverflowMode','saturate', 'RoundMode', 'nearest', 'ProductFractionLe
 % DEBUG CODE
 % fipref('DataTypeOverride', 'TrueDoubles', 'LoggingMode', 'on'); % turns on datatype override to see the dynamic range of algo's values
 % fipref('DataTypeOverride', 'ForceOff'); % turns off datatype override
-
+Linewidth = 3;
 % F.sub(fi(3), fi(2))
 % asserts that the input parameters are of fixed point
 assert(isa(shouldOutput,'uint32'));
@@ -122,16 +122,17 @@ t = (0:N-1)/double(fs);        % time index
 assert(divide(Fixed_Point_Properties, fi(N, Fixed_Point_Properties, F), fi(fs, Fixed_Point_Properties, F)) >= sample_time);
 
 % UNCOMMENT TO SEE PLOT OF ORIGINAL EKG
-
-    %figure(1)
-    %sub%plot(2,1,1)
-    %plot(t,x1)
-    %xlabel('second');ylabel('Volts');title('Input ECG Signal')
-    %sub%plot(2,1,2)
-    %plot(t(200:600),x1(200:600))
-    %xlabel('second');ylabel('Volts');title('Input ECG Signal 1-3 second')
-    %xlim([1 3]);
-
+% UNCOMMENT TO SEE PLOT OF EKG AFTER A MWI IS APPLIED
+ if(shouldOutput)
+    figure(1)
+    subplot(2,1,1)
+    plot(t, x1, 'LineWidth', Linewidth)
+    xlabel('Time(s)');ylabel('Volts');title('Original ECG Signal')
+    subplot(2,1,2)
+    plot(t(100:250),x1(100:250), 'LineWidth', Linewidth)
+    xlabel('Time(s)');ylabel('Volts');title(' ECG Signal 1-2.5 second')
+    xlim([1 2.5]);
+ end
 %CANCELLATION DC DRIFT AND NORMALIZATION
 x1 = x1 - mean (x1 );    % cancel DC conponents
 % x1 = x1/ max( abs(x1 )); % normalize to one
@@ -140,12 +141,12 @@ max_x = fi(max(abs(x1)), Fixed_Point_Properties_signed, F_signed);
 %     divide(Fixed_Point_Properties_signed, x1(i), max_x) % normalize to one
 % end
 x1 = divide(Fixed_Point_Properties_signed, x1, max_x); % normalize to one
-figure(50)
-plot(x1);
-if(shouldOutput)
-    figure(50)
-    plot(x1);
-end
+% figure(50)
+% plot(x1);
+% if(shouldOutput)
+%     figure(50)
+%     plot(x1);
+% end
 assert(isequal(numerictype(x1),Fixed_Point_Properties_signed) && isequal(fimath(x1), F_signed));
 
 
@@ -331,16 +332,16 @@ if(shouldOutput)
     plot(x5)
 end
 % UNCOMMENT TO SEE PLOT OF EKG AFTER SQUARING
-%     if(shouldOutput)
-        %figure(8)
-        %subplot(2,1,1)
-        %plot([0:length(x5)-1]/fs,x5)
-        %xlabel('second');ylabel('Volts');title(' ECG Signal Squaring')
-        %subplot(2,1,2)
-        %plot(t(200:600),x5(200:600))
-        %xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
-        %xlim([1 3]);
-%     end
+%  if(shouldOutput)
+%     figure(8)
+%     subplot(2,1,1)
+%     plot(t,x5)
+%     xlabel('Time(s)');ylabel('Volts');title(' ECG Signal Squaring')
+%     subplot(2,1,2)
+%     plot(t(100:250),x5(100:250))
+%     xlabel('Time(s)');ylabel('Volts');title(' ECG Signal 1-3 second')
+%     xlim([1 2.5]);
+%  end
 %MOVING WINDOW INTEGRATION
 
 % Make impulse response
@@ -366,16 +367,16 @@ end
 assert(isequal(numerictype(x6),Fixed_Point_Properties) && isequal(fimath(x6), F));
 
 % UNCOMMENT TO SEE PLOT OF EKG AFTER A MWI IS APPLIED
-%     if(shouldOutput)
-        %figure(9)
-        %subplot(2,1,1)
-        %plot([0:length(x6)-1]/fs,x6)
-        %xlabel('second');ylabel('Volts');title(' ECG Signal after Averaging')
-        %subplot(2,1,2)
-        %plot(t(200:600),x6(200:600))
-        %xlabel('second');ylabel('Volts');title(' ECG Signal 1-3 second')
-        %xlim([1 3]);
-%     end
+ if(shouldOutput)
+    figure(9)
+    subplot(2,1,1)
+    plot(t,x6, 'LineWidth', Linewidth)
+    xlabel('Time(s)');ylabel('Volts');title(' ECG Signal Squaring')
+    subplot(2,1,2)
+    plot(t(100:250),x6(100:250), 'LineWidth', Linewidth)
+    xlabel('Time(s)');ylabel('Volts');title(' ECG Signal 1-2.5 second')
+    xlim([1 2.5]);
+ end
     
 %FIND QRS POINTS. NOTE: THE PEAK FINDING IS DIFFERENT THAN PAN-TOMPKINS ALGORITHM
 
@@ -455,12 +456,19 @@ R_loc=R_loc(R_loc~=0);
 if(shouldOutput)
     figure(11)
     subplot(2,1,1)
-    title('ECG Signal with R points');
-    plot (t, sqrt(x6), t(R_loc), R_value, 'r^');
+    plot (t, sqrt(x6), t(R_loc), R_value, 'r^', 'LineWidth', Linewidth);
+    title('ECG Signal with HR Peaks');
+    xlabel('Time(s)');
+    ylabel('Volts');
+%     ylabel('Heart Rate(bpm)');
     legend('ECG','R');
     subplot(2,1,2)
-    plot (t(100:300),sqrt(x6(100:300)) , t(R_loc) ,R_value , 'r^');
-    xlim([1 3]);
+    plot (t(100:250),sqrt(x6(100:250)) , t(R_loc) ,R_value , 'r^', 'LineWidth', Linewidth);
+    xlim([1 2.5]);
+    title('ECG Signal with HR Peaks');
+    xlabel('Time(s)');
+    ylabel('Volts');
+    legend('ECG','R');
 end
 
 % VITASIGN'S CODE BELOW

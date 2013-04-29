@@ -12,6 +12,7 @@
 #define BUFFER_SIZE NEW_DATA_SAMPLE_TIME * FS
 #define CEIL(VARIABLE) ( (VARIABLE - (int)VARIABLE)==0 ? (int)VARIABLE : (int)VARIABLE+1 )
 #define NUM_BUFFERS CEIL(SAMPLE_TIME/NEW_DATA_SAMPLE_TIME)
+#define NUM_HRS_AVG 4
 /**
  * Defines the PCB struct
  */
@@ -27,8 +28,8 @@ Linked_Buffer *linked_buffer_head, *linked_buffer_tail;
 Linked_Buffer circular_buffers[NUM_BUFFERS];
 Linked_Buffer *current_linked_buffer;
 unsigned int data_out[SAMPLE_TIME * FS];
-unsigned int num_empty_buffers_left = NUM_BUFFERS, buffers_full = 0, current_index = 0;
-
+unsigned int num_empty_buffers_left = NUM_BUFFERS, buffers_full = 0, current_index = 0, hr_index = 0, num_hrs = 0;
+unsigned int heart_rates[NUM_HRS_AVG];
 
 /**
  * Function prototypes
@@ -51,12 +52,13 @@ main(int argc, char **argv)
 	setbuf(stderr, NULL);
 	initLinkedBuffers();
 	
-	while(how_many_times != 80) {
+	while(how_many_times != 120) {
 		data = (data + 1) % UINT_MAX;
 		// fprintf(stderr, "Filling buffer @ index %i Buffer size is %u\n",  i, BUFFER_SIZE);
 		addData(data);
 		how_many_times++;
 	}
+
 	return 0;
 
 }
@@ -65,6 +67,7 @@ main(int argc, char **argv)
  * @param val [description]
  */
 static void addData(unsigned int val) {
+	unsigned int i;
 	(current_linked_buffer->buffer)[current_index] = val; 
 	
 	// Checks if we are at the end of the buffer
@@ -80,6 +83,17 @@ static void addData(unsigned int val) {
 		 */
 		if (!num_empty_buffers_left){
 			copyDataOut(current_linked_buffer, data_out);
+			heart_rates[hr_index] = val;
+			if (num_hrs != NUM_HRS_AVG)
+				num_hrs++;
+			hr_index = (hr_index + 1) % NUM_HRS_AVG;
+			printData(heart_rates, NUM_HRS_AVG);
+			// Put for loop for averaging HRS from 0 to NUM_HRS_AVG
+			unsigned int hr_sum = 0;
+			for(i = 0; i < NUM_HRS_AVG; i++) {
+				hr_sum += heart_rates[i];
+			}
+			printf("HR_AVG: %f\n", ((double)(hr_sum)/ num_hrs));
 			buffers_full = 1;
 		}
 	}

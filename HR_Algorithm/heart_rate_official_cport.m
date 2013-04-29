@@ -427,18 +427,20 @@ for i=1:num_cols_indices
             
         % Updates the last index if the R_value is valid
         else   
-              heart_beat_delta = (current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta;
+%               heart_beat_delta = (current_R_index - 1) * time_delta - (last_R_index - 1) * time_delta;
               
               % Calcs the HR peak delta average
               if(num_peak_deltas ~= 0)
                 hr_delta_avg = divide(Fixed_Point_Properties, hr_delta_sum, num_peak_deltas);
+              else
+                hr_delta_avg = fi(0, Fixed_Point_Properties, F);
               end
               
               % Tosses out peaks which occur below the deviance threshold of the average peak delta
-              if (num_peak_deltas < toss_thresh || (num_peak_deltas >= toss_thresh && meets_deviance_threshold(heart_beat_delta, hr_delta_avg, fi(100, Fixed_Point_Properties, F), neg_peak_deviance_threshold)))
+              if (num_peak_deltas < toss_thresh || (num_peak_deltas >= toss_thresh && meets_deviance_threshold(peak_delta, hr_delta_avg, fi(100, Fixed_Point_Properties, F), neg_peak_deviance_threshold)))
                   % Updates the number of peaks and sum
                   num_peak_deltas = num_peak_deltas + 1;
-                  hr_delta_sum = hr_delta_sum + heart_beat_delta;
+                  hr_delta_sum = hr_delta_sum + peak_delta;
               else
                   continue;
               end
