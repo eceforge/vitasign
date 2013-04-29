@@ -470,7 +470,7 @@ static void addData(int32_T val) {
 	// Checks if we are at the end of the buffer
 	if (current_index == BUFFER_SIZE - 1) {
 		// Updates the buffer full
-		if(!buffers_full)
+		if(!buffers_full || num_empty_buffers_left > 0)
 			num_empty_buffers_left--;
 
 		current_linked_buffer = current_linked_buffer->next;
@@ -555,27 +555,35 @@ static void runHRAlgo() {
 //		if(num_hrs < NUM_HRS_AVG_FI){
 //			num_hrs = plus(num_hrs); //1024 is = 1 in Q=10 Fixed Point
 //		}
-		if(num_hrs < NUM_HRS_AVG)
-			num_hrs++;
 		/**
 		 * Averages the HR value over the last num_indp_hrs
 		 */
 		int32_T hr_sum = 0; int index = offset;
-		int num_times = (num_hrs - 1 ) / SAMPLE_TIME + 1;
-		for(i=0; i < num_times; i+=1){
-			hr_sum += heart_rates[index];
-			num_indp_hrs = plus(num_indp_hrs); // Increments the number of independent hrs we are averaging over
-			index = (index + 5) % NUM_HRS_AVG;
+		if(num_hrs < NUM_HRS_AVG){
+			// Averages all of the HRs until we are able to average only over independent samples and not lose per second updates
+			num_hrs++;
+			for(i=0; i < num_hrs; i+=1){
+				hr_sum += heart_rates[i];
+				num_indp_hrs = plus(num_indp_hrs); // Increments the number of hrs we are averaging over. These hrs here aren't independent b/c we don't have enough samples to ensure 1s update cycle
+			}
+		}
+		else {
+			int num_times = (num_hrs - 1 ) / SAMPLE_TIME + 1;
+			for(i=0; i < num_times; i+=1){
+				hr_sum += heart_rates[index];
+				num_indp_hrs = plus(num_indp_hrs); // Increments the number of independent hrs we are averaging over
+				index = (index + 5) % NUM_HRS_AVG;
+			}
+			// Updates the offset
+			offset = (offset + 1) % NUM_HRS_AVG;
 		}
 		hr_sum = (hr_sum >> 10) + ((hr_sum & 512L) != 0L); // Converts back to Q=10 Fixed Point from Q=20 Fixed point
 		// Saves the heart rate average to the out variable
 		heart_rate_avg = div_repeat_s32_sat_near(hr_sum, num_indp_hrs, 10U);
-		// Updates the offset
-		offset = (offset + 1) % NUM_HRS_AVG;
+
 		// Resets the sum and count variables
 		hr_sum = 0;
 		num_indp_hrs = 0;
-
 		// Resets the hr delta avg
 		if (reset_counter < RESET_THRESH){
 			reset_counter++;
