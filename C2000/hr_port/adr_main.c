@@ -111,8 +111,9 @@ extern Uint16 RamfuncsLoadSize;
 
 
 // Number of HR results we average over
-#define NUM_HRS_AVG  6
+#define NUM_HRS_AVG  16
 #define NUM_HRS_AVG_FI NUM_HRS_AVG * 1024 // Equal to 4 In Fixed point:
+#define NUM_INDP_HRS 4 // Num of independent 'sample time' chunks we are averaging over - for documentation purposes not used in the actual code. Also based on the num_hrs_avg time of 16
 /**
  * Linked buffer definitions
  */
@@ -177,7 +178,8 @@ int32_T num_peak_deltas = 0;
 //int32_T neg_peak_deviance_threshold = 409; // .35
 int32_T neg_peak_deviance_threshold = 102400; // 100 - Essentially disables noise filtering based on peak delta dev.
 
-unsigned int hr_index = 0, num_hrs = 0, reset_counter = 0;
+unsigned int hr_index = 0, num_hrs = 0, reset_counter = 0, offset = 0;
+int32_T num_indp_hrs = 0;
 /**
  * Heart Rate Output variables
  */
@@ -447,13 +449,6 @@ void main(void)
 	for(i=0; i < NUM_HRS_AVG; i++)
 		heart_rates[i] = 0;
 
-//  	// Converts the DC values to fixed point values
-//	for(i = 0; i < 500; i++) {
-//		Voltages2[i] = mul_s32_s32_s32_sat(Voltages2[i], div_repeat_s32_sat_near(3379, 4096, 10U)); // 3379 is 3.3 is fixed point
-//		Voltages2[i] = (Voltages2[i] >> 10) + ((Voltages2[i] & 512L) != 0L);
-//		Voltages[i] = Voltages2[i];
-//	}
-
    for(;;)
    {
        // This loop will be interrupted, so the overall
@@ -485,8 +480,8 @@ static void addData(int32_T val) {
 		 */
 		if (!num_empty_buffers_left){
 			copying = 1;
-			// Tests if we are ever calculating and copying
-			if(calculating == 1){
+			// Tests if we are ever calculating and copying or if the leads are off
+			if(calculating == 1 || (leads_off_alarm == 1 || leads_off_alarm == 2)){
 				copying = 0;
 				return; // Waits til next copy cycle to run the algorithm on new data
 			}
@@ -546,42 +541,49 @@ static void runHRAlgo() {
 			Voltages[i] = (Voltages[i] >> 10) + ((Voltages[i] & 512L) != 0L);
 		}
 
-	  		heart_rate = 0;
-			calculating = 1;
+		heart_rate = 0;
+		calculating = 1;
 //	  		heart_rate_official_cport(Voltages, 100, threshold_1, threshold_2, threshold_3, pos_deviance, neg_deviance, sample_time, should_output, prev_hr_delta, &heart_rate, &last_hr_delta);
-			heart_rate_official_cport(Voltages, 100, threshold_1, threshold_2, threshold_3, pos_deviance, neg_deviance, prev_hr_delta, &hr_delta_sum, toss_thresh, &num_peak_deltas, neg_peak_deviance_threshold, sample_time, should_output, &heart_rate, &last_hr_delta);
+		heart_rate_official_cport(Voltages, 100, threshold_1, threshold_2, threshold_3, pos_deviance, neg_deviance, prev_hr_delta, &hr_delta_sum, toss_thresh, &num_peak_deltas, neg_peak_deviance_threshold, sample_time, should_output, &heart_rate, &last_hr_delta);
 
-	  		calculating = 0;
-	  		// Grabs the heart rate value
-	  		heart_rates[hr_index] = heart_rate;
-			hr_index = (hr_index + 1) % NUM_HRS_AVG;
-	  		// Ceilings the number of heart rate samples we average pver
-	  		if(num_hrs < NUM_HRS_AVG_FI)
-	  			num_hrs = plus(num_hrs); //1024 is = 1 in Q=10 Fixed Point
-	  		else {
-				// Averages the HR value over the last NUM_HRS
-				int32_T hr_sum = 0;
-				for(i=0; i < NUM_HRS_AVG; i++)
-					hr_sum += heart_rates[i];
-				hr_sum = (hr_sum >> 10) + ((hr_sum & 512L) != 0L); // Converts back to Q=10 Fixed Point from Q=20 Fixed point
-				// Saves the heart rate average to the out variable
-				heart_rate_avg = div_repeat_s32_sat_near(hr_sum, num_hrs, 10U);
-				hr_sum = 0;
-				num_hrs = 0;
-	  		}
-			// Resets the hr delta avg
-			if (reset_counter < RESET_THRESH){
-				reset_counter++;
-			}
-			else{
-				num_peak_deltas  = 0;
-				hr_delta_sum = 0;
-				reset_counter = 0;
-			}
+		calculating = 0;
+		// Grabs the heart rate value
+		heart_rates[hr_index] = heart_rate;
+		hr_index = (hr_index + 1) % NUM_HRS_AVG;
 
-//			for(i = 0; i < 500; i++) {
-//				Voltages2[i] = Voltages[i];
-//			}
+//		// Ceilings the number of heart rate samples we average over
+//		if(num_hrs < NUM_HRS_AVG_FI){
+//			num_hrs = plus(num_hrs); //1024 is = 1 in Q=10 Fixed Point
+//		}
+		if(num_hrs < NUM_HRS_AVG)
+			num_hrs++;
+		/**
+		 * Averages the HR value over the last num_indp_hrs
+		 */
+		int32_T hr_sum = 0; int index = offset;
+		for(i=0; i < (num_hrs - 1)/ SAMPLE_TIME; i+=1){
+			index = (index + 5) % NUM_HRS_AVG;
+			hr_sum += heart_rates[i];
+			num_indp_hrs = plus(num_indp_hrs); // Increments the number of independent hrs we are averaging over
+		}
+		hr_sum = (hr_sum >> 10) + ((hr_sum & 512L) != 0L); // Converts back to Q=10 Fixed Point from Q=20 Fixed point
+		// Saves the heart rate average to the out variable
+		heart_rate_avg = div_repeat_s32_sat_near(hr_sum, num_indp_hrs, 10U);
+		// Updates the offset
+		offset = (offset + 1) % NUM_HRS_AVG;
+		// Resets the sum and count variables
+		hr_sum = 0;
+		num_indp_hrs = 0;
+
+		// Resets the hr delta avg
+		if (reset_counter < RESET_THRESH){
+			reset_counter++;
+		}
+		else{
+			num_peak_deltas  = 0;
+			hr_delta_sum = 0;
+			reset_counter = 0;
+		}
 
 }
 
