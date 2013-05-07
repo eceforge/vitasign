@@ -57,7 +57,7 @@ void InitLeadsOffDetection(void){
  * This interrupt should trigger EITHER when leads go off OR when they come back on again.
  */
 interrupt void leads_off_isr1(void){
-	GpioDataRegs.GPBSET.bit.GPIO34 = 1; // Turn off the GPIO 34 LED
+	GpioDataRegs.GPACLEAR.bit.GPIO0 = 1; // Turn off the GPIO 34 LED
 
 
 	leads_off_alarm = 0; // Release the lock, both leads are back on now
@@ -68,6 +68,7 @@ interrupt void leads_off_isr1(void){
 	int lead_2_status = GpioDataRegs.GPADAT.bit.GPIO2;
 	if( lead_1_status == 1 || lead_2_status == 1){ // Only when leads have gone off
 		leads_off_alarm = 1;
+		GpioDataRegs.GPATOGGLE.bit.GPIO0 = 1;
 //		heart_rate_avg = 75776; // Prevent future toggles bpm=74
 		heart_rate_avg = 2048;
 	}
@@ -78,11 +79,11 @@ interrupt void leads_off_isr1(void){
 }
 
 interrupt void leads_off_isr2(void){
-	GpioDataRegs.GPBSET.bit.GPIO34 = 1; // Turn off the GPIO 34 LED
+	GpioDataRegs.GPASET.bit.GPIO0 = 1; // Turn off the GPIO 34 LED
 
 	leads_off_alarm = 2;
 	heart_rate_avg = -2; // fill the buffer with error code
-
+	GpioDataRegs.GPASET.bit.GPIO0 = 0;
 	PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;
 }
 
